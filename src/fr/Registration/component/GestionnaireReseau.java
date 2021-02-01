@@ -1,8 +1,14 @@
-package fr.Registration;
+package fr.Registration.component;
 
 import java.util.ArrayList;
 import java.util.Set;
 
+import fr.Registration.interfaces.RegistrationCI;
+import fr.Registration.port.RegistrationInboundPort;
+import fr.Utils.classes.Noeud;
+import fr.Utils.interfaces.ConnectionInfo;
+import fr.Utils.interfaces.NodeAddressI;
+import fr.Utils.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;

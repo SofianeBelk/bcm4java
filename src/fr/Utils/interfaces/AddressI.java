@@ -1,4 +1,4 @@
-package fr.Registration;
+package fr.Utils.interfaces;
 
 public interface AddressI {
 	public boolean isNodeAdress();

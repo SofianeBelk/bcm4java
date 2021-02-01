@@ -1,4 +1,8 @@
-package fr.Registration;
+package fr.Utils.classes;
+
+import fr.Utils.interfaces.ConnectionInfo;
+import fr.Utils.interfaces.NodeAddressI;
+import fr.Utils.interfaces.PositionI;
 
 public class Noeud implements ConnectionInfo {
 	private NodeAddressI address;

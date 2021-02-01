@@ -1,7 +1,10 @@
-package fr.Registration;
+package fr.Registration.interfaces;
 
 import java.util.Set;
 
+import fr.Utils.interfaces.ConnectionInfo;
+import fr.Utils.interfaces.NodeAddressI;
+import fr.Utils.interfaces.PositionI;
 import fr.sorbonne_u.components.interfaces.OfferedCI;
 
 public interface RegistrationCI extends OfferedCI{
