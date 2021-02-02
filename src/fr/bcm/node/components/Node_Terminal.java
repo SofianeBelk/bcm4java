@@ -6,9 +6,13 @@ import fr.bcm.utils.address.classes.Address;
 import fr.bcm.utils.address.classes.NetworkAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
+import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+import javafx.geometry.Point2D;
+
 import java.util.UUID;
 
 
@@ -53,6 +57,8 @@ public class Node_Terminal extends AbstractComponent{
 	@Override
 	public synchronized void execute() throws Exception {
 		super.execute();
+		PositionI pointInitial= (PositionI) new Point2D(10,10);
+		this.ntop.registre((NodeAddressI)address, ntop_uri,pointInitial , 20.00, true);
 		this.logMessage(String.valueOf(address.isNetworkAdress()));
 	}
 
