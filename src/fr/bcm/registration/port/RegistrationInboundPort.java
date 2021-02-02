@@ -1,14 +1,14 @@
-package fr.Registration.port;
+package fr.bcm.registration.port;
 
 import java.util.Set;
 
-import fr.Registration.interfaces.RegistrationCI;
-import fr.Utils.interfaces.ConnectionInfo;
-import fr.Utils.interfaces.NodeAddressI;
-import fr.Utils.interfaces.PositionI;
+import fr.bcm.registration.interfaces.RegistrationCI;
+import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
+import fr.bcm.utils.nodeInfo.interfaces.NodeAddressI;
+import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
-import fr.Registration.component.GestionnaireReseau;
+import fr.bcm.registration.component.GestionnaireReseau;
 
 public class RegistrationInboundPort 
 extends AbstractInboundPort
@@ -34,6 +34,7 @@ implements RegistrationCI
 		return this.getOwner().handleRequest(
 				c -> ((GestionnaireReseau)c).catalogue(address, communicationInboundPortURI, initialPosition, initialRange, isRouting)
 				);
+		
 		
 	}
 

@@ -1,14 +1,14 @@
-package fr.Registration.component;
+package fr.bcm.registration.component;
 
 import java.util.ArrayList;
 import java.util.Set;
 
-import fr.Registration.interfaces.RegistrationCI;
-import fr.Registration.port.RegistrationInboundPort;
-import fr.Utils.classes.Noeud;
-import fr.Utils.interfaces.ConnectionInfo;
-import fr.Utils.interfaces.NodeAddressI;
-import fr.Utils.interfaces.PositionI;
+import fr.bcm.registration.interfaces.RegistrationCI;
+import fr.bcm.registration.port.RegistrationInboundPort;
+import fr.bcm.utils.nodeInfo.classes.Noeud;
+import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
+import fr.bcm.utils.nodeInfo.interfaces.NodeAddressI;
+import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;

@@ -1,4 +1,4 @@
-package fr.Utils.interfaces;
+package fr.bcm.utils.nodeInfo.interfaces;
 
 public interface NetworkAddressI extends AddressI{
 	public default boolean isNodeAdress() {
