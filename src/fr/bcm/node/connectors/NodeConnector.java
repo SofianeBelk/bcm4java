@@ -6,7 +6,7 @@ import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.connectednodes.interfaces.ConnectionInfo;
-import fr.bcm.utils.connectednodes.interfaces.PositionI;
+import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.connectors.AbstractConnector;
 
 public class NodeConnector extends AbstractConnector implements Node_TerminalCI {

@@ -1,7 +1,8 @@
 package fr.bcm.utils.nodeInfo.classes;
 
-import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
-import fr.bcm.utils.nodeInfo.interfaces.NodeAddressI;
+
+import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.connectednodes.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 
 public class Noeud implements ConnectionInfo {

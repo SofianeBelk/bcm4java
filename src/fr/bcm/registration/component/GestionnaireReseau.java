@@ -5,9 +5,9 @@ import java.util.Set;
 
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.registration.port.RegistrationInboundPort;
+import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.connectednodes.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.classes.Noeud;
-import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
-import fr.bcm.utils.nodeInfo.interfaces.NodeAddressI;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;

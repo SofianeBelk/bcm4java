@@ -6,7 +6,7 @@ import fr.bcm.node.interfaces.Node_EphemeralCI;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.connectednodes.interfaces.ConnectionInfo;
-import fr.bcm.utils.connectednodes.interfaces.PositionI;
+import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
