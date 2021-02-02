@@ -1,0 +1,61 @@
+package fr.bcm.node.components;
+
+import fr.bcm.node.interfaces.Node_TerminalCI;
+import fr.bcm.node.ports.Node_TerminalOutBoundPort;
+import fr.bcm.utils.address.classes.Address;
+import fr.bcm.utils.address.classes.NetworkAddress;
+import fr.bcm.utils.address.interfaces.AddressI;
+import fr.bcm.utils.address.interfaces.NetworkAddressI;
+import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.annotations.RequiredInterfaces;
+import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+import java.util.UUID;
+
+
+@RequiredInterfaces(required = {Node_TerminalCI.class})
+public class Node_Terminal extends AbstractComponent{
+	
+	public static final String ntop_uri = "ntop-uri";
+	protected Node_TerminalOutBoundPort ntop;
+	
+	private NetworkAddress address = new NetworkAddress();
+	
+	
+	protected Node_Terminal() throws Exception {
+		super(1,0);
+		this.ntop = new Node_TerminalOutBoundPort(ntop_uri, this);
+		this.ntop.publishPort();
+		this.toggleLogging();
+		this.toggleTracing();
+	}
+
+
+	@Override
+	public synchronized void finalise() throws Exception {
+		if(this.ntop.connected()) {
+			this.doPortDisconnection(ntop_uri);
+		}
+		super.finalise();
+	}
+
+
+	@Override
+	public synchronized void shutdown() throws ComponentShutdownException {
+		try {
+			this.ntop.unpublishPort();
+		} catch (Exception e) {
+			throw new ComponentShutdownException();
+		}
+		super.shutdown();
+	}
+
+
+	@Override
+	public synchronized void execute() throws Exception {
+		super.execute();
+		this.logMessage(String.valueOf(address.isNetworkAdress()));
+	}
+
+	
+	
+}
