@@ -6,9 +6,14 @@ import fr.bcm.utils.address.classes.Address;
 import fr.bcm.utils.address.classes.NetworkAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
+import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.nodeInfo.classes.Position;
+import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+
+import java.awt.Point;
 import java.util.UUID;
 
 
@@ -25,6 +30,8 @@ public class Node_Terminal extends AbstractComponent{
 		super(1,0);
 		this.ntop = new Node_TerminalOutBoundPort(ntop_uri, this);
 		this.ntop.publishPort();
+		
+		// Enable logs
 		this.toggleLogging();
 		this.toggleTracing();
 	}
@@ -53,7 +60,10 @@ public class Node_Terminal extends AbstractComponent{
 	@Override
 	public synchronized void execute() throws Exception {
 		super.execute();
-		this.logMessage(String.valueOf(address.isNetworkAdress()));
+		this.logMessage("Tries to log in the manager");
+		Position pointInitial= new Position(10,10);
+		this.ntop.registre(address, ntop_uri,pointInitial , 20.00, true).size();
+		this.logMessage("Logged");
 	}
 
 	
