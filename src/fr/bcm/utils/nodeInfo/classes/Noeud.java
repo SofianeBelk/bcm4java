@@ -1,18 +1,18 @@
 package fr.bcm.utils.nodeInfo.classes;
 
 
-import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.connectednodes.interfaces.ConnectionInfo;
+import fr.bcm.utils.address.interfaces.AddressI;
+import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 
 public class Noeud implements ConnectionInfo {
-	private NodeAddressI address;
+	private AddressI address;
 	private String communicationInboundPortURI;
 	private PositionI initialPosition;
 	private double initialRange;
 	private boolean isRouting;
 	
-	public Noeud(NodeAddressI address, String communicationInboundPortURI,
+	public Noeud(AddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) {
 		this.address=address;
 		this.communicationInboundPortURI=communicationInboundPortURI;
@@ -21,8 +21,8 @@ public class Noeud implements ConnectionInfo {
 		this.isRouting=isRouting;
 	}
 	
-	public NodeAddressI getAddress(){
-		return address;
+	public AddressI getAddress(){
+		return this.address;
 	}
 	
 
@@ -36,8 +36,8 @@ public class Noeud implements ConnectionInfo {
 	public boolean getisRouting() {
 		return this.isRouting;
 	}
-	public void setAddress(NodeAddressI a) {
-		this.address=a;
+	public void setAddress(AddressI a) {
+		this.address.equals(a);
 	}
 	
 	public void setcommunicationInboundPortURI(String a) {

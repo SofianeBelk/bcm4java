@@ -1,5 +1,6 @@
 package fr.bcm.node.components;
 
+import fr.bcm.node.interfaces.Node_EphemeralCI;
 import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.node.ports.Node_EphemeralOutBoundPort;
 import fr.bcm.node.ports.Node_TerminalOutBoundPort;
@@ -8,16 +9,17 @@ import fr.bcm.utils.address.classes.NetworkAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
-import javafx.geometry.Point2D;
 
+import java.awt.Point;
 import java.util.UUID;
 
 
-@RequiredInterfaces(required = {Node_TerminalCI.class})
+@RequiredInterfaces(required = {Node_EphemeralCI.class})
 public class Node_Ephemeral extends AbstractComponent{
 	
 	public static final String neop_uri = "neop_uri";
@@ -30,6 +32,8 @@ public class Node_Ephemeral extends AbstractComponent{
 		super(1,0);
 		this.neop = new Node_EphemeralOutBoundPort(neop_uri, this);
 		this.neop.publishPort();
+		
+		// Enables logs
 		this.toggleLogging();
 		this.toggleTracing();
 	}
@@ -58,9 +62,10 @@ public class Node_Ephemeral extends AbstractComponent{
 	@Override
 	public synchronized void execute() throws Exception {
 		super.execute();
-		PositionI pointInitial= (PositionI) new Point2D(10,5);
-		this.neop.registre((NodeAddressI)address,neop_uri , pointInitial, 25.00, true);
-		this.logMessage(String.valueOf(address.isNetworkAdress()));
+		this.logMessage("Tries to log in the manager");
+		PositionI pointInitial = new Position(10,5);
+		this.neop.registre(address,neop_uri , pointInitial, 25.00, true);
+		this.logMessage("Logged");
 	}
 
 	

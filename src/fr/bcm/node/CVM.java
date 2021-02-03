@@ -21,11 +21,11 @@ public class CVM extends AbstractCVM {
 	public void deploy() throws Exception{
 		String ntURI=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
 		String neURI=AbstractComponent.createComponent(Node_Ephemeral.class.getCanonicalName(), new Object[]{});
+		
 		AbstractComponent.createComponent(GestionnaireReseau.class.getCanonicalName(), new Object[]{});
-		//la connexion du coté gauche 
+		
 		this.doPortConnection(ntURI, Node_Terminal.ntop_uri, GestionnaireReseau.GS_URI, NodeConnector.class.getCanonicalName());
-		/*la connexion du coté droit "je crois que le composant 
-		gestionnaire reseau a besoin d'une interface required pour se connecter a l'autre composant"*/
+		
 		this.doPortConnection(neURI, Node_Ephemeral.neop_uri, GestionnaireReseau.GS_URI, NodeConnector.class.getCanonicalName());
 		super.deploy();
 	}
