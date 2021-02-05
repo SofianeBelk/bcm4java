@@ -5,6 +5,7 @@ import java.util.Set;
 import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.interfaces.AddressI;
+import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
@@ -21,15 +22,20 @@ public class Node_TerminalOutBoundPort extends AbstractOutboundPort implements N
 	}
 
 	@Override
-	public Set<ConnectionInfo> registre(AddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfo> registerTerminalNode(NetworkAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
 		
-		return ((Node_TerminalCI)this.getConnector()).registre(
+		return ((Node_TerminalCI)this.getConnector()).registerTerminalNode(
 				address, 
 				communicationInboundPortURI, 
 				initialPosition, 
 				initialRange, 
 				isRouting);
+	}
+
+	@Override
+	public void unregister(AddressI address) throws Exception {
+		((Node_TerminalCI)this.getConnector()).unregister(address);
 	}
 
 

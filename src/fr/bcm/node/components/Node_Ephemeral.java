@@ -6,6 +6,7 @@ import fr.bcm.node.ports.Node_EphemeralOutBoundPort;
 import fr.bcm.node.ports.Node_TerminalOutBoundPort;
 import fr.bcm.utils.address.classes.Address;
 import fr.bcm.utils.address.classes.NetworkAddress;
+import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
@@ -25,7 +26,7 @@ public class Node_Ephemeral extends AbstractComponent{
 	public static final String neop_uri = "neop_uri";
 	protected Node_EphemeralOutBoundPort neop;
 	
-	private NetworkAddress address = new NetworkAddress();
+	private NodeAddress address = new NodeAddress();
 	
 	
 	protected Node_Ephemeral() throws Exception {
@@ -64,8 +65,10 @@ public class Node_Ephemeral extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		PositionI pointInitial = new Position(10,5);
-		this.neop.registre(address,neop_uri , pointInitial, 25.00, true);
+		this.neop.registerAccessPoint(address,neop_uri , pointInitial, 25.00);
 		this.logMessage("Logged");
+		this.neop.unregister(address);
+		this.logMessage("Unregistered");
 	}
 
 	

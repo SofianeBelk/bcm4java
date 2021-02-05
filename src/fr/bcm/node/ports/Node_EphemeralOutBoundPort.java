@@ -3,7 +3,9 @@ package fr.bcm.node.ports;
 import java.util.Set;
 
 import fr.bcm.node.interfaces.Node_EphemeralCI;
+import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.registration.interfaces.RegistrationCI;
+import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
@@ -21,25 +23,21 @@ public class Node_EphemeralOutBoundPort extends AbstractOutboundPort implements 
 	}
 
 	@Override
-	public Set<ConnectionInfo> registre(AddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
-		return ((Node_EphemeralCI)this.getConnector()).registre(
-				address, 
-				communicationInboundPortURI, 
-				initialPosition, 
-				initialRange, 
-				isRouting);
-	}
-
-	@Override
-	public Set<ConnectionInfo> registreAccessPoint(AddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfo> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange) throws Exception {
 		// TODO Auto-generated method stub
-		return ((Node_EphemeralCI)this.getConnector()).registreAccessPoint(
+		return ((Node_EphemeralCI)this.getConnector()).registerAccessPoint(
 				address, 
 				communicationInboundPortURI, 
 				initialPosition, 
 				initialRange);
+	}
+
+
+	@Override
+	public void unregister(AddressI address) throws Exception {
+		((Node_EphemeralCI)this.getConnector()).unregister(address);
+		
 	}
 
 
