@@ -2,6 +2,7 @@ package fr.bcm.utils.nodeInfo.classes;
 
 
 import fr.bcm.utils.address.interfaces.AddressI;
+import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 
@@ -11,6 +12,7 @@ public class Noeud implements ConnectionInfo {
 	private PositionI initialPosition;
 	private double initialRange;
 	private boolean isRouting;
+	private String routingInboundPortURI;
 	
 	public Noeud(AddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) {
@@ -21,6 +23,20 @@ public class Noeud implements ConnectionInfo {
 		this.isRouting=isRouting;
 	}
 	
+	
+	public Noeud(AddressI address, String communicationInboundPortURI, PositionI initialPosition,
+			double initialRange, boolean isRouting, String routingInboundPortURI) {
+		this.address=address;
+		this.communicationInboundPortURI=communicationInboundPortURI;
+		this.initialPosition=initialPosition;
+		this.initialRange=initialRange;
+		this.isRouting=isRouting;
+		this.routingInboundPortURI = routingInboundPortURI;
+	}
+
+	
+
+
 	public AddressI getAddress(){
 		return this.address;
 	}
@@ -54,7 +70,13 @@ public class Noeud implements ConnectionInfo {
 
 	@Override
 	public String getCommunicationInboundPortURI() {
-		// TODO Auto-generated method stub
 		return communicationInboundPortURI;
 	}
+
+
+	public String getRoutingInboundPortURI() {
+		return routingInboundPortURI;
+	}
+
+
 }

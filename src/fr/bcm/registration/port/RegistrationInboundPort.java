@@ -4,6 +4,7 @@ import java.util.Set;
 
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.interfaces.AddressI;
+import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
@@ -27,21 +28,37 @@ implements RegistrationCI
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Set<ConnectionInfo> registre(AddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfo> registerTerminalNode(NetworkAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
 		return (Set<ConnectionInfo>) this.getOwner().handleRequest(
-				c -> ((GestionnaireReseau)c).register(address, communicationInboundPortURI, initialPosition, initialRange, isRouting)
+				c -> ((GestionnaireReseau)c).registerTerminalNode(address, communicationInboundPortURI, initialPosition, initialRange, isRouting)
 				);
 		
 		
 	}
 
 	@Override
-	public Set<ConnectionInfo> registreAccessPoint(AddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfo> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange) throws Exception {
 		return (Set<ConnectionInfo>) this.getOwner().handleRequest(
 				c -> ((GestionnaireReseau)c).registerAccessPoint(address, communicationInboundPortURI, initialPosition, initialRange)
 				);
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Set<ConnectionInfo> registreRoutingNode(NodeAddressI address, String communicationInboundPortURI,
+			PositionI initialPosition, double initialRange, String routingInBoundPortURI) throws Exception {
+		return (Set<ConnectionInfo>) this.getOwner().handleRequest(
+				c -> ((GestionnaireReseau)c).registerRoutingNode(address, communicationInboundPortURI, initialPosition, initialRange, routingInBoundPortURI)
+		);
+	}
+
+	@Override
+	public void unregister(AddressI address) throws Exception {
+		this.getOwner().handleRequest(c -> ((GestionnaireReseau)c).unregister(address));
+	}
+
+	
 
 }

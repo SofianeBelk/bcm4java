@@ -62,7 +62,7 @@ public class Node_Terminal extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		Position pointInitial= new Position(10,10);
-		this.ntop.registre(address, ntop_uri,pointInitial , 20.00, true).size();
+		this.ntop.registerTerminalNode(address, ntop_uri,pointInitial , 20.00, true).size();
 		this.logMessage("Logged");
 	}
 

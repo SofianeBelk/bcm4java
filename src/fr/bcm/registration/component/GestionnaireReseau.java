@@ -2,11 +2,13 @@ package fr.bcm.registration.component;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.registration.port.RegistrationInboundPort;
 import fr.bcm.utils.address.interfaces.AddressI;
+import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.classes.Noeud;
@@ -43,7 +45,7 @@ public class GestionnaireReseau extends AbstractComponent{
 	
 
 	@SuppressWarnings("unchecked")
-	public Set<ConnectionInfo> register(AddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfo> registerTerminalNode(NetworkAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
 		
 		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,isRouting);
@@ -62,15 +64,37 @@ public class GestionnaireReseau extends AbstractComponent{
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<ConnectionInfo> registerAccessPoint(AddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfo> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange) throws Exception {
 		
 		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,true);
 		Set<ConnectionInfo> copie = new HashSet<>();
 		copie.addAll(mySet);
 		mySet.add(n);
-		return (Set<ConnectionInfo>) copie;
+		this.logMessage("New node has registered");
+		return (Set<ConnectionInfo>) copie;		
 	}
+
+
+	public Object registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
+			PositionI initialPosition, double initialRange, String routingInboundPortURI) {
+		Noeud n = new Noeud((AddressI)address, communicationInboundPortURI, initialPosition, initialRange, true, routingInboundPortURI);
+		return null;
+	}
+
+	public Object unregister(AddressI address) {
+		Iterator<ConnectionInfo> iter = this.mySet.iterator();
+		while(iter.hasNext()) {
+			ConnectionInfo cinfo = (ConnectionInfo)iter.next();
+			if (cinfo.getAddress().equals(address)){
+				this.mySet.remove(cinfo);
+				this.logMessage("A node has unregistered");
+				break;
+			}
+		}
+		return null;
+	}
+
 
 
 
