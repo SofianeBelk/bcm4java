@@ -1,9 +1,9 @@
-package fr.bcm.node;
+package fr.bcm;
 
-import fr.bcm.node.components.Node_AccessPoint;
-import fr.bcm.node.components.Node_Routing;
-import fr.bcm.node.components.Node_Terminal;
+import fr.bcm.node.accesspoint.components.Node_AccessPoint;
 import fr.bcm.node.connectors.NodeConnector;
+import fr.bcm.node.routing.components.Node_Routing;
+import fr.bcm.node.terminal.components.Node_Terminal;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
@@ -28,6 +28,7 @@ public class CVM extends AbstractCVM {
 		// String nrURI=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		String ntURI1=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
 		String ntURI2=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
+		String ntURI3=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
 
 		super.deploy();
 	}

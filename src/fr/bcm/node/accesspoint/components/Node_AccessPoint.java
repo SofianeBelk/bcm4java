@@ -1,20 +1,21 @@
-package fr.bcm.node.components;
+package fr.bcm.node.accesspoint.components;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import fr.bcm.connexion.classes.ConnectionInformation;
 import fr.bcm.connexion.connectors.CommunicationConnector;
 import fr.bcm.connexion.interfaces.CommunicationCI;
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
+import fr.bcm.node.accesspoint.interfaces.Node_AccessPointCI;
+import fr.bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
+import fr.bcm.node.accesspoint.ports.Node_AccessPointInboundPort;
+import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
-import fr.bcm.node.interfaces.Node_TerminalCI;
-import fr.bcm.node.ports.Node_TerminalOutBoundPort;
-import fr.bcm.node.ports.Node_TerminalCommOutboundPort;
-import fr.bcm.node.ports.Node_TerminalInboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
-import fr.bcm.utils.address.classes.Address;
-import fr.bcm.utils.address.classes.NetworkAddress;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
-import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
@@ -24,50 +25,44 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
-import java.util.List;
-import java.util.Set;
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.UUID;
 
-
-@RequiredInterfaces(required = {CommunicationCI.class, Node_TerminalCI.class})
+@RequiredInterfaces(required = {Node_AccessPointCI.class, CommunicationCI.class})
 @OfferedInterfaces (offered = {CommunicationCI.class})
 
-public class Node_Terminal extends AbstractComponent{
+public class Node_AccessPoint extends AbstractComponent{
 	
-	protected Node_TerminalOutBoundPort ntop;
-	protected Node_TerminalInboundPort ntip;
-	protected Node_TerminalCommOutboundPort ntcop;
+
+	protected Node_AccessPointOutboundPort napop;
+	protected Node_AccessPointInboundPort napip;
+	protected Node_AccessPointCommOutboundPort napcop;
+	
 	private NodeAddress address = new NodeAddress();
-	private List<ConnectionInfoI> addressConnected= new ArrayList<>();
+	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
 	
 	
-	protected Node_Terminal() throws Exception {
-		super(1,0); 
-		this.ntop = new Node_TerminalOutBoundPort(this);
-		this.ntip = new Node_TerminalInboundPort(this);
-		this.ntcop = new Node_TerminalCommOutboundPort(this);
-		this.ntop.publishPort();
-		this.ntip.publishPort();
-		this.ntcop.publishPort();
-		
-		
+	protected Node_AccessPoint() throws Exception {
+		super(1,0);
+		this.napop = new Node_AccessPointOutboundPort(this);
+		this.napip = new Node_AccessPointInboundPort(this);
+		this.napcop = new Node_AccessPointCommOutboundPort(this);
+		this.napop.publishPort();
+		this.napip.publishPort();
+		this.napcop.publishPort();
 		this.doPortConnection(
-				this.ntop.getPortURI(),
+				this.napop.getPortURI(),
 				GestionnaireReseau.GS_URI,
 				NodeConnector.class.getCanonicalName());
-		// Enable logs
+		// Enables logs
 		this.toggleLogging();
 		this.toggleTracing();
-		
+		this.logMessage("Node_AccessPoint");
 	}
 
 
 	@Override
 	public synchronized void finalise() throws Exception {
-		if(this.ntop.connected()) {
-			this.doPortDisconnection(ntop.getPortURI());
+		if(this.napop.connected()) {
+			this.doPortDisconnection(napop.getPortURI());
 		}
 		super.finalise();
 	}
@@ -76,21 +71,21 @@ public class Node_Terminal extends AbstractComponent{
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException {
 		try {
-			if(ntop.connected()) {
-				this.ntop.doDisconnection();
+			if(napop.connected()) {
+				this.napop.doDisconnection();
 			}
-			if(ntip.connected()) {
-				this.ntip.doDisconnection();
-			}
-			
-			if(ntcop.connected()) {
-				this.ntcop.doDisconnection();
+			if(napip.connected()) {
+				this.napip.doDisconnection();
 			}
 			
+			if(napcop.connected()) {
+				this.napcop.doDisconnection();
+			}
 			
-			this.ntop.unpublishPort();
-			this.ntip.unpublishPort();
-			this.ntcop.unpublishPort();
+			
+			this.napop.unpublishPort();
+			this.napip.unpublishPort();
+			this.napcop.unpublishPort();
 		} catch (Exception e) {
 			return;
 		}
@@ -102,39 +97,42 @@ public class Node_Terminal extends AbstractComponent{
 	public synchronized void execute() throws Exception {
 		super.execute();
 		this.logMessage("Tries to log in the manager");
-		Position pointInitial= new Position(10,10);
-		System.out.println(ntip.getPortURI());
-		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00, true);
+		PositionI pointInitial = new Position(10,5);
+		Set<ConnectionInfoI> devices = this.napop.registerAccessPoint(address,napip.getPortURI() , pointInitial, 25.00);
 		this.logMessage("Logged");
-		
 		// Current node connects to others nodes
-		System.out.println(devices.size());
 		for(ConnectionInfoI CInfo: devices) {
 			
 			this.addressConnected.add(CInfo);
+			
+
+			System.out.println(this.napcop.connected());
 			this.doPortConnection(
-					this.ntcop.getPortURI(),
+					this.napcop.getPortURI(),
 					CInfo.getCommunicationInboundPortURI(),
 					CommunicationConnector.class.getCanonicalName()
 			);
-			this.ntcop.connect(address, this.ntip.getPortURI());
+			this.napcop.connect(address, this.napip.getPortURI());
 		}
+		System.out.println("Size devices " + devices.size());
 		this.logMessage("Connected to all nearby devices");
-		
-		
+				
 	}
-
+	
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
 		this.addressConnected.add(CInfo);
+		System.out.println("Trying job");
+		System.out.println(this.napcop.connected());
 		try {
 			this.doPortConnection(
-					this.ntcop.getPortURI(), 
+					this.napcop.getPortURI(), 
 					communicationInboundPortURI, 
 					CommunicationConnector.class.getCanonicalName());
-		} catch (Exception e) {
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		
 		this.logMessage("Added new devices to connections");
 		return null;
 	}

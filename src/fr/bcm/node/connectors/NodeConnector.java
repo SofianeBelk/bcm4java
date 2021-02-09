@@ -3,9 +3,9 @@ package fr.bcm.node.connectors;
 import java.util.Set;
 
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
-import fr.bcm.node.interfaces.Node_AccessPointCI;
-import fr.bcm.node.interfaces.Node_RoutingCI;
-import fr.bcm.node.interfaces.Node_TerminalCI;
+import fr.bcm.node.accesspoint.interfaces.Node_AccessPointCI;
+import fr.bcm.node.routing.interfaces.Node_RoutingCI;
+import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;

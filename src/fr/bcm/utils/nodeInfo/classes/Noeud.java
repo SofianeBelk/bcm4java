@@ -11,7 +11,7 @@ public class Noeud implements ConnectionInfoI {
 	private String communicationInboundPortURI;
 	private PositionI initialPosition;
 	private double initialRange;
-	private boolean isRouting;
+	private boolean isRouting = false;
 	private String routingInboundPortURI;
 	
 	public Noeud(AddressI address, String communicationInboundPortURI,

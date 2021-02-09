@@ -1,12 +1,14 @@
-package fr.bcm.node.components;
+package fr.bcm.node.routing.components;
 
 import fr.bcm.connexion.interfaces.CommunicationCI;
+import fr.bcm.node.accesspoint.interfaces.Node_AccessPointCI;
+import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
-import fr.bcm.node.interfaces.Node_AccessPointCI;
-import fr.bcm.node.interfaces.Node_RoutingCI;
-import fr.bcm.node.ports.Node_AccessPointOutBoundPort;
-import fr.bcm.node.ports.Node_RoutingInboundPort;
-import fr.bcm.node.ports.Node_RoutingOutBoundPort;
+import fr.bcm.node.routing.interfaces.Node_RoutingCI;
+import fr.bcm.node.routing.interfaces.RoutingCI;
+import fr.bcm.node.routing.ports.Node_RoutingCommOutboundPort;
+import fr.bcm.node.routing.ports.Node_RoutingInboundPort;
+import fr.bcm.node.routing.ports.Node_RoutingOutBoundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.nodeInfo.classes.Position;
@@ -18,13 +20,14 @@ import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
 
 @RequiredInterfaces(required = {Node_RoutingCI.class, CommunicationCI.class})
-@OfferedInterfaces (offered = {Node_RoutingCI.class, CommunicationCI.class})
+@OfferedInterfaces (offered = {RoutingCI.class, CommunicationCI.class})
 
 public class Node_Routing extends AbstractComponent{
 	
 
 	protected Node_RoutingOutBoundPort nrop;
 	protected Node_RoutingInboundPort nrip;
+	protected Node_RoutingCommOutboundPort nrcop;
 	private NodeAddress address = new NodeAddress();
 	
 	
@@ -32,8 +35,11 @@ public class Node_Routing extends AbstractComponent{
 		super(1,0);
 		this.nrop = new Node_RoutingOutBoundPort(this);
 		this.nrip = new Node_RoutingInboundPort(this);
+		this.nrcop = new Node_RoutingCommOutboundPort(this);
 		this.nrop.publishPort();
 		this.nrip.publishPort();
+		this.nrcop.publishPort();
+		
 		this.doPortConnection(
 				this.nrop.getPortURI(), 
 				GestionnaireReseau.GS_URI, 

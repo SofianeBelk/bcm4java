@@ -1,10 +1,10 @@
-package fr.bcm.node.ports;
+package fr.bcm.node.terminal.ports;
 
 import java.util.Set;
 
 import fr.bcm.connexion.interfaces.CommunicationCI;
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
-import fr.bcm.node.interfaces.Node_TerminalCI;
+import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;

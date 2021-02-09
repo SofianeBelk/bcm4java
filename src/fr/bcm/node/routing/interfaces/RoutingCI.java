@@ -1,4 +1,4 @@
-package fr.bcm.connexion.interfaces;
+package fr.bcm.node.routing.interfaces;
 
 import java.util.Set;
 
