@@ -19,8 +19,8 @@ public class Node_RoutingOutBoundPort extends AbstractOutboundPort implements No
 
 	private static final long serialVersionUID = 1L;
 
-	public Node_RoutingOutBoundPort(String nropUri, ComponentI owner) throws Exception {
-		super(nropUri, Node_RoutingCI.class, owner);
+	public Node_RoutingOutBoundPort(ComponentI owner) throws Exception {
+		super(Node_RoutingCI.class, owner);
 	}
 
 

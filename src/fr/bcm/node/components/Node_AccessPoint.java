@@ -1,8 +1,10 @@
 package fr.bcm.node.components;
 
 import fr.bcm.connexion.interfaces.CommunicationCI;
+import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.interfaces.Node_AccessPointCI;
 import fr.bcm.node.ports.Node_AccessPointOutBoundPort;
+import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
@@ -17,17 +19,20 @@ import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
 public class Node_AccessPoint extends AbstractComponent{
 	
-	public static final String nacop_uri = "nacop_uri";
-	protected Node_AccessPointOutBoundPort nac;
+
+	protected Node_AccessPointOutBoundPort nacop;
 	
 	private NodeAddress address = new NodeAddress();
 	
 	
 	protected Node_AccessPoint() throws Exception {
 		super(1,0);
-		this.nac = new Node_AccessPointOutBoundPort(nacop_uri, this);
-		this.nac.publishPort();
-		
+		this.nacop = new Node_AccessPointOutBoundPort(this);
+		this.nacop.publishPort();
+		this.doPortConnection(
+				this.nacop.getPortURI(),
+				GestionnaireReseau.GS_URI,
+				NodeConnector.class.getCanonicalName());
 		// Enables logs
 		this.toggleLogging();
 		this.toggleTracing();
@@ -36,8 +41,8 @@ public class Node_AccessPoint extends AbstractComponent{
 
 	@Override
 	public synchronized void finalise() throws Exception {
-		if(this.nac.connected()) {
-			this.doPortDisconnection(nacop_uri);
+		if(this.nacop.connected()) {
+			this.doPortDisconnection(nacop.getPortURI());
 		}
 		super.finalise();
 	}
@@ -46,7 +51,7 @@ public class Node_AccessPoint extends AbstractComponent{
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException {
 		try {
-			this.nac.unpublishPort();
+			this.nacop.unpublishPort();
 		} catch (Exception e) {
 			throw new ComponentShutdownException();
 		}
@@ -59,9 +64,9 @@ public class Node_AccessPoint extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		PositionI pointInitial = new Position(10,5);
-		this.nac.registerAccessPoint(address,nacop_uri , pointInitial, 25.00);
+		this.nacop.registerAccessPoint(address,nacop.getPortURI() , pointInitial, 25.00);
 		this.logMessage("Logged");
-		this.nac.unregister(address);
+		this.nacop.unregister(address);
 		this.logMessage("Unregistered");
 	}
 

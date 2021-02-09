@@ -6,9 +6,10 @@ import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
+import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 
-public interface Node_RoutingCI extends RequiredCI{
+public interface Node_RoutingCI extends RequiredCI, OfferedCI{
 	public Set<ConnectionInfo> registerRoutingNode(
 			NodeAddressI address, 
 			String communicationInboundPortURI,
