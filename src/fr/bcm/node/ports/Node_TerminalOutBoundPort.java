@@ -15,7 +15,7 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
 
-public class Node_TerminalOutBoundPort extends AbstractOutboundPort implements Node_TerminalCI, CommunicationCI{
+public class Node_TerminalOutBoundPort extends AbstractOutboundPort implements Node_TerminalCI{
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,36 +42,5 @@ public class Node_TerminalOutBoundPort extends AbstractOutboundPort implements N
 	public void unregister(AddressI address) throws Exception {
 		((Node_TerminalCI)this.getConnector()).unregister(address);
 	}
-
-	@Override
-	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		((CommunicationCI)this.getConnector()).connect(address, communicationInboundPortURI);
-	}
-
-	@Override
-	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		((CommunicationCI)this.getConnector()).connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
-	}
-
-	@Override
-	public void transmitMessage(MessageI m) throws Exception {
-		((CommunicationCI)this.getConnector()).transmitMessage(m);
-		
-	}
-
-	@Override
-	public boolean hasRouteFor(AddressI address) throws Exception{
-		return ((CommunicationCI)this.getConnector()).hasRouteFor(address);
-	}
-
-	@Override
-	public void ping() throws Exception{
-		((CommunicationCI)this.getConnector()).ping();
-	}
-
-
-	
-
-	
 
 }

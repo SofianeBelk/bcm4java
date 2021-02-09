@@ -1,11 +1,13 @@
 package fr.bcm.node.components;
 
 import fr.bcm.connexion.classes.ConnectionInformation;
+import fr.bcm.connexion.connectors.CommunicationConnector;
 import fr.bcm.connexion.interfaces.CommunicationCI;
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.node.ports.Node_TerminalOutBoundPort;
+import fr.bcm.node.ports.Node_TerminalCommOutboundPort;
 import fr.bcm.node.ports.Node_TerminalInboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.Address;
@@ -36,6 +38,7 @@ public class Node_Terminal extends AbstractComponent{
 	
 	protected Node_TerminalOutBoundPort ntop;
 	protected Node_TerminalInboundPort ntip;
+	protected Node_TerminalCommOutboundPort ntcop;
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected= new ArrayList<>();
 	
@@ -44,10 +47,11 @@ public class Node_Terminal extends AbstractComponent{
 		super(1,0); 
 		this.ntop = new Node_TerminalOutBoundPort(this);
 		this.ntip = new Node_TerminalInboundPort(this);
+		this.ntcop = new Node_TerminalCommOutboundPort(this);
 		this.ntop.publishPort();
 		this.ntip.publishPort();
+		this.ntcop.publishPort();
 		
-		System.out.println(this.ntop.getImplementedInterface().getCanonicalName());
 		
 		this.doPortConnection(
 				this.ntop.getPortURI(),
@@ -56,6 +60,7 @@ public class Node_Terminal extends AbstractComponent{
 		// Enable logs
 		this.toggleLogging();
 		this.toggleTracing();
+		
 	}
 
 
@@ -71,10 +76,23 @@ public class Node_Terminal extends AbstractComponent{
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException {
 		try {
+			if(ntop.connected()) {
+				this.ntop.doDisconnection();
+			}
+			if(ntip.connected()) {
+				this.ntip.doDisconnection();
+			}
+			
+			if(ntcop.connected()) {
+				this.ntcop.doDisconnection();
+			}
+			
+			
 			this.ntop.unpublishPort();
 			this.ntip.unpublishPort();
+			this.ntcop.unpublishPort();
 		} catch (Exception e) {
-			throw new ComponentShutdownException();
+			return;
 		}
 		super.shutdown();
 	}
@@ -85,29 +103,21 @@ public class Node_Terminal extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		Position pointInitial= new Position(10,10);
+		System.out.println(ntip.getPortURI());
 		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00, true);
 		this.logMessage("Logged");
 		
 		// Current node connects to others nodes
-		
+		System.out.println(devices.size());
 		for(ConnectionInfoI CInfo: devices) {
 			
 			this.addressConnected.add(CInfo);
-			System.out.println("TEST1");
-			try {
-				System.out.println(this.ntop.getPortURI());
-				System.out.println(CInfo.getCommunicationInboundPortURI());
-				this.doPortConnection(
-						this.ntop.getPortURI(),
-						CInfo.getCommunicationInboundPortURI(),
-						CommunicationCI.class.getCanonicalName()
-				);
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println("TEST2");
-			this.ntop.connect(address, this.ntip.getPortURI());
-			System.out.println("TEST3");
+			this.doPortConnection(
+					this.ntcop.getPortURI(),
+					CInfo.getCommunicationInboundPortURI(),
+					CommunicationConnector.class.getCanonicalName()
+			);
+			this.ntcop.connect(address, this.ntip.getPortURI());
 		}
 		this.logMessage("Connected to all nearby devices");
 		
@@ -115,13 +125,16 @@ public class Node_Terminal extends AbstractComponent{
 	}
 
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		System.out.println("TEST4");
 		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
 		this.addressConnected.add(CInfo);
-		this.doPortConnection(
-				this.ntop.getPortURI(), 
-				communicationInboundPortURI, 
-				CommunicationCI.class.getCanonicalName());
+		try {
+			this.doPortConnection(
+					this.ntcop.getPortURI(), 
+					communicationInboundPortURI, 
+					CommunicationConnector.class.getCanonicalName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		this.logMessage("Added new devices to connections");
 		return null;
 	}
