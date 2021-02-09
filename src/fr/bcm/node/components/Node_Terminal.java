@@ -2,8 +2,11 @@ package fr.bcm.node.components;
 
 import fr.bcm.connexion.classes.ConnectionInformation;
 import fr.bcm.connexion.interfaces.CommunicationCI;
+import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.node.ports.Node_TerminalOutBoundPort;
+import fr.bcm.node.ports.Node_TerminalInboundPort;
+import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.Address;
 import fr.bcm.utils.address.classes.NetworkAddress;
 import fr.bcm.utils.address.classes.NodeAddress;
@@ -12,6 +15,7 @@ import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
+import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
@@ -19,6 +23,7 @@ import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
 import java.util.List;
+import java.util.Set;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -29,17 +34,21 @@ import java.util.UUID;
 
 public class Node_Terminal extends AbstractComponent{
 	
-	public static final String ntop_uri = "ntop-uri";
 	protected Node_TerminalOutBoundPort ntop;
+	protected Node_TerminalInboundPort ntip;
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInformation> addressConnected= new ArrayList<>();
 	
 	
 	protected Node_Terminal() throws Exception {
-		super(1,0);
-		this.ntop = new Node_TerminalOutBoundPort(ntop_uri, this);
+		super(1,0); 
+		this.ntop = new Node_TerminalOutBoundPort(this);
 		this.ntop.publishPort();
 		
+		this.doPortConnection(
+				ntop.getPortURI(),
+				GestionnaireReseau.GS_URI,
+				NodeConnector.class.getCanonicalName());
 		// Enable logs
 		this.toggleLogging();
 		this.toggleTracing();
@@ -49,7 +58,7 @@ public class Node_Terminal extends AbstractComponent{
 	@Override
 	public synchronized void finalise() throws Exception {
 		if(this.ntop.connected()) {
-			this.doPortDisconnection(ntop_uri);
+			this.doPortDisconnection(ntop.getPortURI());
 		}
 		super.finalise();
 	}
@@ -71,23 +80,28 @@ public class Node_Terminal extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		Position pointInitial= new Position(10,10);
-		this.ntop.registerTerminalNode(address, ntop_uri,pointInitial , 20.00, true).size();
+		Set<ConnectionInfo> devices = this.ntop.registerTerminalNode(address, ntop.getPortURI(),pointInitial , 20.00, true);
 		this.logMessage("Logged");
 		
-		this.ntop.connect(address, ntop_uri);
+		System.out.println(devices.size());
+		this.ntop.connect(address, ntop.getPortURI());
+		
 	}
 
-	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
+	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		ConnectionInformation CInfo = new ConnectionInformation(address, communicationInboundPortURI);
 		this.addressConnected.add(CInfo);
+		return null;
 	}
 
-	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
+	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		ConnectionInformation CInfo = new ConnectionInformation(address, communicationInboundPortURI, routingInboundPortURI);
 		this.addressConnected.add(CInfo);
+		return null;
 	}
 
-	public void transmitMessage(MessageI m) throws Exception {
+	public Object transmitMessage(MessageI m) throws Exception {
+		return null;
 	}
 
 	public boolean hasRouteFor(AddressI address) throws Exception{
@@ -103,7 +117,8 @@ public class Node_Terminal extends AbstractComponent{
 		return false;
 	}
 
-	public void ping() throws Exception{
+	public Object ping() throws Exception{
+		return null;
 	}
 	
 }

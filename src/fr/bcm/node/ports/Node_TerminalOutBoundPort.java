@@ -19,6 +19,9 @@ public class Node_TerminalOutBoundPort extends AbstractOutboundPort implements N
 
 	private static final long serialVersionUID = 1L;
 
+	public Node_TerminalOutBoundPort(ComponentI owner) throws Exception{
+		super(Node_TerminalCI.class, owner);
+	}
 	public Node_TerminalOutBoundPort(String ntopUri, ComponentI owner) throws Exception {
 		super(ntopUri, Node_TerminalCI.class, owner);
 	}

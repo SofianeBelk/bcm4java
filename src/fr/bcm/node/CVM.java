@@ -20,13 +20,18 @@ public class CVM extends AbstractCVM {
 	 *Connexion entre le composant Ephemeral au composant Gestionnaire Reseau  
 	 **/
 	public void deploy() throws Exception{
-		String ntURI=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
-		String nacURI=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
-		String nrURI=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 
 		AbstractComponent.createComponent(GestionnaireReseau.class.getCanonicalName(), new Object[]{});
+
+	
+		String nacURI=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
+		String nrURI=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		String ntURI1=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
+		String ntURI2=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
+
 		
-		this.doPortConnection(ntURI, Node_Terminal.ntop_uri, GestionnaireReseau.GS_URI, NodeConnector.class.getCanonicalName());
+		
+		
 		this.doPortConnection(nacURI, Node_AccessPoint.nacop_uri, GestionnaireReseau.GS_URI, NodeConnector.class.getCanonicalName());
 		this.doPortConnection(nrURI, Node_Routing.nrop_uri, GestionnaireReseau.GS_URI, NodeConnector.class.getCanonicalName());
 		
