@@ -24,8 +24,8 @@ public class CVM extends AbstractCVM {
 		AbstractComponent.createComponent(GestionnaireReseau.class.getCanonicalName(), new Object[]{});
 
 	
-		String nacURI=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
-		String nrURI=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		// String nacURI=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
+		// String nrURI=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		String ntURI1=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
 		String ntURI2=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
 

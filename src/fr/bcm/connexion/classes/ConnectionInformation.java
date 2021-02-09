@@ -1,8 +1,10 @@
 package fr.bcm.connexion.classes;
 
+import fr.bcm.connexion.interfaces.CommunicationCI;
+import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.utils.address.interfaces.AddressI;
 
-public class ConnectionInformation {
+public class ConnectionInformation implements ConnectionInfoI{
 	private AddressI address;
 	private String communicationInboundPortURI;
 	private String routingInboundPortURI;
@@ -22,12 +24,14 @@ public class ConnectionInformation {
 		return address;
 	}
 	
-	public String getCommunicationIBPU(){
-		return communicationInboundPortURI;
-	}
 	
-	public String getRoutingIBPU() {
+	public String getRoutingInboundPortURI() {
 		return routingInboundPortURI;
+	}
+
+	@Override
+	public String getCommunicationInboundPortURI() {
+		return communicationInboundPortURI;
 	}
 	
 	

@@ -2,6 +2,7 @@ package fr.bcm.node.ports;
 
 import java.util.Set;
 
+import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.interfaces.Node_AccessPointCI;
 import fr.bcm.node.interfaces.Node_RoutingCI;
 import fr.bcm.node.interfaces.Node_TerminalCI;
@@ -9,7 +10,6 @@ import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
@@ -26,7 +26,7 @@ public class Node_RoutingInboundPort extends AbstractInboundPort implements Node
 
 
 	@Override
-	public Set<ConnectionInfo> registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfoI> registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception {
 		return null;
 	}

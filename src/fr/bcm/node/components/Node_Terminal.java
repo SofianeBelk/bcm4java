@@ -2,6 +2,7 @@ package fr.bcm.node.components;
 
 import fr.bcm.connexion.classes.ConnectionInformation;
 import fr.bcm.connexion.interfaces.CommunicationCI;
+import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.node.ports.Node_TerminalOutBoundPort;
@@ -15,7 +16,6 @@ import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
-import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 
-@RequiredInterfaces(required = {Node_TerminalCI.class, CommunicationCI.class})
+@RequiredInterfaces(required = {CommunicationCI.class, Node_TerminalCI.class})
 @OfferedInterfaces (offered = {CommunicationCI.class})
 
 public class Node_Terminal extends AbstractComponent{
@@ -37,16 +37,20 @@ public class Node_Terminal extends AbstractComponent{
 	protected Node_TerminalOutBoundPort ntop;
 	protected Node_TerminalInboundPort ntip;
 	private NodeAddress address = new NodeAddress();
-	private List<ConnectionInformation> addressConnected= new ArrayList<>();
+	private List<ConnectionInfoI> addressConnected= new ArrayList<>();
 	
 	
 	protected Node_Terminal() throws Exception {
 		super(1,0); 
 		this.ntop = new Node_TerminalOutBoundPort(this);
+		this.ntip = new Node_TerminalInboundPort(this);
 		this.ntop.publishPort();
+		this.ntip.publishPort();
+		
+		System.out.println(this.ntop.getImplementedInterface().getCanonicalName());
 		
 		this.doPortConnection(
-				ntop.getPortURI(),
+				this.ntop.getPortURI(),
 				GestionnaireReseau.GS_URI,
 				NodeConnector.class.getCanonicalName());
 		// Enable logs
@@ -68,6 +72,7 @@ public class Node_Terminal extends AbstractComponent{
 	public synchronized void shutdown() throws ComponentShutdownException {
 		try {
 			this.ntop.unpublishPort();
+			this.ntip.unpublishPort();
 		} catch (Exception e) {
 			throw new ComponentShutdownException();
 		}
@@ -80,17 +85,44 @@ public class Node_Terminal extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		Position pointInitial= new Position(10,10);
-		Set<ConnectionInfo> devices = this.ntop.registerTerminalNode(address, ntop.getPortURI(),pointInitial , 20.00, true);
+		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00, true);
 		this.logMessage("Logged");
 		
-		System.out.println(devices.size());
-		this.ntop.connect(address, ntop.getPortURI());
+		// Current node connects to others nodes
+		
+		for(ConnectionInfoI CInfo: devices) {
+			
+			this.addressConnected.add(CInfo);
+			System.out.println("TEST1");
+			try {
+				System.out.println(this.ntop.getPortURI());
+				System.out.println(CInfo.getCommunicationInboundPortURI());
+				this.doPortConnection(
+						this.ntop.getPortURI(),
+						CInfo.getCommunicationInboundPortURI(),
+						CommunicationCI.class.getCanonicalName()
+				);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println("TEST2");
+			this.ntop.connect(address, this.ntip.getPortURI());
+			System.out.println("TEST3");
+		}
+		this.logMessage("Connected to all nearby devices");
+		
 		
 	}
 
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		ConnectionInformation CInfo = new ConnectionInformation(address, communicationInboundPortURI);
+		System.out.println("TEST4");
+		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
 		this.addressConnected.add(CInfo);
+		this.doPortConnection(
+				this.ntop.getPortURI(), 
+				communicationInboundPortURI, 
+				CommunicationCI.class.getCanonicalName());
+		this.logMessage("Added new devices to connections");
 		return null;
 	}
 
@@ -109,7 +141,7 @@ public class Node_Terminal extends AbstractComponent{
 			return true;
 		}
 		
-		for(ConnectionInformation CInfo: this.addressConnected) {
+		for(ConnectionInfoI CInfo: this.addressConnected) {
 			if(CInfo.getAddress().equals(address)) {
 				return true;
 			}

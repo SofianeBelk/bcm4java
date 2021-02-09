@@ -1,12 +1,12 @@
 package fr.bcm.utils.nodeInfo.classes;
 
 
+import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 
-public class Noeud implements ConnectionInfo {
+public class Noeud implements ConnectionInfoI {
 	private AddressI address;
 	private String communicationInboundPortURI;
 	private PositionI initialPosition;
