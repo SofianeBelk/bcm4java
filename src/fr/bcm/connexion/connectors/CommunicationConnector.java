@@ -1,9 +1,9 @@
-package fr.bcm.node.connectors;
+package fr.bcm.connexion.connectors;
 
 import fr.bcm.connexion.interfaces.CommunicationCI;
-import fr.bcm.connexion.utils.MessageI;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.message.interfaces.MessageI;
 import fr.sorbonne_u.components.connectors.AbstractConnector;
 
 public class CommunicationConnector extends AbstractConnector implements CommunicationCI{

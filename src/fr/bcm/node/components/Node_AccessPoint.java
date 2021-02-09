@@ -1,16 +1,9 @@
 package fr.bcm.node.components;
 
 import fr.bcm.connexion.interfaces.CommunicationCI;
-import fr.bcm.node.interfaces.Node_EphemeralCI;
-import fr.bcm.node.interfaces.Node_TerminalCI;
-import fr.bcm.node.ports.Node_EphemeralOutBoundPort;
-import fr.bcm.node.ports.Node_TerminalOutBoundPort;
-import fr.bcm.utils.address.classes.Address;
-import fr.bcm.utils.address.classes.NetworkAddress;
+import fr.bcm.node.interfaces.Node_AccessPointCI;
+import fr.bcm.node.ports.Node_AccessPointOutBoundPort;
 import fr.bcm.utils.address.classes.NodeAddress;
-import fr.bcm.utils.address.interfaces.AddressI;
-import fr.bcm.utils.address.interfaces.NetworkAddressI;
-import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
@@ -18,24 +11,21 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
-import java.awt.Point;
-import java.util.UUID;
 
-
-@RequiredInterfaces(required = {Node_EphemeralCI.class, CommunicationCI.class})
+@RequiredInterfaces(required = {Node_AccessPointCI.class, CommunicationCI.class})
 @OfferedInterfaces (offered = {CommunicationCI.class})
 
-public class Node_Ephemeral extends AbstractComponent{
+public class Node_AccessPoint extends AbstractComponent{
 	
 	public static final String neop_uri = "neop_uri";
-	protected Node_EphemeralOutBoundPort neop;
+	protected Node_AccessPointOutBoundPort neop;
 	
 	private NodeAddress address = new NodeAddress();
 	
 	
-	protected Node_Ephemeral() throws Exception {
+	protected Node_AccessPoint() throws Exception {
 		super(1,0);
-		this.neop = new Node_EphemeralOutBoundPort(neop_uri, this);
+		this.neop = new Node_AccessPointOutBoundPort(neop_uri, this);
 		this.neop.publishPort();
 		
 		// Enables logs

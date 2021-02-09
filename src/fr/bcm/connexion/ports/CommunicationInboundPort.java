@@ -1,10 +1,10 @@
-package fr.bcm.node.ports;
+package fr.bcm.connexion.ports;
 
 
 import fr.bcm.connexion.interfaces.CommunicationCI;
-import fr.bcm.connexion.utils.MessageI;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.message.interfaces.MessageI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;

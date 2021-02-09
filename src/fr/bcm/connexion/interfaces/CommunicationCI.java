@@ -1,8 +1,8 @@
 package fr.bcm.connexion.interfaces;
 
-import fr.bcm.connexion.utils.MessageI;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.message.interfaces.MessageI;
 import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 

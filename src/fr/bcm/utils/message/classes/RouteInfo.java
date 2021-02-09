@@ -1,4 +1,4 @@
-package fr.bcm.connexion.utils;
+package fr.bcm.utils.message.classes;
 
 import fr.bcm.utils.address.interfaces.AddressI;
 

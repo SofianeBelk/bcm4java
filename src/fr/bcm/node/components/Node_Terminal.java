@@ -5,6 +5,7 @@ import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.node.ports.Node_TerminalOutBoundPort;
 import fr.bcm.utils.address.classes.Address;
 import fr.bcm.utils.address.classes.NetworkAddress;
+import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
@@ -27,7 +28,7 @@ public class Node_Terminal extends AbstractComponent{
 	public static final String ntop_uri = "ntop-uri";
 	protected Node_TerminalOutBoundPort ntop;
 	
-	private NetworkAddress address = new NetworkAddress();
+	private NodeAddress address = new NodeAddress();
 	
 	
 	protected Node_Terminal() throws Exception {

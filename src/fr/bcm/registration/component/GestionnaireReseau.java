@@ -45,7 +45,7 @@ public class GestionnaireReseau extends AbstractComponent{
 	
 
 	@SuppressWarnings("unchecked")
-	public Set<ConnectionInfo> registerTerminalNode(NetworkAddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfo> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
 		
 		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,isRouting);

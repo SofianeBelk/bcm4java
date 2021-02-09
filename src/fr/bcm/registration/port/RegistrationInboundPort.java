@@ -28,7 +28,7 @@ implements RegistrationCI
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public Set<ConnectionInfo> registerTerminalNode(NetworkAddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfo> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
 		return (Set<ConnectionInfo>) this.getOwner().handleRequest(
 				c -> ((GestionnaireReseau)c).registerTerminalNode(address, communicationInboundPortURI, initialPosition, initialRange, isRouting)

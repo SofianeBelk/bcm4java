@@ -12,7 +12,7 @@ import fr.sorbonne_u.components.interfaces.OfferedCI;
 
 
 public interface RegistrationCI extends OfferedCI{
-	public Set<ConnectionInfo> registerTerminalNode(NetworkAddressI address, String communicationInboundPortURI, PositionI initialPosition, double initialRange, boolean isRouting) throws Exception;
+	public Set<ConnectionInfo> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI, PositionI initialPosition, double initialRange, boolean isRouting) throws Exception;
 	public Set<ConnectionInfo> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,PositionI initialPosition, double initialRange ) throws Exception;
 	public Set<ConnectionInfo> registreRoutingNode(NodeAddressI address, String communicationInboundPortURI,PositionI initialPosition, double initialRange, String routingInBoundPortURI) throws Exception;
 	public void unregister(AddressI address) throws Exception;

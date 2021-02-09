@@ -1,4 +1,4 @@
-package fr.bcm.connexion.utils;
+package fr.bcm.utils.message.interfaces;
 import java.io.Serializable;
 
 import fr.bcm.utils.address.interfaces.AddressI;

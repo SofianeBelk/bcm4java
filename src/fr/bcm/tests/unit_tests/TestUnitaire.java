@@ -1,4 +1,4 @@
-package fr.bcm.node.test;
+package fr.bcm.tests.unit_tests;
 
 public class TestUnitaire {
       /* a compléter */
