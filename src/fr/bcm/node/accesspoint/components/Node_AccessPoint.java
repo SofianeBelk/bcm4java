@@ -13,6 +13,7 @@ import fr.bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointInboundPort;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
+import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
@@ -34,7 +35,7 @@ public class Node_AccessPoint extends AbstractComponent{
 
 	protected Node_AccessPointOutboundPort napop;
 	protected Node_AccessPointInboundPort napip;
-	protected Node_AccessPointCommOutboundPort napcop;
+	protected List<Node_AccessPointCommOutboundPort> node_CommOBP = new ArrayList<>();
 	
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
@@ -44,10 +45,9 @@ public class Node_AccessPoint extends AbstractComponent{
 		super(1,0);
 		this.napop = new Node_AccessPointOutboundPort(this);
 		this.napip = new Node_AccessPointInboundPort(this);
-		this.napcop = new Node_AccessPointCommOutboundPort(this);
+
 		this.napop.publishPort();
 		this.napip.publishPort();
-		this.napcop.publishPort();
 		this.doPortConnection(
 				this.napop.getPortURI(),
 				GestionnaireReseau.GS_URI,
@@ -70,6 +70,8 @@ public class Node_AccessPoint extends AbstractComponent{
 
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException {
+		
+		System.out.println(node_CommOBP.size());
 		try {
 			if(napop.connected()) {
 				this.napop.doDisconnection();
@@ -78,14 +80,11 @@ public class Node_AccessPoint extends AbstractComponent{
 				this.napip.doDisconnection();
 			}
 			
-			if(napcop.connected()) {
-				this.napcop.doDisconnection();
-			}
+			
 			
 			
 			this.napop.unpublishPort();
 			this.napip.unpublishPort();
-			this.napcop.unpublishPort();
 		} catch (Exception e) {
 			return;
 		}
@@ -104,17 +103,17 @@ public class Node_AccessPoint extends AbstractComponent{
 		for(ConnectionInfoI CInfo: devices) {
 			
 			this.addressConnected.add(CInfo);
-			
-
-			System.out.println(this.napcop.connected());
+			Node_AccessPointCommOutboundPort napcop = new Node_AccessPointCommOutboundPort(this);
+			napcop.publishPort();
 			this.doPortConnection(
-					this.napcop.getPortURI(),
+					napcop.getPortURI(),
 					CInfo.getCommunicationInboundPortURI(),
 					CommunicationConnector.class.getCanonicalName()
 			);
-			this.napcop.connect(address, this.napip.getPortURI());
+			napcop.connect(address, this.napip.getPortURI());
+			node_CommOBP.add(napcop);
 		}
-		System.out.println("Size devices " + devices.size());
+
 		this.logMessage("Connected to all nearby devices");
 				
 	}
@@ -122,17 +121,19 @@ public class Node_AccessPoint extends AbstractComponent{
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
 		this.addressConnected.add(CInfo);
-		System.out.println("Trying job");
-		System.out.println(this.napcop.connected());
+		Node_AccessPointCommOutboundPort napcop = new Node_AccessPointCommOutboundPort(this);
+		napcop.publishPort();
+
 		try {
 			this.doPortConnection(
-					this.napcop.getPortURI(), 
+					napcop.getPortURI(), 
 					communicationInboundPortURI, 
 					CommunicationConnector.class.getCanonicalName());
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		
+		node_CommOBP.add(napcop);
 		this.logMessage("Added new devices to connections");
 		return null;
 	}
