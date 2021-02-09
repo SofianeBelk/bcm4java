@@ -3,6 +3,7 @@ package fr.bcm.node.ports;
 import java.util.Set;
 
 import fr.bcm.node.interfaces.Node_AccessPointCI;
+import fr.bcm.node.interfaces.Node_RoutingCI;
 import fr.bcm.node.interfaces.Node_TerminalCI;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.classes.NodeAddress;
@@ -14,33 +15,32 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
 
-public class Node_AccessPointOutBoundPort extends AbstractOutboundPort implements Node_AccessPointCI{
+public class Node_RoutingOutBoundPort extends AbstractOutboundPort implements Node_RoutingCI{
 
 	private static final long serialVersionUID = 1L;
 
-	public Node_AccessPointOutBoundPort(String nacopUri, ComponentI owner) throws Exception {
-		super(nacopUri, Node_AccessPointCI.class, owner);
+	public Node_RoutingOutBoundPort(String nropUri, ComponentI owner) throws Exception {
+		super(nropUri, Node_RoutingCI.class, owner);
 	}
 
+
 	@Override
-	public Set<ConnectionInfo> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange) throws Exception {
-		// TODO Auto-generated method stub
-		return ((Node_AccessPointCI)this.getConnector()).registerAccessPoint(
+	public Set<ConnectionInfo> registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
+			PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception {
+		return ((Node_RoutingCI)this.getConnector()).registerRoutingNode(
 				address, 
 				communicationInboundPortURI, 
 				initialPosition, 
-				initialRange);
+				initialRange,
+				routingInboundPortURI);
 	}
 
 
 	@Override
 	public void unregister(AddressI address) throws Exception {
-		((Node_AccessPointCI)this.getConnector()).unregister(address);
+		((Node_RoutingCI)this.getConnector()).unregister(address);
 		
 	}
-
-
 
 
 

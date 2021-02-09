@@ -40,6 +40,7 @@ implements RegistrationCI
 	@Override
 	public Set<ConnectionInfo> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange) throws Exception {
+		
 		return (Set<ConnectionInfo>) this.getOwner().handleRequest(
 				c -> ((GestionnaireReseau)c).registerAccessPoint(address, communicationInboundPortURI, initialPosition, initialRange)
 				);
@@ -49,6 +50,7 @@ implements RegistrationCI
 	@Override
 	public Set<ConnectionInfo> registreRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInBoundPortURI) throws Exception {
+		System.out.println("TEST");
 		return (Set<ConnectionInfo>) this.getOwner().handleRequest(
 				c -> ((GestionnaireReseau)c).registerRoutingNode(address, communicationInboundPortURI, initialPosition, initialRange, routingInBoundPortURI)
 		);

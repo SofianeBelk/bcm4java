@@ -78,8 +78,12 @@ public class GestionnaireReseau extends AbstractComponent{
 
 	public Object registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) {
-		Noeud n = new Noeud((AddressI)address, communicationInboundPortURI, initialPosition, initialRange, true, routingInboundPortURI);
-		return null;
+		Noeud n = new Noeud(address, communicationInboundPortURI, initialPosition, initialRange, true, routingInboundPortURI);
+		Set<ConnectionInfo> copie = new HashSet<>();
+		copie.addAll(mySet);
+		mySet.add(n);
+		this.logMessage("New node has registered");
+		return (Set<ConnectionInfo>) copie;		
 	}
 
 	public Object unregister(AddressI address) {
