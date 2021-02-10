@@ -10,7 +10,7 @@ import fr.bcm.connexion.interfaces.CommunicationCI;
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.accesspoint.interfaces.Node_AccessPointCI;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
-import fr.bcm.node.accesspoint.ports.Node_AccessPointInboundPort;
+import fr.bcm.node.accesspoint.ports.Node_AccessPointCommInboundPort;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.routing.interfaces.RoutingCI;
@@ -35,7 +35,7 @@ public class Node_AccessPoint extends AbstractComponent{
 	
 
 	protected Node_AccessPointOutboundPort napop;
-	protected Node_AccessPointInboundPort napip;
+	protected Node_AccessPointCommInboundPort napip;
 	protected List<Node_AccessPointCommOutboundPort> node_CommOBP = new ArrayList<>();
 	protected String routingInboundPortURI = "";
 	private NodeAddress address = new NodeAddress();
@@ -45,7 +45,7 @@ public class Node_AccessPoint extends AbstractComponent{
 	protected Node_AccessPoint() throws Exception {
 		super(1,0);
 		this.napop = new Node_AccessPointOutboundPort(this);
-		this.napip = new Node_AccessPointInboundPort(this);
+		this.napip = new Node_AccessPointCommInboundPort(this);
 
 		this.napop.publishPort();
 		this.napip.publishPort();
