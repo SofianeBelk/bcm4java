@@ -28,14 +28,13 @@ public class Node_TerminalOutBoundPort extends AbstractOutboundPort implements N
 
 	@Override
 	public Set<ConnectionInfoI> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
+			PositionI initialPosition, double initialRange) throws Exception {
 		
 		return ((Node_TerminalCI)this.getConnector()).registerTerminalNode(
 				address, 
 				communicationInboundPortURI, 
 				initialPosition, 
-				initialRange, 
-				isRouting);
+				initialRange);
 	}
 
 	@Override

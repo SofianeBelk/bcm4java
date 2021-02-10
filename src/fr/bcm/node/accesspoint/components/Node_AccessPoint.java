@@ -13,6 +13,7 @@ import fr.bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointInboundPort;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
+import fr.bcm.node.routing.interfaces.RoutingCI;
 import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NodeAddress;
@@ -28,7 +29,7 @@ import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
 
 @RequiredInterfaces(required = {Node_AccessPointCI.class, CommunicationCI.class})
-@OfferedInterfaces (offered = {CommunicationCI.class})
+@OfferedInterfaces (offered = {CommunicationCI.class, RoutingCI.class})
 
 public class Node_AccessPoint extends AbstractComponent{
 	
@@ -36,7 +37,7 @@ public class Node_AccessPoint extends AbstractComponent{
 	protected Node_AccessPointOutboundPort napop;
 	protected Node_AccessPointInboundPort napip;
 	protected List<Node_AccessPointCommOutboundPort> node_CommOBP = new ArrayList<>();
-	
+	protected String routingInboundPortURI = "";
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
 	
@@ -97,7 +98,7 @@ public class Node_AccessPoint extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		PositionI pointInitial = new Position(10,5);
-		Set<ConnectionInfoI> devices = this.napop.registerAccessPoint(address,napip.getPortURI() , pointInitial, 25.00);
+		Set<ConnectionInfoI> devices = this.napop.registerAccessPoint(address,napip.getPortURI() , pointInitial, 25.00, routingInboundPortURI);
 		this.logMessage("Logged");
 		// Current node connects to others nodes
 		for(ConnectionInfoI CInfo: devices) {

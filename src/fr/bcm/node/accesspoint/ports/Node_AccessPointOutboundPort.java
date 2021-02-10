@@ -24,13 +24,14 @@ public class Node_AccessPointOutboundPort extends AbstractOutboundPort implement
 
 	@Override
 	public Set<ConnectionInfoI> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange) throws Exception {
+			PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception {
 		// TODO Auto-generated method stub
 		return ((Node_AccessPointCI)this.getConnector()).registerAccessPoint(
 				address, 
 				communicationInboundPortURI, 
 				initialPosition, 
-				initialRange);
+				initialRange,
+				routingInboundPortURI);
 	}
 
 

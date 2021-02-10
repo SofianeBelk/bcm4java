@@ -69,25 +69,52 @@ public class GestionnaireReseau extends AbstractComponent{
 
 	@SuppressWarnings("unchecked")
 	public Set<ConnectionInfoI> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange) throws Exception {
+			PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception {
 		
-		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,true);
-		Set<ConnectionInfoI> copie = new HashSet<>();
-		copie.addAll(mySet);
+		
+		
+		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,true,routingInboundPortURI);
+		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
+		for(ConnectionInfoI ci : mySet) {
+	    	if(ci instanceof Noeud) {
+	    		if(!ci.getAddress().equals(address)) {
+	    			// Connects accessPoint
+	    			if(((Noeud)ci).getisAccessPoint()){
+	    				portee.add(ci);
+	    			}
+	    			else {
+	    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
+			    			portee.add(ci);
+			    		}
+	    			}
+	    		}
+	    	}
+	    }
 		mySet.add(n);
 		this.logMessage("New node has registered");
-		return (Set<ConnectionInfoI>) copie;		
+		return (Set<ConnectionInfoI>) portee;		
 	}
 
 
 	public Object registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) {
 		Noeud n = new Noeud(address, communicationInboundPortURI, initialPosition, initialRange, true, routingInboundPortURI);
-		Set<ConnectionInfoI> copie = new HashSet<>();
-		copie.addAll(mySet);
+		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
+		for(ConnectionInfoI ci : mySet) {
+	    	if(ci instanceof Noeud) {
+	    		if(!ci.getAddress().equals(address)) {	    			
+    				if(((Noeud)ci).getisRouting()) {
+	    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
+			    			portee.add(ci);
+			    		}
+	    			}
+	    		}
+	    	}
+	    }
+		
 		mySet.add(n);
 		this.logMessage("New node has registered");
-		return (Set<ConnectionInfoI>) copie;		
+		return (Set<ConnectionInfoI>) portee;		
 	}
 
 	public Object unregister(AddressI address) {

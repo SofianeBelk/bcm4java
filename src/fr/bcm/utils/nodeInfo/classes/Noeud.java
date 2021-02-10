@@ -13,6 +13,7 @@ public class Noeud implements ConnectionInfoI {
 	private double initialRange;
 	private boolean isRouting = false;
 	private String routingInboundPortURI;
+	private boolean isAccessPoint = false;
 	
 	public Noeud(AddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) {
@@ -33,6 +34,17 @@ public class Noeud implements ConnectionInfoI {
 		this.isRouting=isRouting;
 		this.routingInboundPortURI = routingInboundPortURI;
 	}
+	
+	public Noeud(AddressI address, String communicationInboundPortURI, PositionI initialPosition,
+			double initialRange, boolean isRouting, String routingInboundPortURI, boolean isAccessPoint) {
+		this.address=address;
+		this.communicationInboundPortURI=communicationInboundPortURI;
+		this.initialPosition=initialPosition;
+		this.initialRange=initialRange;
+		this.isRouting=isRouting;
+		this.routingInboundPortURI = routingInboundPortURI;
+		this.isAccessPoint = isAccessPoint;
+	}
 
 	
 
@@ -52,6 +64,11 @@ public class Noeud implements ConnectionInfoI {
 	public boolean getisRouting() {
 		return this.isRouting;
 	}
+	
+	public boolean getisAccessPoint() {
+		return this.isAccessPoint;
+	}
+	
 	public void setAddress(AddressI a) {
 		this.address.equals(a);
 	}

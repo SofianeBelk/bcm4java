@@ -98,7 +98,7 @@ public class Node_Terminal extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		Position pointInitial= new Position(10,10);
-		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00, false);
+		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00);
 		this.logMessage("Logged");
 		
 		// Current node connects to others nodes
