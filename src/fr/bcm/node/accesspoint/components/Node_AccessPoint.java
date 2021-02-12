@@ -14,10 +14,12 @@ import fr.bcm.node.accesspoint.ports.Node_AccessPointCommInboundPort;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.routing.interfaces.RoutingCI;
+import fr.bcm.node.routing.ports.Node_RoutingCommOutboundPort;
 import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
+import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
@@ -146,6 +148,50 @@ public class Node_AccessPoint extends AbstractComponent{
 	}
 
 	public Object transmitMessage(MessageI m) throws Exception {
+
+		if(this.hasRouteFor(m.getAddress())) {
+			
+			boolean trouverNode=false;
+			
+			if(this.address==m.getAddress()) {
+				System.out.println("Message bien recu : "+m.getContent().toString());
+				return null;
+			}
+			if(m.getAddress().isNetworkAdress()) {
+				NetworkAddressI a = (NetworkAddressI) m.getAddress();
+				for(Node_AccessPointCommOutboundPort c : node_CommOBP) {
+						c.transmitMessage(m);
+					}
+				return null;
+			}
+			
+			if(m.getAddress().isNodeAdress()) {
+				NodeAddressI k =(NodeAddressI)m.getAddress();
+				for(Node_AccessPointCommOutboundPort c : node_CommOBP) {
+					if(c.hasRouteFor(k) ){
+						// il faudrait faire appell a la fonction updateAccessPoint
+						c.transmitMessage(m);
+						trouverNode=true;
+						break;
+					}
+				}
+		
+			}
+			
+			if(!(trouverNode)) {
+				int alea =(int) (1+Math.random() * (node_CommOBP.size() - 1));
+	            for(int i=0;i<alea;i++) {
+	                if(m.stillAlive()) {
+	                    m.decrementHops();
+	                    node_CommOBP.get(i).transmitMessage(m);
+	                }else {
+	                    //Destruction
+	                    m = null;
+	                    System.out.println("Message Detruit");
+	                }
+	            }
+			}
+		}
 		return null;
 	}
 

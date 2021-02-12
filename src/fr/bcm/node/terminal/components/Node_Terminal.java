@@ -149,6 +149,35 @@ public class Node_Terminal extends AbstractComponent{
 	}
 
 	public Object transmitMessage(MessageI m) throws Exception {
+		/*si il existe une route*/
+		if(this.hasRouteFor(m.getAddress())) {
+			/*dans le cas ou c'est moi le destinataire*/
+			if(this.address.equals(m.getAddress())) {
+				System.out.println("j'ai recu le message "+m.getContent().toString());
+				return null;
+			}
+			/*trouver le noeud correspendant*/
+			for(Node_TerminalCommOutboundPort s :node_CommOBP) {
+				if(s.hasRouteFor(m.getAddress())) {
+					s.transmitMessage(m);
+				}
+			}
+			
+		}else {
+			/*acheminement par inondation*/
+			int alea =(int) (1+Math.random() * (node_CommOBP.size() - 1));
+			for(int i=0;i<alea;i++) {
+				if(m.stillAlive()) {
+					m.decrementHops();
+					node_CommOBP.get(i).transmitMessage(m);
+				}else {
+					//Destruction
+					m = null;
+                    System.out.println("Message Detruit");
+				}
+			}
+		}
+		
 		return null;
 	}
 
