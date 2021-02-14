@@ -22,6 +22,7 @@ import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.message.classes.Message;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
@@ -44,6 +45,9 @@ public class Node_Routing extends AbstractComponent{
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
 	
+	private AddressI addressToSendMessage;
+	private int NumberOfNeighboorsToSend = 2;
+	
 	
 	protected Node_Routing() throws Exception {
 		super(1,0);
@@ -59,6 +63,7 @@ public class Node_Routing extends AbstractComponent{
 		// Enables logs
 		this.toggleLogging();
 		this.toggleTracing();
+		this.logMessage("Node_Routing " + this.address.getAdress());
 	}
 
 
@@ -74,10 +79,20 @@ public class Node_Routing extends AbstractComponent{
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException {
 		try {
+			if(nrop.connected()) {
+				this.nrop.doDisconnection();
+			}
+			if(nrip.connected()) {
+				this.nrip.doDisconnection();
+			}
+			
+			
+			
+			
 			this.nrop.unpublishPort();
 			this.nrip.unpublishPort();
 		} catch (Exception e) {
-			throw new ComponentShutdownException();
+			return;
 		}
 		super.shutdown();
 	}
@@ -87,28 +102,45 @@ public class Node_Routing extends AbstractComponent{
 	public synchronized void execute() throws Exception {
 		super.execute();
 		this.logMessage("Tries to log in the manager");
+		Thread.sleep(1000);
 		PositionI pointInitial = new Position(10,5);
-		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrop.getPortURI() , pointInitial, 25.00, nrip.getPortURI());
+		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrip.getPortURI() , pointInitial, 25.00, routingInboundPortURI);
 		this.logMessage("Logged");
 		// Current node connects to others nodes
 		for(ConnectionInfoI CInfo: devices) {
 			
+			
 			this.addressConnected.add(CInfo);
+			
+			this.logMessage(String.valueOf(devices.size()));
 			Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this);
+			this.logMessage("Creating routing Port");
 			nrcop.publishPort();
+			this.logMessage("Publish Port");
 			this.doPortConnection(
 					nrcop.getPortURI(),
 					CInfo.getCommunicationInboundPortURI(),
 					CommunicationConnector.class.getCanonicalName()
 			);
+			this.logMessage("Do Port connection");
+			this.logMessage(CInfo.getAddress().getAdress());
 			nrcop.connect(address, this.nrip.getPortURI());
+			this.logMessage("Ask for connection");
 			node_CommOBP.add(nrcop);
 		}
 
 		this.logMessage("Connected to all nearby devices");
+		
+		if(this.addressConnected.size()>0) {
+			this.addressToSendMessage = this.addressConnected.get(this.addressConnected.size()-1).getAddress();
+		}
+		Message m = new Message(this.addressToSendMessage,"Hello from : " + this.address.getAdress());
+		this.logMessage("Sending message to " + this.addressToSendMessage.getAdress());
+		this.transmitMessage(m);
 	}
 
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
+		this.logMessage("Someone asked connection");
 		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
 		this.addressConnected.add(CInfo);
 		Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this);
@@ -136,7 +168,29 @@ public class Node_Routing extends AbstractComponent{
 
 	public Object transmitMessage(MessageI m) throws Exception {
 		
+		m.decrementHops();
+		m.addAddressToHistory(this.address);
 
+		
+		if(m.getAddress().equals(this.address)) {
+			this.logMessage("Received a message : " + m.getContent());
+		}
+		else {
+			if(m.stillAlive()) {
+				for(int i = 0; i < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {
+					// No blocking mechanism
+					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
+					if(!m.isInHistory(addressToTransmitTo)) {
+						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
+						this.node_CommOBP.get(i).transmitMessage(m);
+					}
+				}
+			}
+			else {
+				this.logMessage("Message dead");
+			}
+		}
+		/*
 		if(this.hasRouteFor(m.getAddress())) {
 			
 			boolean trouverNode=false;
@@ -185,6 +239,7 @@ public class Node_Routing extends AbstractComponent{
 	            }
 			}
 		}
+		*/
 		return null;
 	}
 

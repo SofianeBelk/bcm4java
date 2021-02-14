@@ -35,8 +35,7 @@ public class Node_TerminalInboundPort extends AbstractInboundPort implements Com
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
-		this.getOwner().handleRequest(c -> ((Node_Terminal)c).transmitMessage(m));
-		
+		this.getOwner().handleRequest(c -> {((Node_Terminal)c).transmitMessage(m); return null;});
 	}
 
 	@Override

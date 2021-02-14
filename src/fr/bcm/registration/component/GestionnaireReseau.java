@@ -54,11 +54,9 @@ public class GestionnaireReseau extends AbstractComponent{
 	    for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {
 	    		if(!ci.getAddress().equals(address)) {
-	    			if(((Noeud)ci).getisRouting()) {
-	    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
-			    			portee.add(ci);
-			    		}
-	    			}
+    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
+		    			portee.add(ci);
+		    		}
 	    		}
 	    	}
 	    }
@@ -103,11 +101,9 @@ public class GestionnaireReseau extends AbstractComponent{
 		for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {
 	    		if(!ci.getAddress().equals(address)) {	    			
-    				if(((Noeud)ci).getisRouting()) {
-	    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
-			    			portee.add(ci);
-			    		}
-	    			}
+    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
+		    			portee.add(ci);
+		    		}
 	    		}
 	    	}
 	    }

@@ -16,6 +16,7 @@ import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
+import fr.bcm.utils.message.classes.Message;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
@@ -43,6 +44,7 @@ public class Node_Terminal extends AbstractComponent{
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected= new ArrayList<>();
 	
+	private int NumberOfNeighboorsToSend = 2;
 	
 	protected Node_Terminal() throws Exception {
 		super(1,0); 
@@ -59,7 +61,7 @@ public class Node_Terminal extends AbstractComponent{
 		// Enable logs
 		this.toggleLogging();
 		this.toggleTracing();
-		this.logMessage("Node Terminal");
+		this.logMessage("Node Terminal " + this.address.getAdress());
 		
 	}
 
@@ -149,32 +151,29 @@ public class Node_Terminal extends AbstractComponent{
 	}
 
 	public Object transmitMessage(MessageI m) throws Exception {
-		/*si il existe une route*/
-		if(this.hasRouteFor(m.getAddress())) {
-			/*dans le cas ou c'est moi le destinataire*/
-			if(this.address.equals(m.getAddress())) {
-				System.out.println("j'ai recu le message "+m.getContent().toString());
-				return null;
-			}
-			/*trouver le noeud correspendant*/
-			for(Node_TerminalCommOutboundPort s :node_CommOBP) {
-				if(s.hasRouteFor(m.getAddress())) {
-					s.transmitMessage(m);
+		
+		m.decrementHops();
+		m.addAddressToHistory(this.address);
+		
+		
+		
+		if(m.getAddress().equals(this.address)) {
+			this.logMessage("Received a message : " + m.getContent());
+		}
+		else {
+			if(m.stillAlive()) {
+				for(int i = 0; i < NumberOfNeighboorsToSend; i++) {
+					
+					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
+					if(!m.isInHistory(addressToTransmitTo)) {
+						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
+						MessageI messageToSend = m.copy();
+						this.node_CommOBP.get(i).transmitMessage(messageToSend);
+					}
 				}
 			}
-			
-		}else {
-			/*acheminement par inondation*/
-			int alea =(int) (1+Math.random() * (node_CommOBP.size() - 1));
-			for(int i=0;i<alea;i++) {
-				if(m.stillAlive()) {
-					m.decrementHops();
-					node_CommOBP.get(i).transmitMessage(m);
-				}else {
-					//Destruction
-					m = null;
-                    System.out.println("Message Detruit");
-				}
+			else {
+				this.logMessage("Message dead");
 			}
 		}
 		

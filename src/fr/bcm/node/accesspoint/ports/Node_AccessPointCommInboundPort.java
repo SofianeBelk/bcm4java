@@ -36,7 +36,7 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
-		this.getOwner().handleRequest(c -> ((Node_AccessPoint)c).transmitMessage(m));
+		this.getOwner().handleRequest(c -> {((Node_AccessPoint)c).transmitMessage(m); return null;});
 		
 	}
 

@@ -24,20 +24,22 @@ public class CVM extends AbstractCVM {
 		AbstractComponent.createComponent(GestionnaireReseau.class.getCanonicalName(), new Object[]{});
 
 	
+		String nacURI1=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
+		String nacURI2=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
 		
-		// String nrURI=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		String ntURI1=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
 		String ntURI2=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
-		String ntURI3=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
-
-		String nacURI=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
+		
+		String nrURI1=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		String nrURI2=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		
 		super.deploy();
 	}
 	
 	public static void main(String[] args) {
 		try {
 			CVM c = new CVM();
-			c.startStandardLifeCycle(1000L);
+			c.startStandardLifeCycle(20000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();

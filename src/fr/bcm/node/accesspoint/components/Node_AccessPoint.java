@@ -43,6 +43,7 @@ public class Node_AccessPoint extends AbstractComponent{
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
 	
+	private int NumberOfNeighboorsToSend = 2;
 	
 	protected Node_AccessPoint() throws Exception {
 		super(1,0);
@@ -58,7 +59,7 @@ public class Node_AccessPoint extends AbstractComponent{
 		// Enables logs
 		this.toggleLogging();
 		this.toggleTracing();
-		this.logMessage("Node_AccessPoint");
+		this.logMessage("Node_AccessPoint " + this.address.getAdress());
 	}
 
 
@@ -148,48 +149,27 @@ public class Node_AccessPoint extends AbstractComponent{
 	}
 
 	public Object transmitMessage(MessageI m) throws Exception {
+		
 
-		if(this.hasRouteFor(m.getAddress())) {
-			
-			boolean trouverNode=false;
-			
-			if(this.address==m.getAddress()) {
-				System.out.println("Message bien recu : "+m.getContent().toString());
-				return null;
-			}
-			if(m.getAddress().isNetworkAdress()) {
-				NetworkAddressI a = (NetworkAddressI) m.getAddress();
-				for(Node_AccessPointCommOutboundPort c : node_CommOBP) {
-						c.transmitMessage(m);
-					}
-				return null;
-			}
-			
-			if(m.getAddress().isNodeAdress()) {
-				NodeAddressI k =(NodeAddressI)m.getAddress();
-				for(Node_AccessPointCommOutboundPort c : node_CommOBP) {
-					if(c.hasRouteFor(k) ){
-						// il faudrait faire appell a la fonction updateAccessPoint
-						c.transmitMessage(m);
-						trouverNode=true;
-						break;
+		m.decrementHops();
+		m.addAddressToHistory(this.address);
+		
+		if(m.getAddress().equals(this.address)) {
+			this.logMessage("Received a message : " + m.getContent());
+		}
+		else {
+			if(m.stillAlive()) {
+				for(int i = 0; i < NumberOfNeighboorsToSend; i++) {
+					// No blocking mechanism
+					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
+					if(!m.isInHistory(addressToTransmitTo)) {
+						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
+						this.node_CommOBP.get(i).transmitMessage(m);
 					}
 				}
-		
 			}
-			
-			if(!(trouverNode)) {
-				int alea =(int) (1+Math.random() * (node_CommOBP.size() - 1));
-	            for(int i=0;i<alea;i++) {
-	                if(m.stillAlive()) {
-	                    m.decrementHops();
-	                    node_CommOBP.get(i).transmitMessage(m);
-	                }else {
-	                    //Destruction
-	                    m = null;
-	                    System.out.println("Message Detruit");
-	                }
-	            }
+			else {
+				this.logMessage("Message dead");
 			}
 		}
 		return null;
