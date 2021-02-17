@@ -1,18 +1,19 @@
 package fr.bcm.utils.nodeInfo.classes;
 
 
+import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 
-public class Noeud implements ConnectionInfo {
+public class Noeud implements ConnectionInfoI {
 	private AddressI address;
 	private String communicationInboundPortURI;
 	private PositionI initialPosition;
 	private double initialRange;
-	private boolean isRouting;
+	private boolean isRouting = false;
 	private String routingInboundPortURI;
+	private boolean isAccessPoint = false;
 	
 	public Noeud(AddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) {
@@ -33,6 +34,17 @@ public class Noeud implements ConnectionInfo {
 		this.isRouting=isRouting;
 		this.routingInboundPortURI = routingInboundPortURI;
 	}
+	
+	public Noeud(AddressI address, String communicationInboundPortURI, PositionI initialPosition,
+			double initialRange, boolean isRouting, String routingInboundPortURI, boolean isAccessPoint) {
+		this.address=address;
+		this.communicationInboundPortURI=communicationInboundPortURI;
+		this.initialPosition=initialPosition;
+		this.initialRange=initialRange;
+		this.isRouting=isRouting;
+		this.routingInboundPortURI = routingInboundPortURI;
+		this.isAccessPoint = isAccessPoint;
+	}
 
 	
 
@@ -52,6 +64,11 @@ public class Noeud implements ConnectionInfo {
 	public boolean getisRouting() {
 		return this.isRouting;
 	}
+	
+	public boolean getisAccessPoint() {
+		return this.isAccessPoint;
+	}
+	
 	public void setAddress(AddressI a) {
 		this.address.equals(a);
 	}

@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.registration.port.RegistrationInboundPort;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.nodeInfo.interfaces.ConnectionInfo;
 import fr.bcm.utils.nodeInfo.classes.Noeud;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractComponent;
@@ -22,7 +22,7 @@ public class GestionnaireReseau extends AbstractComponent{
 	
 	public static final String GS_URI="gs-uri";
 	protected RegistrationInboundPort rip;
-    Set<ConnectionInfo> mySet= new HashSet<>();
+    Set<ConnectionInfoI> mySet= new HashSet<>();
     
 	protected GestionnaireReseau() throws Exception {
 		super(1, 0);
@@ -31,6 +31,8 @@ public class GestionnaireReseau extends AbstractComponent{
 		this.toggleLogging();
 		this.toggleTracing();
 	}
+	
+
 	
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException{
@@ -45,47 +47,78 @@ public class GestionnaireReseau extends AbstractComponent{
 	
 
 	@SuppressWarnings("unchecked")
-	public Set<ConnectionInfo> registerTerminalNode(NetworkAddressI address, String communicationInboundPortURI,
+	public Set<ConnectionInfoI> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
 		
 		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,isRouting);
 		mySet.add(n);
-	    Set<ConnectionInfo> portee= new HashSet<ConnectionInfo>();
-	    for(ConnectionInfo ci : mySet) {
+	    Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
+	    for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {
-	    		if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
-	    			portee.add(ci);
+	    		if(!ci.getAddress().equals(address)) {
+    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
+		    			portee.add(ci);
+		    		}
 	    		}
 	    	}
 	    }
 	    
 	    this.logMessage("New node has registered");
-	    return (Set<ConnectionInfo>) portee;
+	    return (Set<ConnectionInfoI>) portee;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<ConnectionInfo> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange) throws Exception {
+	public Set<ConnectionInfoI> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
+			PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception {
 		
-		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,true);
-		Set<ConnectionInfo> copie = new HashSet<>();
-		copie.addAll(mySet);
+		
+		
+		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,true,routingInboundPortURI);
+		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
+		for(ConnectionInfoI ci : mySet) {
+	    	if(ci instanceof Noeud) {
+	    		if(!ci.getAddress().equals(address)) {
+	    			// Connects accessPoint
+	    			if(((Noeud)ci).getisAccessPoint()){
+	    				portee.add(ci);
+	    			}
+	    			else {
+	    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
+			    			portee.add(ci);
+			    		}
+	    			}
+	    		}
+	    	}
+	    }
 		mySet.add(n);
 		this.logMessage("New node has registered");
-		return (Set<ConnectionInfo>) copie;		
+		return (Set<ConnectionInfoI>) portee;		
 	}
 
 
 	public Object registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) {
-		Noeud n = new Noeud((AddressI)address, communicationInboundPortURI, initialPosition, initialRange, true, routingInboundPortURI);
-		return null;
+		Noeud n = new Noeud(address, communicationInboundPortURI, initialPosition, initialRange, true, routingInboundPortURI);
+		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
+		for(ConnectionInfoI ci : mySet) {
+	    	if(ci instanceof Noeud) {
+	    		if(!ci.getAddress().equals(address)) {	    			
+    				if(((Noeud) ci).getinitialPosition().distance(n.getinitialPosition())<=n.getinitialRange()) {
+		    			portee.add(ci);
+		    		}
+	    		}
+	    	}
+	    }
+		
+		mySet.add(n);
+		this.logMessage("New node has registered");
+		return (Set<ConnectionInfoI>) portee;		
 	}
 
 	public Object unregister(AddressI address) {
-		Iterator<ConnectionInfo> iter = this.mySet.iterator();
+		Iterator<ConnectionInfoI> iter = this.mySet.iterator();
 		while(iter.hasNext()) {
-			ConnectionInfo cinfo = (ConnectionInfo)iter.next();
+			ConnectionInfoI cinfo = (ConnectionInfoI)iter.next();
 			if (cinfo.getAddress().equals(address)){
 				this.mySet.remove(cinfo);
 				this.logMessage("A node has unregistered");
