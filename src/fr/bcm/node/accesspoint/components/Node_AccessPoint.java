@@ -75,7 +75,6 @@ public class Node_AccessPoint extends AbstractComponent{
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException {
 		
-		System.out.println(node_CommOBP.size());
 		try {
 			if(napop.connected()) {
 				this.napop.doDisconnection();
@@ -124,7 +123,7 @@ public class Node_AccessPoint extends AbstractComponent{
 	
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
-		this.addressConnected.add(CInfo);
+		
 		Node_AccessPointCommOutboundPort napcop = new Node_AccessPointCommOutboundPort(this);
 		napcop.publishPort();
 
@@ -138,6 +137,7 @@ public class Node_AccessPoint extends AbstractComponent{
 		}
 		
 		node_CommOBP.add(napcop);
+		this.addressConnected.add(CInfo);
 		this.logMessage("Added new devices to connections");
 		return null;
 	}
@@ -154,17 +154,28 @@ public class Node_AccessPoint extends AbstractComponent{
 		m.decrementHops();
 		m.addAddressToHistory(this.address);
 		
+		if(m.getAddress().isNetworkAdress()) {
+			this.logMessage("Sent " + m.getContent() + " to network");
+			return null;
+		}
+		
 		if(m.getAddress().equals(this.address)) {
 			this.logMessage("Received a message : " + m.getContent());
 		}
 		else {
+			
 			if(m.stillAlive()) {
-				for(int i = 0; i < NumberOfNeighboorsToSend; i++) {
+				int numberSent = 0;
+				for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {		
 					// No blocking mechanism
 					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
 					if(!m.isInHistory(addressToTransmitTo)) {
 						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
 						this.node_CommOBP.get(i).transmitMessage(m);
+						numberSent += 1;
+					}
+					else {
+						this.logMessage("No node to send message to");
 					}
 				}
 			}

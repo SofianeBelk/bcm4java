@@ -11,10 +11,12 @@ import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
+import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 import fr.bcm.node.accesspoint.components.Node_AccessPoint;
+import fr.bcm.node.routing.components.Node_Routing;
 
 public class Node_AccessPointCommInboundPort extends AbstractInboundPort implements CommunicationCI{
 
@@ -31,12 +33,29 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 
 	@Override
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		this.getOwner().handleRequest(c -> ((Node_AccessPoint)c).connectRouting(address, communicationInboundPortURI, routingInboundPortURI));
+		this.getOwner().handleRequest(
+				new AbstractComponent.AbstractService<Void>() {
+					@Override
+					public Void call() throws Exception {
+						// TODO Auto-generated method stub
+						((Node_Routing)this.getServiceProviderReference()).connectRouting(address,communicationInboundPortURI,routingInboundPortURI);
+						return null;
+					}
+				}
+		);
 	}
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
-		this.getOwner().handleRequest(c -> {((Node_AccessPoint)c).transmitMessage(m); return null;});
+		this.getOwner().handleRequest(
+				new AbstractComponent.AbstractService<Void>() {
+					@Override
+					public Void call() throws Exception {
+						((Node_AccessPoint)this.getServiceProviderReference()).transmitMessage(m);
+						return null;
+					}
+				}
+		);
 		
 	}
 

@@ -9,7 +9,7 @@ import fr.bcm.utils.message.interfaces.MessageI;
 
 public class Message implements MessageI {
 	
-	private int hops = 10;
+	private int hops = 60;
 	private AddressI address;
 	private String content = "";
 	private List<AddressI> listAddress = new ArrayList<>();

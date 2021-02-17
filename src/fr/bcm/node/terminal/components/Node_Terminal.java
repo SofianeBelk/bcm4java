@@ -96,7 +96,7 @@ public class Node_Terminal extends AbstractComponent{
 
 
 	@Override
-	public synchronized void execute() throws Exception {
+	public void execute() throws Exception {
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		Position pointInitial= new Position(10,10);
@@ -130,7 +130,7 @@ public class Node_Terminal extends AbstractComponent{
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		
 		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
-		this.addressConnected.add(CInfo);
+		
 		Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this);
 		ntcop.publishPort();
 		
@@ -141,6 +141,7 @@ public class Node_Terminal extends AbstractComponent{
 		this.logMessage("Added new devices to connections");
 		
 		node_CommOBP.add(ntcop);
+		this.addressConnected.add(CInfo);
 		return null;
 	}
 
@@ -162,13 +163,17 @@ public class Node_Terminal extends AbstractComponent{
 		}
 		else {
 			if(m.stillAlive()) {
-				for(int i = 0; i < NumberOfNeighboorsToSend; i++) {
-					
+				int numberSent = 0;
+				for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {					
 					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
 					if(!m.isInHistory(addressToTransmitTo)) {
 						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
 						MessageI messageToSend = m.copy();
 						this.node_CommOBP.get(i).transmitMessage(messageToSend);
+						numberSent += 1;
+					}
+					else {
+						this.logMessage("No node to send message to");
 					}
 				}
 			}

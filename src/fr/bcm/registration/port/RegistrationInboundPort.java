@@ -19,8 +19,9 @@ implements RegistrationCI
 
 	public RegistrationInboundPort(ComponentI owner) throws Exception {
 		super(RegistrationCI.class, owner);
+		assert owner instanceof GestionnaireReseau;
 	}
-	
+		
 	public RegistrationInboundPort(String uri,ComponentI owner) throws Exception {
 		super(uri,RegistrationCI.class, owner);
 	}
