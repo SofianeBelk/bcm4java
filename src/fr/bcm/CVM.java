@@ -33,13 +33,15 @@ public class CVM extends AbstractCVM {
 		String nrURI1=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		String nrURI2=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		
+		
+		
 		super.deploy();
 	}
 	
 	public static void main(String[] args) {
 		try {
 			CVM c = new CVM();
-			c.startStandardLifeCycle(20000L);
+			c.startStandardLifeCycle(10000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -32,6 +32,8 @@ public class GestionnaireReseau extends AbstractComponent{
 		this.toggleTracing();
 	}
 	
+
+	
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException{
 		try {
