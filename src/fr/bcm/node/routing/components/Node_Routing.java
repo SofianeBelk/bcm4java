@@ -1,6 +1,8 @@
 package fr.bcm.node.routing.components;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +14,7 @@ import fr.bcm.node.accesspoint.interfaces.Node_AccessPointCI;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
+import fr.bcm.node.routing.connectors.RoutingConnector;
 import fr.bcm.node.routing.interfaces.Node_RoutingCI;
 import fr.bcm.node.routing.interfaces.RoutingCI;
 import fr.bcm.node.routing.ports.Node_RoutingCommOutboundPort;
@@ -27,6 +30,7 @@ import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.classes.Message;
 import fr.bcm.utils.message.classes.RouteInfo;
+import fr.bcm.utils.message.classes.RoutingMap;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
@@ -57,6 +61,7 @@ public class Node_Routing extends AbstractComponent{
 	protected String routingInboundPortURI = "";
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
+	private Set<RouteInfo> routes = new HashSet<RouteInfo>();
 	
 	private AddressI addressToSendMessage;
 	private int NumberOfNeighboorsToSend = 2;
@@ -171,7 +176,7 @@ public class Node_Routing extends AbstractComponent{
 			this.transmitMessage(m);
 		}
 		
-
+		
 		if(this.id == 2) {
 			Thread.yield();
 			if(this.addressConnected.size()>0) {
@@ -180,6 +185,11 @@ public class Node_Routing extends AbstractComponent{
 				this.logMessage("Sending message to network " + toSend.getAdress());
 				this.transmitMessage(m);
 			}
+		}
+		
+		//init routes
+		for(ConnectionInfoI a : addressConnected) {
+			routes.add(new RoutingMap((AddressI) a,address));
 		}
 	}
 
@@ -206,7 +216,40 @@ public class Node_Routing extends AbstractComponent{
 
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		// TO-DO !!!
+		this.logMessage("Someone asked connection");
+		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
+		this.addressConnected.add(CInfo);
+		Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this);
+		nrcop.publishPort();
+		//la connexion avec le composant communicationCI
+		this.logMessage("trying connexion to communication port");
+		try {
+			this.doPortConnection(
+					nrcop.getPortURI(), 
+					communicationInboundPortURI, 
+					CommunicationConnector.class.getCanonicalName());
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		this.logMessage("successful connection to communication port");
 		
+		Node_RoutingRoutingOutboundPort nrro = new Node_RoutingRoutingOutboundPort(this);
+		nrro.publishPort();
+		
+		//la connexion avec le composant de routage
+		this.logMessage("trying connexion to router port");
+		try {
+			this.doPortConnection(
+					nrro.getPortURI(), 
+					routingInboundPortURI, 
+					RoutingConnector.class.getCanonicalName());
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		this.logMessage("successful connection to routing port");
+		node_CommOBP.add(nrcop);
+		node_RoutingOBP.add(nrro);
+		this.logMessage("Added new devices to connections");
 		return null;
 	}
 
@@ -313,7 +356,33 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfo> routes) throws Exception{
-		// TO-DO !!!
+		//UNE premiére version
+		boolean add;// pour savoir si on l'a déja ajouter ou pas
+		for(RouteInfo ri : routes) {
+			//on vérifier d'abord si le destinataire est présent dans notre table
+			Iterator<RouteInfo> it = this.routes.iterator();
+			add = false;
+			while(it.hasNext()) {
+				RouteInfo tmp = it.next();
+				if(tmp.getDestination()==ri.getDestination()) {
+					if(tmp.getNumberOfHops() > ri.getNumberOfHops()+1 ) {
+						//route interessante on modifier notre table
+						this.routes.remove(tmp);
+						RoutingMap mp = new RoutingMap(ri.getDestination(),neighbour);
+						mp.setNumberOfHops(ri.getNumberOfHops()+1);
+						this.routes.add(mp);
+						add = true;
+					}
+				}
+			}
+			//dans le cas ou on la pas trouver dans notre set
+			if(!add) {
+				RoutingMap tmp = new RoutingMap(ri.getDestination(),neighbour);
+				tmp.setNumberOfHops(ri.getNumberOfHops()+1);
+				this.routes.add(tmp);
+			}
+		}
+		
 	}
 	
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
