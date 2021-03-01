@@ -114,9 +114,6 @@ public class Node_Routing extends AbstractComponent{
 				port.unpublishPort();
 			}
 			
-			
-			
-			
 			this.nrop.unpublishPort();
 			this.nrcip.unpublishPort();
 			this.nrrip.unpublishPort();
@@ -208,8 +205,8 @@ public class Node_Routing extends AbstractComponent{
 	}
 
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		ConnectionInformation CInfo = new ConnectionInformation(address, communicationInboundPortURI, routingInboundPortURI);
-		this.addressConnected.add(CInfo);
+		// TO-DO !!!
+		
 		return null;
 	}
 
@@ -316,11 +313,11 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfo> routes) throws Exception{
-		
+		// TO-DO !!!
 	}
 	
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
-		
+		// TO-DO !!!
 	}
 	
 }
