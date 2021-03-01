@@ -17,6 +17,8 @@ import fr.bcm.node.routing.interfaces.RoutingCI;
 import fr.bcm.node.routing.ports.Node_RoutingCommOutboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingCommInboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingOutBoundPort;
+import fr.bcm.node.routing.ports.Node_RoutingRoutingInboundPort;
+import fr.bcm.node.routing.ports.Node_RoutingRoutingOutboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NetworkAddress;
 import fr.bcm.utils.address.classes.NodeAddress;
@@ -24,6 +26,7 @@ import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.classes.Message;
+import fr.bcm.utils.message.classes.RouteInfo;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
@@ -33,7 +36,7 @@ import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
 
-@RequiredInterfaces(required = {Node_RoutingCI.class, CommunicationCI.class})
+@RequiredInterfaces(required = {Node_RoutingCI.class, CommunicationCI.class, RoutingCI.class})
 @OfferedInterfaces (offered = {RoutingCI.class, CommunicationCI.class})
 
 public class Node_Routing extends AbstractComponent{
@@ -43,8 +46,14 @@ public class Node_Routing extends AbstractComponent{
 	
 	private int id;
 	protected Node_RoutingOutBoundPort nrop;
-	protected Node_RoutingCommInboundPort nrip;
+	
+	protected Node_RoutingCommInboundPort nrcip;
 	protected List<Node_RoutingCommOutboundPort> node_CommOBP = new ArrayList<>();
+	
+	protected Node_RoutingRoutingInboundPort nrrip;
+	protected List<Node_RoutingRoutingOutboundPort> node_RoutingOBP = new ArrayList<>();
+	
+	
 	protected String routingInboundPortURI = "";
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
@@ -58,9 +67,11 @@ public class Node_Routing extends AbstractComponent{
 		this.id = node_routing_id;
 		node_routing_id += 1;
 		this.nrop = new Node_RoutingOutBoundPort(this);
-		this.nrip = new Node_RoutingCommInboundPort(this);
+		this.nrcip = new Node_RoutingCommInboundPort(this);
+		this.nrrip = new Node_RoutingRoutingInboundPort(this);
 		this.nrop.publishPort();
-		this.nrip.publishPort();
+		this.nrcip.publishPort();
+		this.nrrip.publishPort();
 		this.doPortConnection(
 				this.nrop.getPortURI(), 
 				GestionnaireReseau.GS_URI, 
@@ -88,10 +99,17 @@ public class Node_Routing extends AbstractComponent{
 			if(nrop.connected()) {
 				this.nrop.doDisconnection();
 			}
-			if(nrip.connected()) {
-				this.nrip.doDisconnection();
+			if(nrcip.connected()) {
+				this.nrcip.doDisconnection();
+			}
+			if(nrrip.connected()) {
+				this.nrrip.doDisconnection();
 			}
 			for (Node_RoutingCommOutboundPort port : this.node_CommOBP) {
+				port.doDisconnection();
+				port.unpublishPort();
+			}
+			for (Node_RoutingRoutingOutboundPort port : this.node_RoutingOBP) {
 				port.doDisconnection();
 				port.unpublishPort();
 			}
@@ -100,7 +118,8 @@ public class Node_Routing extends AbstractComponent{
 			
 			
 			this.nrop.unpublishPort();
-			this.nrip.unpublishPort();
+			this.nrcip.unpublishPort();
+			this.nrrip.unpublishPort();
 		} catch (Exception e) {
 			return;
 		}
@@ -116,7 +135,7 @@ public class Node_Routing extends AbstractComponent{
 		Thread.sleep(1000);
 		this.logMessage("Tries to log in the manager");
 		PositionI pointInitial = new Position(10,5);
-		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrip.getPortURI() , pointInitial, 25.00, routingInboundPortURI);
+		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrcip.getPortURI() , pointInitial, 25.00, routingInboundPortURI);
 		this.logMessage("Logged");
 		// Current node connects to others nodes
 		for(ConnectionInfoI CInfo: devices) {
@@ -136,7 +155,7 @@ public class Node_Routing extends AbstractComponent{
 			);
 			this.logMessage("Do Port connection");
 			this.logMessage(CInfo.getAddress().getAdress());
-			nrcop.connect(address, this.nrip.getPortURI());
+			nrcop.connect(address, this.nrcip.getPortURI());
 			this.logMessage("Ask for connection");
 			node_CommOBP.add(nrcop);
 		}
@@ -200,6 +219,7 @@ public class Node_Routing extends AbstractComponent{
 		m.addAddressToHistory(this.address);
 
 		
+		// Message par innondation
 		if(m.getAddress().equals(this.address)) {
 			this.logMessage("Received a message : " + m.getContent());
 		}
@@ -293,6 +313,14 @@ public class Node_Routing extends AbstractComponent{
 
 	public Object ping() throws Exception{
 		return null;
+	}
+	
+	public void updateRouting(NodeAddressI neighbour, Set<RouteInfo> routes) throws Exception{
+		
+	}
+	
+	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
+		
 	}
 	
 }
