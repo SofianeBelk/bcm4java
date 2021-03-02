@@ -70,10 +70,14 @@ public class GestionnaireReseau extends AbstractComponent{
 	@SuppressWarnings("unchecked")
 	public Set<ConnectionInfoI> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception {
-		
-		
-		
-		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,true,routingInboundPortURI);
+		Noeud n =new Noeud(
+				address,
+				communicationInboundPortURI,
+				initialPosition,
+				initialRange,
+				true,
+				routingInboundPortURI
+		);
 		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 		for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {
@@ -98,7 +102,15 @@ public class GestionnaireReseau extends AbstractComponent{
 
 	public Object registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) {
-		Noeud n = new Noeud(address, communicationInboundPortURI, initialPosition, initialRange, true, routingInboundPortURI);
+		Noeud n = new Noeud(
+				address, 
+				communicationInboundPortURI, 
+				initialPosition, 
+				initialRange, 
+				true, 
+				routingInboundPortURI
+		);
+
 		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 		for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {

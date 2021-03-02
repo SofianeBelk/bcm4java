@@ -4,13 +4,13 @@ import java.util.Set;
 
 import fr.bcm.node.routing.interfaces.RoutingCI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.message.classes.RouteInfo;
+import fr.bcm.utils.routing.interfaces.RouteInfoI;
 import fr.sorbonne_u.components.connectors.AbstractConnector;
 
 public class RoutingConnector extends AbstractConnector implements RoutingCI {
 
 	@Override
-	public void updateRouting(NodeAddressI neighbour, Set<RouteInfo> routes) throws Exception {
+	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
 		// TODO Auto-generated method stub
 		((RoutingCI)this.offering).updateRouting(neighbour, routes);
 	}

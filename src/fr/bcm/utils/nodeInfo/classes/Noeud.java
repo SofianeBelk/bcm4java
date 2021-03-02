@@ -92,7 +92,7 @@ public class Noeud implements ConnectionInfoI {
 
 
 	public String getRoutingInboundPortURI() {
-		return routingInboundPortURI;
+		return this.routingInboundPortURI;
 	}
 
 

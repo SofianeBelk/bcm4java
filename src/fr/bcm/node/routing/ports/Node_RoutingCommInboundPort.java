@@ -47,7 +47,16 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 
 	@Override
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		this.getOwner().handleRequest(c -> ((Node_AccessPoint)c).connectRouting(address, communicationInboundPortURI, routingInboundPortURI));
+		this.getOwner().handleRequest(
+				new AbstractComponent.AbstractService<Void>() {
+					@Override
+					public Void call() throws Exception {
+						// TODO Auto-generated method stub
+						((Node_Routing)this.getServiceProviderReference()).connectRouting(address, communicationInboundPortURI,routingInboundPortURI);
+						return null;
+					}
+				}
+		);
 	}
 
 	@Override

@@ -10,9 +10,9 @@ import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.message.classes.RouteInfo;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
+import fr.bcm.utils.routing.interfaces.RouteInfoI;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
@@ -30,7 +30,7 @@ public class Node_RoutingRoutingOutboundPort extends AbstractOutboundPort implem
 	}
 	
 	@Override
-	public void updateRouting(NodeAddressI neighbour, Set<RouteInfo> routes) throws Exception {
+	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
 		((RoutingCI)this.getConnector()).updateRouting(neighbour, routes);
 		
 	}

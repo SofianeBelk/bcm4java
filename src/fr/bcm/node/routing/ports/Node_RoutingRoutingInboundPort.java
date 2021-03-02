@@ -14,8 +14,8 @@ import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.message.classes.RouteInfo;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
+import fr.bcm.utils.routing.interfaces.RouteInfoI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
@@ -32,7 +32,7 @@ public class Node_RoutingRoutingInboundPort extends AbstractInboundPort implemen
 
 
 	@Override
-	public void updateRouting(NodeAddressI neighbour, Set<RouteInfo> routes) throws Exception {
+	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
 		this.getOwner().handleRequest(
 				new AbstractComponent.AbstractService<Void>() {
 					@Override
