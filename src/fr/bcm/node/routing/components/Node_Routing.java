@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import fr.bcm.connexion.classes.ConnectionInformation;
@@ -59,7 +60,10 @@ public class Node_Routing extends AbstractComponent{
 	
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
-	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
+    
+	private Map<NodeAddressI, Set<RouteInfoI>> routes;
+    private Map<NodeAddressI, Integer> accessPointsMap;
+
 	
 	private AddressI addressToSendMessage;
 	private int NumberOfNeighboorsToSend = 2;
@@ -211,7 +215,7 @@ public class Node_Routing extends AbstractComponent{
 		
 		// Init routes
 		for(ConnectionInfoI a : addressConnected) {
-			routes.add(new RoutingInfo(a.getAddress(),address));
+			//routes.put(this.address,a. ); 
 		}
 	}
 
@@ -318,7 +322,14 @@ public class Node_Routing extends AbstractComponent{
 	
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception{
 		//UNE premiére version
-		boolean add;// pour savoir si on l'a déja ajouter ou pas
+		if (!this.routes.containsKey(address))
+            this.routes.put(address, routes);
+		Set<RouteInfoI> currentInfos = this.routes.get(address);
+        currentInfos.addAll(routes);
+        this.routes.put(address, currentInfos);
+        
+        
+		/*boolean add;// pour savoir si on l'a déja ajouter ou pas
 		for(RouteInfoI riExt : routes) {
 			
 			add = true;
@@ -338,11 +349,15 @@ public class Node_Routing extends AbstractComponent{
 				riAdd.setHops(riAdd.getNumberOfHops() + 1);
 				this.routes.add(riAdd);
 			}
-		}
+		}*/
 	}
 	
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
 		// TO-DO !!!
+		if (!accessPointsMap.containsKey(address))
+            accessPointsMap.put(address, numberOfHops);
+        if (accessPointsMap.get(address) > numberOfHops)
+            accessPointsMap.put(address, numberOfHops);
 	}
 	
 }
