@@ -17,11 +17,13 @@ public class Node_Terminal extends AbstractComponent{
 	
  
 	protected final static String MY_PLUGIN_URI = "map-Node_Terminal-plugin-uri" ;
-	
+	private NodeTerminalplugin plugin;
 	
 	protected Node_Terminal() throws Exception {
 		super(1,0); 
-		
+		this.plugin = new NodeTerminalplugin();
+		this.plugin.setPluginURI(MY_PLUGIN_URI);
+		this.installPlugin(plugin); 
 		
 	}
 
@@ -30,9 +32,7 @@ public class Node_Terminal extends AbstractComponent{
 	@Override
 	public void execute() throws Exception {
 		super.execute();
-		NodeTerminalplugin plugin = new NodeTerminalplugin();
-		plugin.setPluginURI(MY_PLUGIN_URI);
-		this.installPlugin(plugin); 
+		plugin.start();
 		
 	}
 

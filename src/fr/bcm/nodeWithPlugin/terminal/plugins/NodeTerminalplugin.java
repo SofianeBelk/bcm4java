@@ -17,10 +17,11 @@ import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
+import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
-public class NodeTerminalplugin extends AbstractPlugin implements CommunicationCI{
+public class NodeTerminalplugin extends AbstractPlugin implements CommunicationCI, Node_TerminalCI{
 	private static final long serialVersionUID = 1L ;
 	protected ComponentI owner;
 	protected String URIportCommunication; 
@@ -44,15 +45,8 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 		// Add interfaces 
 		this.addRequiredInterface(CommunicationCI.class);
 		this.addRequiredInterface(Node_TerminalCI.class);
-        this.addOfferedInterface(RegistrationCI.class);
-        
-        //add port
-        this.ntop = new Node_TerminalOutBoundPort(this.owner);
-		this.ntip = new Node_TerminalInboundPort(this.owner);
-		this.ntop.publishPort();
-		this.ntip.publishPort();
-		
-		
+        this.addOfferedInterface(CommunicationCI.class);
+       
 		
 		// Enable logs
 		this.owner.toggleLogging();
@@ -65,45 +59,55 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	@Override
 	public void	initialise() throws Exception {
         super.initialise();
-        this.owner.doPortConnection(
+        //add port
+        this.ntop = new Node_TerminalOutBoundPort(this.owner);
+		this.ntip = new Node_TerminalInboundPort(this.owner);
+		this.ntop.publishPort();
+		this.ntip.publishPort();
+		
+		this.owner.doPortConnection(
 				this.ntop.getPortURI(),
 				GestionnaireReseau.GS_URI,
 				NodeConnector.class.getCanonicalName());
-        this.logMessage("Tries to log in the manager");
-		Position pointInitial= new Position(10,10);
-		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00);
-		this.logMessage("Logged");
 		
-		// Current node connects to others nodes
-		
-		for(ConnectionInfoI CInfo: devices) {
-			Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this.owner);
-			ntcop.publishPort();
+	}
+	
+	public void start() throws Exception {
+		 this.logMessage("Tries to log in the manager");
+			Position pointInitial= new Position(10,10);
+			Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00);
+			this.logMessage("Logged");
 			
-			this.addressConnected.add(CInfo);
-			try {
-				this.owner.doPortConnection(
-						ntcop.getPortURI(),
-						CInfo.getCommunicationInboundPortURI(),
-						CommunicationConnector.class.getCanonicalName()
-				);
-			}catch(Exception e) {
-				e.printStackTrace();
+			// Current node connects to others nodes
+			
+			for(ConnectionInfoI CInfo: devices) {
+				Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this.owner);
+				ntcop.publishPort();
+				
+				this.addressConnected.add(CInfo);
+				try {
+					this.owner.doPortConnection(
+							ntcop.getPortURI(),
+							CInfo.getCommunicationInboundPortURI(),
+							CommunicationConnector.class.getCanonicalName()
+					);
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				
+				ntcop.connect(address, this.ntip.getPortURI());
+				node_CommOBP.add(ntcop);
 			}
-			
-			ntcop.connect(address, this.ntip.getPortURI());
-			node_CommOBP.add(ntcop);
-		}
-		this.logMessage("Connected to all nearby devices");
-		
+			this.logMessage("Connected to all nearby devices");
 	}
 
 	
 	@Override
 	public void	finalise() throws Exception
-	{
-		
+	{		
 		super.finalise();
+		this.owner.doPortDisconnection(this.ntop.getPortURI());
+
 
 	}
 
@@ -155,6 +159,21 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	public void ping() throws Exception {
 		// TODO Auto-generated method stub
 		this.ntip.ping();
+	}
+
+
+	@Override
+	public Set<ConnectionInfoI> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
+			PositionI initialPosition, double initialRange) throws Exception {
+		// TODO Auto-generated method stub
+		return this.ntop.registerTerminalNode(address, communicationInboundPortURI, initialPosition, initialRange);
+	}
+
+
+	@Override
+	public void unregister(AddressI address) throws Exception {
+		// TODO Auto-generated method stub
+		this.unregister(address);
 	}
 	
 	
