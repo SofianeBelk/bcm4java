@@ -41,7 +41,7 @@ public class Node_AccessPoint extends AbstractComponent{
 	protected List<Node_AccessPointCommOutboundPort> node_CommOBP = new ArrayList<>();
 	protected String routingInboundPortURI = "";
 	private NodeAddress address = new NodeAddress();
-	private List<ConnectionInfoI> addressConnected = new ArrayList<>();
+	private List<ConnectionInformation> addressConnected = new ArrayList<>();
 	
 	private int NumberOfNeighboorsToSend = 2;
 	
@@ -99,13 +99,14 @@ public class Node_AccessPoint extends AbstractComponent{
 	public synchronized void execute() throws Exception {
 		super.execute();
 		this.logMessage("Tries to log in the manager");
-		PositionI pointInitial = new Position(10,5);
+		PositionI pointInitial = new Position(0,0);
 		Set<ConnectionInfoI> devices = this.napop.registerAccessPoint(address,napip.getPortURI() , pointInitial, 25.00, routingInboundPortURI);
 		this.logMessage("Logged");
 		// Current node connects to others nodes
 		for(ConnectionInfoI CInfo: devices) {
+			ConnectionInformation ciToAdd = new ConnectionInformation(CInfo.getAddress());
 			
-			this.addressConnected.add(CInfo);
+			
 			Node_AccessPointCommOutboundPort napcop = new Node_AccessPointCommOutboundPort(this);
 			napcop.publishPort();
 			this.doPortConnection(
@@ -115,6 +116,10 @@ public class Node_AccessPoint extends AbstractComponent{
 			);
 			napcop.connect(address, this.napip.getPortURI());
 			node_CommOBP.add(napcop);
+			
+			ciToAdd.setCommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
+			ciToAdd.setNapcop(napcop);
+			this.addressConnected.add(ciToAdd);
 		}
 
 		this.logMessage("Connected to all nearby devices");
@@ -122,7 +127,9 @@ public class Node_AccessPoint extends AbstractComponent{
 	}
 	
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
+		ConnectionInformation CInfo = new ConnectionInformation(address);
+		CInfo.setcommunicationInboundPortURI(communicationInboundPortURI);
+		
 		
 		Node_AccessPointCommOutboundPort napcop = new Node_AccessPointCommOutboundPort(this);
 		napcop.publishPort();
@@ -137,14 +144,13 @@ public class Node_AccessPoint extends AbstractComponent{
 		}
 		
 		node_CommOBP.add(napcop);
+		CInfo.setNapcop(napcop);
 		this.addressConnected.add(CInfo);
 		this.logMessage("Added new devices to connections");
 		return null;
 	}
 
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		ConnectionInformation CInfo = new ConnectionInformation(address, communicationInboundPortURI, routingInboundPortURI);
-		this.addressConnected.add(CInfo);
 		return null;
 	}
 
@@ -187,15 +193,6 @@ public class Node_AccessPoint extends AbstractComponent{
 	}
 
 	public boolean hasRouteFor(AddressI address) throws Exception{
-		if(this.address.equals(address)) {
-			return true;
-		}
-		
-		for(ConnectionInfoI CInfo: this.addressConnected) {
-			if(CInfo.getAddress().equals(address)) {
-				return true;
-			}
-		}
 		return false;
 	}
 

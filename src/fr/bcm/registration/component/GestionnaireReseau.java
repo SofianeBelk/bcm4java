@@ -76,7 +76,8 @@ public class GestionnaireReseau extends AbstractComponent{
 				initialPosition,
 				initialRange,
 				true,
-				routingInboundPortURI
+				routingInboundPortURI,
+				true
 		);
 		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 		for(ConnectionInfoI ci : mySet) {

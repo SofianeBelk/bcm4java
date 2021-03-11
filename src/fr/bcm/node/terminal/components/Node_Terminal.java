@@ -42,7 +42,7 @@ public class Node_Terminal extends AbstractComponent{
 	
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
 	private NodeAddress address = new NodeAddress();
-	private List<ConnectionInfoI> addressConnected= new ArrayList<>();
+	private List<ConnectionInformation> addressConnected= new ArrayList<>();
 	
 	private int NumberOfNeighboorsToSend = 2;
 	
@@ -129,7 +129,7 @@ public class Node_Terminal extends AbstractComponent{
 
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		
-		ConnectionInfoI CInfo = new ConnectionInformation(address, communicationInboundPortURI);
+		ConnectionInformation CInfo = new ConnectionInformation(address);
 		
 		Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this);
 		ntcop.publishPort();
@@ -146,8 +146,6 @@ public class Node_Terminal extends AbstractComponent{
 	}
 
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		ConnectionInformation CInfo = new ConnectionInformation(address, communicationInboundPortURI, routingInboundPortURI);
-		this.addressConnected.add(CInfo);
 		return null;
 	}
 
@@ -186,15 +184,6 @@ public class Node_Terminal extends AbstractComponent{
 	}
 
 	public boolean hasRouteFor(AddressI address) throws Exception{
-		if(this.address.equals(address)) {
-			return true;
-		}
-		
-		for(ConnectionInfoI CInfo: this.addressConnected) {
-			if(CInfo.getAddress().equals(address)) {
-				return true;
-			}
-		}
 		return false;
 	}
 

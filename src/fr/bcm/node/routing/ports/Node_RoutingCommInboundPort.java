@@ -37,7 +37,6 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 				new AbstractComponent.AbstractService<Void>() {
 					@Override
 					public Void call() throws Exception {
-						// TODO Auto-generated method stub
 						((Node_Routing)this.getServiceProviderReference()).connect(address, communicationInboundPortURI);
 						return null;
 					}
@@ -51,7 +50,6 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 				new AbstractComponent.AbstractService<Void>() {
 					@Override
 					public Void call() throws Exception {
-						// TODO Auto-generated method stub
 						((Node_Routing)this.getServiceProviderReference()).connectRouting(address, communicationInboundPortURI,routingInboundPortURI);
 						return null;
 					}
@@ -67,7 +65,6 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 				new AbstractComponent.AbstractService<Void>() {
 					@Override
 					public Void call() throws Exception {
-						// TODO Auto-generated method stub
 						((Node_Routing)this.getServiceProviderReference()).transmitMessage(m);
 						return null;
 					}
