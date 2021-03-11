@@ -322,11 +322,17 @@ public class Node_Routing extends AbstractComponent{
 	
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception{
 		//UNE premiére version
-		if (!this.routes.containsKey(address))
-            this.routes.put(address, routes);
-		Set<RouteInfoI> currentInfos = this.routes.get(address);
-        currentInfos.addAll(routes);
-        this.routes.put(address, currentInfos);
+		this.traceMessage("update begining");
+		Iterator<RouteInfoI> it = routes.iterator();
+		while(it.hasNext()) {
+			RouteInfoI c = it.next();
+			NodeAddressI destAdress = (NodeAddressI) c.getDestination();
+			int saut = c.getNumberOfHops();
+			
+			if(destAdress != this.address) {
+				//this.routes.put(destAdress, new RouteInfoI(saut,voisin));
+			}
+		}
         
         
 		/*boolean add;// pour savoir si on l'a déja ajouter ou pas
