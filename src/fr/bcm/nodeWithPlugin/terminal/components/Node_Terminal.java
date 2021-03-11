@@ -15,15 +15,13 @@ import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 public class Node_Terminal extends AbstractComponent{
 	
 	
-	protected String URIportCommunication; 
-	protected String URIportNodeTerminale; 
+ 
 	protected final static String MY_PLUGIN_URI = "map-Node_Terminal-plugin-uri" ;
 	
 	
-	protected Node_Terminal(String URIportNodeTerminale,String URIportCommunication) throws Exception {
+	protected Node_Terminal() throws Exception {
 		super(1,0); 
-		this.URIportCommunication=URIportCommunication;
-		this.URIportNodeTerminale=URIportNodeTerminale;
+		
 		
 	}
 
@@ -32,7 +30,7 @@ public class Node_Terminal extends AbstractComponent{
 	@Override
 	public void execute() throws Exception {
 		super.execute();
-		NodeTerminalplugin plugin = new NodeTerminalplugin(URIportNodeTerminale,URIportCommunication);
+		NodeTerminalplugin plugin = new NodeTerminalplugin();
 		plugin.setPluginURI(MY_PLUGIN_URI);
 		this.installPlugin(plugin); 
 		

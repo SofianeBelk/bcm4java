@@ -21,7 +21,7 @@ public   static String URI__BROKER_PUBLISHER_MANAGEMENT = "URI_BROKER_PUBLISHER_
 		
 		uri = AbstractComponent.createComponent(
 				Node_Terminal.class.getCanonicalName(),
-				new Object[]{uri,""}) ;
+				new Object[]{}) ;
 		assert	this.isDeployedComponent(uri);
 		
 		

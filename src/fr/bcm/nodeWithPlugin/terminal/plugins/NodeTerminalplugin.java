@@ -32,11 +32,7 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	private List<ConnectionInfoI> addressConnected= new ArrayList<>();
 
 	
-	public NodeTerminalplugin(String URIportNodeTerminale,String URIportCommunication) {
-		this.URIportCommunication=URIportCommunication;
-		this.URIportNodeTerminale=URIportNodeTerminale;
-	}
-	
+
 	@Override
 	public void	 installOn(ComponentI owner) throws Exception
 	{
@@ -68,12 +64,37 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	
 	@Override
 	public void	initialise() throws Exception {
-		System.out.println("Plugin Initialise ");
         super.initialise();
         this.owner.doPortConnection(
 				this.ntop.getPortURI(),
 				GestionnaireReseau.GS_URI,
 				NodeConnector.class.getCanonicalName());
+        this.logMessage("Tries to log in the manager");
+		Position pointInitial= new Position(10,10);
+		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00);
+		this.logMessage("Logged");
+		
+		// Current node connects to others nodes
+		
+		for(ConnectionInfoI CInfo: devices) {
+			Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this.owner);
+			ntcop.publishPort();
+			
+			this.addressConnected.add(CInfo);
+			try {
+				this.owner.doPortConnection(
+						ntcop.getPortURI(),
+						CInfo.getCommunicationInboundPortURI(),
+						CommunicationConnector.class.getCanonicalName()
+				);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			ntcop.connect(address, this.ntip.getPortURI());
+			node_CommOBP.add(ntcop);
+		}
+		this.logMessage("Connected to all nearby devices");
 		
 	}
 
@@ -81,8 +102,7 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	@Override
 	public void	finalise() throws Exception
 	{
-		this.owner.doPortDisconnection(this.ntop.getPortURI());
-		this.owner.doPortDisconnection(this.ntip.getPortURI());
+		
 		super.finalise();
 
 	}
@@ -91,13 +111,14 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	@Override
 	public void	uninstall() throws Exception
 	{
-		this.ntop.unpublishPort();
-		this.ntip.destroyPort() ;
-		
-		this.ntip.unpublishPort();
-		this.ntip.destroyPort() ;
-		
 		super.uninstall();
+
+		this.ntop.unpublishPort();		
+		this.ntip.unpublishPort();
+		
+		this.ntop.destroyPort() ;
+		this.ntip.destroyPort() ;
+		
 	}
 
 
