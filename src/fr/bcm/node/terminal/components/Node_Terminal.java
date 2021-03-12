@@ -106,10 +106,11 @@ public class Node_Terminal extends AbstractComponent{
 		// Current node connects to others nodes
 		
 		for(ConnectionInfoI CInfo: devices) {
+			ConnectionInformation ciToAdd = new ConnectionInformation(CInfo.getAddress());
 			Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this);
 			ntcop.publishPort();
 			
-			this.addressConnected.add(CInfo);
+			
 			try {
 				this.doPortConnection(
 						ntcop.getPortURI(),
@@ -122,6 +123,10 @@ public class Node_Terminal extends AbstractComponent{
 			
 			ntcop.connect(address, this.ntip.getPortURI());
 			node_CommOBP.add(ntcop);
+			
+			ciToAdd.setcommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
+			ciToAdd.setNtcop(ntcop);
+			this.addressConnected.add(ciToAdd);
 		}
 		this.logMessage("Connected to all nearby devices");
 		

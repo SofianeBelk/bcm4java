@@ -52,9 +52,7 @@ public class Node_Routing extends AbstractComponent{
 	private int id;
 	protected Node_RoutingOutBoundPort nrop;
 	protected Node_RoutingCommInboundPort nrcip;
-	protected List<Node_RoutingCommOutboundPort> node_CommOBP = new ArrayList<>();
 	protected Node_RoutingRoutingInboundPort nrrip;
-	protected List<Node_RoutingRoutingOutboundPort> node_RoutingOBP = new ArrayList<>();
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInformation> addressConnected = new ArrayList<>();
 	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
@@ -110,13 +108,9 @@ public class Node_Routing extends AbstractComponent{
 			if(nrrip.connected()) {
 				this.nrrip.doDisconnection();
 			}
-			for (Node_RoutingCommOutboundPort port : this.node_CommOBP) {
-				port.doDisconnection();
-				port.unpublishPort();
-			}
-			for (Node_RoutingRoutingOutboundPort port : this.node_RoutingOBP) {
-				port.doDisconnection();
-				port.unpublishPort();
+			
+			for (ConnectionInformation ci: this.addressConnected) {
+				ci.disconnectAll();
 			}
 			
 			this.nrop.unpublishPort();
@@ -180,7 +174,6 @@ public class Node_Routing extends AbstractComponent{
 					e.printStackTrace();
 				}
 				nrcop.connectRouting(address, this.nrcip.getPortURI(), this.nrrip.getPortURI());
-				node_RoutingOBP.add(nrrop);
 				
 				ciToAdd.setRoutingInboundPortURI(CInfo.getRoutingInboundPortURI());
 				ciToAdd.setNrrop(nrrop);
@@ -193,8 +186,6 @@ public class Node_Routing extends AbstractComponent{
 				nrcop.connect(address, this.nrcip.getPortURI());
 				this.logMessage("Successful connection to communication");
 			}
-			
-			node_CommOBP.add(nrcop);
 			
 			ciToAdd.setcommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
 			ciToAdd.setNrcop(nrcop);
@@ -270,7 +261,6 @@ public class Node_Routing extends AbstractComponent{
 			e.printStackTrace();
 		}
 		
-		node_CommOBP.add(nrcop);
 		this.logMessage("Added new devices to connections");
 		CInfo.setNrcop(nrcop);
 		routes.add(new RoutingInfo(address,address));
@@ -310,8 +300,6 @@ public class Node_Routing extends AbstractComponent{
 		}
 		
 		this.logMessage("Successful connection to communication + routing port");
-		node_CommOBP.add(nrcop);
-		node_RoutingOBP.add(nrrop);
 		this.logMessage("Added new devices to connections");
 		routes.add(new RoutingInfo(address,address));
 		this.logMessage("Sending routing informations");
@@ -340,51 +328,69 @@ public class Node_Routing extends AbstractComponent{
 			if(m.stillAlive()) {
 				
 				// Sending to nearest access point if possible
-				if(m.getAddress().isNetworkAdress()) {
-					if(this.routeToAccessPoint != null) {
-						for(ConnectionInformation ci: this.addressConnected) {
-							if(ci.getAddress().equals(this.routeToAccessPoint.getIntermediate())) {
-								this.logMessage("(Via routing tables) Transmitting a Message to network by " + ci.getAddress().getAdress());
-								ci.getNrcop().transmitMessage(m);
-								return null;
-							}
-						}
-					}
+				if(sendMessageToNetwork(m)) {
+					return null;
 				}
 				
 				// Try to send it from routing tables
-				for(RouteInfoI ri: this.routes) {
-					if(ri.getDestination().equals(m.getAddress())) {
-						for(ConnectionInformation ci: this.addressConnected) {
-							if(ci.getAddress().equals(ri.getDestination())) {
-								this.logMessage("(Via routing tables) Transmitting a Message to " + ci.getAddress().getAdress());
-								ci.getNrcop().transmitMessage(m);
-								return null;
-							}
-						}
-					}
+				if(sendMessageViaRouting(m)) {
+					return null;
 				}
 				
 				// Message par Innondation 
-				int numberSent = 0;
-				for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {
-					// No blocking mechanism
-					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
-					if(!m.isInHistory(addressToTransmitTo)) {
-						this.logMessage("(Via innondation) Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
-						this.node_CommOBP.get(i).transmitMessage(m);
-						numberSent += 1;
-					}
-					else {
-						this.logMessage("No node to send message to");
-					}
-				}
+				sendMessageViaInnondation(m);
 			}
 			else {
 				this.logMessage("Message dead");
 			}
 		}
 		return null;
+	}
+	
+	public boolean sendMessageToNetwork(MessageI m) throws Exception {
+		if(m.getAddress().isNetworkAdress()) {
+			if(this.routeToAccessPoint != null) {
+				for(ConnectionInformation ci: this.addressConnected) {
+					if(ci.getAddress().equals(this.routeToAccessPoint.getIntermediate())) {
+						this.logMessage("(Via routing tables) Transmitting a Message to network by " + ci.getAddress().getAdress());
+						ci.getNrcop().transmitMessage(m);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean sendMessageViaRouting(MessageI m) throws Exception {
+		for(RouteInfoI ri: this.routes) {
+			if(ri.getDestination().equals(m.getAddress())) {
+				for(ConnectionInformation ci: this.addressConnected) {
+					if(ci.getAddress().equals(ri.getDestination())) {
+						this.logMessage("(Via routing tables) Transmitting a Message to " + ci.getAddress().getAdress());
+						ci.getNrcop().transmitMessage(m);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public void sendMessageViaInnondation(MessageI m) throws Exception{
+		int numberSent = 0;
+		for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {
+			// No blocking mechanism
+			AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
+			if(!m.isInHistory(addressToTransmitTo)) {
+				this.logMessage("(Via innondation) Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
+				this.addressConnected.get(i).getNrcop().transmitMessage(m);
+				numberSent += 1;
+			}
+			else {
+				this.logMessage("No node to send message to");
+			}
+		}
 	}
 
 	public boolean hasRouteFor(AddressI address) throws Exception{
@@ -394,8 +400,6 @@ public class Node_Routing extends AbstractComponent{
 	public Object ping() throws Exception{
 		return null;
 	}
-	
-	
 	
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception{
 		boolean add;

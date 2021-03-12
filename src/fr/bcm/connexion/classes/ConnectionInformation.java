@@ -5,6 +5,7 @@ import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingCommOutboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingRoutingOutboundPort;
+import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 
@@ -15,6 +16,8 @@ public class ConnectionInformation{
 	private Node_RoutingCommOutboundPort nrcop;
 	private Node_RoutingRoutingOutboundPort nrrop;
 	private Node_AccessPointCommOutboundPort napcop;
+	private Node_TerminalCommOutboundPort ntcop;
+	
 	private boolean isRouting = false;
 	private boolean isAccessPoint = false;
 	
@@ -99,5 +102,36 @@ public class ConnectionInformation{
 	public void setNapcop(Node_AccessPointCommOutboundPort napcop) {
 		this.napcop = napcop;
 	}	
+	
+	public Node_TerminalCommOutboundPort getNtcop() {
+		return ntcop;
+	}
+
+	public void setNtcop(Node_TerminalCommOutboundPort ntcop) {
+		this.ntcop = ntcop;
+	}
+	
+	public void disconnectAll() {
+		try {
+			if(this.ntcop != null) {
+				this.ntcop.doDisconnection();
+				this.ntcop.unpublishPort();
+			}
+			if(this.napcop != null) {
+				this.napcop.doDisconnection();
+				this.napcop.unpublishPort();
+			}
+			if(this.nrcop != null) {
+				this.nrcop.doDisconnection();
+				this.nrcop.unpublishPort();
+			}
+			if(this.nrrop != null) {
+				this.nrrop.doDisconnection();
+				this.nrrop.unpublishPort();
+			}
+		} catch (Exception e) {
+			return;
+		}
+	}
 	
 }
