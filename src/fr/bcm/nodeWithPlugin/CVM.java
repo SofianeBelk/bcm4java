@@ -1,5 +1,7 @@
 package fr.bcm.nodeWithPlugin;
 
+
+import fr.bcm.nodeWithPlugin.routing.components.Node_Routing;
 import fr.bcm.nodeWithPlugin.terminal.components.Node_Terminal;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.sorbonne_u.components.AbstractComponent;
@@ -25,6 +27,8 @@ public   static String URI__BROKER_PUBLISHER_MANAGEMENT = "URI_BROKER_PUBLISHER_
 		assert	this.isDeployedComponent(uri);
 		
 		
+		String nrURI1=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		String nrURI2=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		
 		super.deploy();
 	}
