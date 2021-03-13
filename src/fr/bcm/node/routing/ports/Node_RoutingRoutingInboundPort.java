@@ -37,7 +37,6 @@ public class Node_RoutingRoutingInboundPort extends AbstractInboundPort implemen
 				new AbstractComponent.AbstractService<Void>() {
 					@Override
 					public Void call() throws Exception {
-						// TODO Auto-generated method stub
 						((Node_Routing)this.getServiceProviderReference()).updateRouting(neighbour, routes);
 						return null;
 					}
@@ -52,7 +51,6 @@ public class Node_RoutingRoutingInboundPort extends AbstractInboundPort implemen
 				new AbstractComponent.AbstractService<Void>() {
 					@Override
 					public Void call() throws Exception {
-						// TODO Auto-generated method stub
 						((Node_Routing)this.getServiceProviderReference()).updateAccessPoint(neighbour, numberOfHops);
 						return null;
 					}

@@ -32,7 +32,6 @@ public class Node_RoutingRoutingOutboundPort extends AbstractOutboundPort implem
 	@Override
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
 		((RoutingCI)this.getConnector()).updateRouting(neighbour, routes);
-		
 	}
 	@Override
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception {

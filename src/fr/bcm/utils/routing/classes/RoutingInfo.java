@@ -53,4 +53,9 @@ public class RoutingInfo implements RouteInfoI{
 		return new RoutingInfo(this.destination, this.intermediate, this.numberOfhops);
 	}
 
+	@Override
+	public void setDestination(AddressI a) {
+		this.destination = a;
+	}
+
 }
