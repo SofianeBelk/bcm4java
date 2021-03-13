@@ -3,6 +3,7 @@ package fr.bcm.connexion.classes;
 import fr.bcm.connexion.interfaces.CommunicationCI;
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
+import fr.bcm.node.accesspoint.ports.Node_AccessPointRoutingOutboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingCommOutboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingRoutingOutboundPort;
 import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
@@ -11,11 +12,12 @@ import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 
 public class ConnectionInformation{
 	private AddressI address;
-	private String communicationInboundPortURI;
-	private String routingInboundPortURI;
+	private String communicationInboundPortURI = "";
+	private String routingInboundPortURI = "";
 	private Node_RoutingCommOutboundPort nrcop;
 	private Node_RoutingRoutingOutboundPort nrrop;
 	private Node_AccessPointCommOutboundPort napcop;
+	private Node_AccessPointRoutingOutboundPort naprop;
 	private Node_TerminalCommOutboundPort ntcop;
 	
 	private boolean isRouting = false;
@@ -111,6 +113,16 @@ public class ConnectionInformation{
 		this.ntcop = ntcop;
 	}
 	
+	public Node_AccessPointRoutingOutboundPort getNaprop() {
+		return naprop;
+	}
+
+
+	public void setNaprop(Node_AccessPointRoutingOutboundPort naprop) {
+		this.naprop = naprop;
+	}
+
+
 	public void disconnectAll() {
 		try {
 			if(this.ntcop != null) {

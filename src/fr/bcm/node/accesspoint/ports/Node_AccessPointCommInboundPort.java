@@ -28,7 +28,16 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 
 	@Override
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		this.getOwner().handleRequest(c -> ((Node_AccessPoint)c).connect(address, communicationInboundPortURI));
+		this.getOwner().handleRequest(
+				new AbstractComponent.AbstractService<Void>() {
+					@Override
+					public Void call() throws Exception {
+						// TODO Auto-generated method stub
+						((Node_AccessPoint)this.getServiceProviderReference()).connect(address,communicationInboundPortURI);
+						return null;
+					}
+				}
+		);
 	}
 
 	@Override
@@ -38,7 +47,7 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 					@Override
 					public Void call() throws Exception {
 						// TODO Auto-generated method stub
-						((Node_Routing)this.getServiceProviderReference()).connectRouting(address,communicationInboundPortURI,routingInboundPortURI);
+						((Node_AccessPoint)this.getServiceProviderReference()).connectRouting(address,communicationInboundPortURI,routingInboundPortURI);
 						return null;
 					}
 				}

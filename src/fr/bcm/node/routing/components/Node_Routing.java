@@ -128,7 +128,7 @@ public class Node_Routing extends AbstractComponent{
 		super.execute();
 		
 		Thread.yield();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		this.logMessage("Tries to log in the manager");
 		
 		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrcip.getPortURI() , this.pointInitial, 1.5, nrrip.getPortURI());
@@ -139,14 +139,10 @@ public class Node_Routing extends AbstractComponent{
 		for(ConnectionInfoI CInfo: devices) {
 			
 			ConnectionInformation ciToAdd = new ConnectionInformation(CInfo.getAddress());
-			// Route to an access point
-			if(CInfo.getisAccessPoint()) {
-				this.routeToAccessPoint = new RoutingInfo(null, CInfo.getAddress());
-				ciToAdd.setisAccessPoint(CInfo.getisAccessPoint());
-			}
+			
 			
 			Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this);
-			this.logMessage("Creating routing Port");
+			this.logMessage("Creating communication Port");
 			nrcop.publishPort();
 			this.logMessage("Publish Port");
 			this.doPortConnection(
@@ -157,11 +153,10 @@ public class Node_Routing extends AbstractComponent{
 			this.logMessage("Do Port connection");
 			this.logMessage(CInfo.getAddress().getAdress());
 			
-			
-			
-			
+		
 			// Routing connection
-			if(!CInfo.getRoutingInboundPortURI().isEmpty()) {
+			if(CInfo.getisRouting()) {
+				
 				this.logMessage("Ask for routing connection");
 				Node_RoutingRoutingOutboundPort nrrop = new Node_RoutingRoutingOutboundPort(this);
 				nrrop.publishPort();
@@ -174,22 +169,27 @@ public class Node_Routing extends AbstractComponent{
 					e.printStackTrace();
 				}
 				nrcop.connectRouting(address, this.nrcip.getPortURI(), this.nrrip.getPortURI());
-				
 				ciToAdd.setRoutingInboundPortURI(CInfo.getRoutingInboundPortURI());
 				ciToAdd.setNrrop(nrrop);
-				this.logMessage("Successful connection to communication + routing port");
+				this.logMessage("Accepted connection to communication + routing port");
 			}
 			
 			// Normal connection
 			else {
 				this.logMessage("Ask for connection");
 				nrcop.connect(address, this.nrcip.getPortURI());
-				this.logMessage("Successful connection to communication");
+				this.logMessage("Accepted connection to communication");
 			}
 			
 			ciToAdd.setcommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
 			ciToAdd.setNrcop(nrcop);
 			this.addressConnected.add(ciToAdd);
+			
+			// Route to an access point
+			if(CInfo.getisAccessPoint()) {
+				this.routeToAccessPoint = new RoutingInfo(null, CInfo.getAddress());
+				ciToAdd.setisAccessPoint(CInfo.getisAccessPoint());
+			}
 		}
 
 		this.logMessage("Connected to all nearby devices");
@@ -199,7 +199,7 @@ public class Node_Routing extends AbstractComponent{
 			routes.add(new RoutingInfo(a.getAddress(),a.getAddress()));
 		}
 		
-		// Init routes
+		// Update routes
 		for(ConnectionInformation a : addressConnected) {
 			if(!(a.getNrrop() == null)) {
 				a.getNrrop().updateRouting(this.address, this.routes);
@@ -222,8 +222,6 @@ public class Node_Routing extends AbstractComponent{
 		}
 		
 		Thread.sleep(3000);
-		
-		
 		// Sending a message to the first routing node from the third routing node
 		if(this.id == 3) {
 			if(Node_Routing.addressToSendMessage != null) {
@@ -348,6 +346,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	public boolean sendMessageToNetwork(MessageI m) throws Exception {
+		
 		if(m.getAddress().isNetworkAdress()) {
 			if(this.routeToAccessPoint != null) {
 				for(ConnectionInformation ci: this.addressConnected) {

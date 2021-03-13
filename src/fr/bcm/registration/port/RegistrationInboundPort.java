@@ -32,7 +32,7 @@ implements RegistrationCI
 	public Set<ConnectionInfoI> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange) throws Exception {
 		return (Set<ConnectionInfoI>) this.getOwner().handleRequest(
-				c -> ((GestionnaireReseau)c).registerTerminalNode(address, communicationInboundPortURI, initialPosition, initialRange, false)
+				c -> ((GestionnaireReseau)c).registerTerminalNode(address, communicationInboundPortURI, initialPosition, initialRange)
 				);
 		
 		

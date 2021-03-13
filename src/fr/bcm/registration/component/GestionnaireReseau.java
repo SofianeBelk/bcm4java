@@ -48,9 +48,9 @@ public class GestionnaireReseau extends AbstractComponent{
 
 	@SuppressWarnings("unchecked")
 	public Set<ConnectionInfoI> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
+			PositionI initialPosition, double initialRange) throws Exception {
 		
-		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,isRouting);
+		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange);
 		mySet.add(n);
 	    Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 	    for(ConnectionInfoI ci : mySet) {

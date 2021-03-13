@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointCommInboundPort;
-import fr.bcm.node.terminal.ports.Node_TerminalInboundPort;
+import fr.bcm.node.terminal.ports.Node_TerminalCommInboundPort;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
@@ -32,7 +32,7 @@ public class GestionnnaireReseauTest {
    
     public void initialisation() throws Exception {
     	gr = new GestionnaireReseau();
-        portee1=gr.registerTerminalNode(a, Node_TerminalInboundPort.generatePortURI(), new Position(10,10), 20.00, false);
+        portee1=gr.registerTerminalNode(a, Node_TerminalCommInboundPort.generatePortURI(), new Position(10,10), 20.00);
         portee2=gr.registerAccessPoint(b,Node_AccessPointCommInboundPort.generatePortURI(), new Position(11,8), 25.00, "");
         gr.start();
     }

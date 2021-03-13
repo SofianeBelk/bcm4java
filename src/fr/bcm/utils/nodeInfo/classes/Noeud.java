@@ -24,6 +24,14 @@ public class Noeud implements ConnectionInfoI {
 		this.isRouting=isRouting;
 	}
 	
+	public Noeud(AddressI address, String communicationInboundPortURI,
+			PositionI initialPosition, double initialRange) {
+		this.address=address;
+		this.communicationInboundPortURI=communicationInboundPortURI;
+		this.initialPosition=initialPosition;
+		this.initialRange=initialRange;
+	}
+	
 	
 	public Noeud(AddressI address, String communicationInboundPortURI, PositionI initialPosition,
 			double initialRange, boolean isRouting, String routingInboundPortURI) {

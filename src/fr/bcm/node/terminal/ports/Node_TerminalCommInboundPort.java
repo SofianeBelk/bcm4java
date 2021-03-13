@@ -18,17 +18,25 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
-public class Node_TerminalInboundPort extends AbstractInboundPort implements CommunicationCI{
+public class Node_TerminalCommInboundPort extends AbstractInboundPort implements CommunicationCI{
 
 	private static final long serialVersionUID = 1L;
 
-	public Node_TerminalInboundPort(ComponentI owner) throws Exception {
+	public Node_TerminalCommInboundPort(ComponentI owner) throws Exception {
 		super(CommunicationCI.class, owner);
 	}
 
 	@Override
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		this.getOwner().handleRequest(c -> ((Node_Terminal)c).connect(address, communicationInboundPortURI));
+		this.getOwner().handleRequest(
+				new AbstractComponent.AbstractService<Void>() {
+					@Override
+					public Void call() throws Exception {
+						((Node_Terminal)this.getServiceProviderReference()).connect(address, communicationInboundPortURI);
+						return null;
+					}
+				}
+		);
 	}
 
 	@Override
@@ -42,7 +50,6 @@ public class Node_TerminalInboundPort extends AbstractInboundPort implements Com
 				new AbstractComponent.AbstractService<Void>() {
 					@Override
 					public Void call() throws Exception {
-						// TODO Auto-generated method stub
 						((Node_Terminal)this.getServiceProviderReference()).transmitMessage(m);
 						return null;
 					}

@@ -7,7 +7,7 @@ import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
 import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
-import fr.bcm.node.terminal.ports.Node_TerminalInboundPort;
+import fr.bcm.node.terminal.ports.Node_TerminalCommInboundPort;
 import fr.bcm.node.terminal.ports.Node_TerminalOutBoundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.Address;
@@ -37,19 +37,27 @@ import java.util.UUID;
 
 public class Node_Terminal extends AbstractComponent{
 	
+	public static int node_terminal_id = 1;
+	
+	private int id;
+	
 	protected Node_TerminalOutBoundPort ntop;
-	protected Node_TerminalInboundPort ntip;
+	protected Node_TerminalCommInboundPort ntip;
 	
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInformation> addressConnected= new ArrayList<>();
 	
 	private int NumberOfNeighboorsToSend = 2;
+	private PositionI pointInitial;
 	
 	protected Node_Terminal() throws Exception {
-		super(1,0); 
+		super(3,0); 
+		this.id = node_terminal_id;
+		node_terminal_id += 1;
+		this.pointInitial = new Position(0,this.id);
 		this.ntop = new Node_TerminalOutBoundPort(this);
-		this.ntip = new Node_TerminalInboundPort(this);
+		this.ntip = new Node_TerminalCommInboundPort(this);
 		this.ntop.publishPort();
 		this.ntip.publishPort();
 		
@@ -61,16 +69,13 @@ public class Node_Terminal extends AbstractComponent{
 		// Enable logs
 		this.toggleLogging();
 		this.toggleTracing();
-		this.logMessage("Node Terminal " + this.address.getAdress());
+		this.logMessage("Node Terminal " + this.address.getAdress() + this.id + " Position initiale : (" + pointInitial.getX() + ", " + pointInitial.getY() + ")");
 		
 	}
 
 
 	@Override
 	public synchronized void finalise() throws Exception {
-		if(this.ntop.connected()) {
-			this.doPortDisconnection(ntop.getPortURI());
-		}
 		super.finalise();
 	}
 
@@ -99,8 +104,7 @@ public class Node_Terminal extends AbstractComponent{
 	public void execute() throws Exception {
 		super.execute();
 		this.logMessage("Tries to log in the manager");
-		Position pointInitial= new Position(10,10);
-		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00);
+		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),this.pointInitial , 1.5);
 		this.logMessage("Logged");
 		
 		// Current node connects to others nodes
@@ -134,8 +138,11 @@ public class Node_Terminal extends AbstractComponent{
 
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		
+		this.logMessage("Someone asked for connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
+		CInfo.setCommunicationInboundPortURI(communicationInboundPortURI);
 		
+		this.logMessage("Creating comm port");
 		Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this);
 		ntcop.publishPort();
 		
@@ -143,10 +150,13 @@ public class Node_Terminal extends AbstractComponent{
 				ntcop.getPortURI(), 
 				communicationInboundPortURI, 
 				CommunicationConnector.class.getCanonicalName());
-		this.logMessage("Added new devices to connections");
+		this.logMessage("Connected comm port to device");
 		
 		node_CommOBP.add(ntcop);
+		CInfo.setNtcop(ntcop);
 		this.addressConnected.add(CInfo);
+		this.logMessage("Added " + address.getAdress() + " to connections");
+
 		return null;
 	}
 
