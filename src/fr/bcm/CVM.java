@@ -32,7 +32,7 @@ public class CVM extends AbstractCVM {
 		
 		AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
-		// AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		
 		
 		super.deploy();

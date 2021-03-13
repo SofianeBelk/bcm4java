@@ -19,7 +19,7 @@ import fr.bcm.node.routing.ports.Node_RoutingRoutingInboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingRoutingOutboundPort;
 import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
 import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
-import fr.bcm.node.terminal.ports.Node_TerminalInboundPort;
+import fr.bcm.node.terminal.ports.Node_TerminalCommInboundPort;
 import fr.bcm.node.terminal.ports.Node_TerminalOutBoundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NetworkAddress;

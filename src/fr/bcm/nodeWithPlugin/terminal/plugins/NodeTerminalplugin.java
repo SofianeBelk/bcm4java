@@ -27,7 +27,7 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	protected String URIportCommunication; 
 	protected String URIportNodeTerminale; 
 	protected Node_TerminalOutBoundPort ntop;
-	protected Node_TerminalInboundPort ntip;
+	protected Node_TerminalCommInboundPort ntcip;
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInfoI> addressConnected= new ArrayList<>();
@@ -61,9 +61,9 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
         super.initialise();
         //add port
         this.ntop = new Node_TerminalOutBoundPort(this.owner);
-		this.ntip = new Node_TerminalInboundPort(this.owner);
+		this.ntcip = new Node_TerminalCommInboundPort(this.owner);
 		this.ntop.publishPort();
-		this.ntip.publishPort();
+		this.ntcip.publishPort();
 		
 		this.owner.doPortConnection(
 				this.ntop.getPortURI(),
@@ -75,7 +75,7 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	public void start() throws Exception {
 		 this.logMessage("Tries to log in the manager");
 			Position pointInitial= new Position(10,10);
-			Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),pointInitial , 20.00);
+			Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntcip.getPortURI(),pointInitial , 20.00);
 			this.logMessage("Logged");
 			
 			// Current node connects to others nodes
@@ -95,7 +95,7 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 					e.printStackTrace();
 				}
 				
-				ntcop.connect(address, this.ntip.getPortURI());
+				ntcop.connect(address, this.ntcip.getPortURI());
 				node_CommOBP.add(ntcop);
 			}
 			this.logMessage("Connected to all nearby devices");
@@ -118,10 +118,10 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 		super.uninstall();
 
 		this.ntop.unpublishPort();		
-		this.ntip.unpublishPort();
+		this.ntcip.unpublishPort();
 		
 		this.ntop.destroyPort() ;
-		this.ntip.destroyPort() ;
+		this.ntcip.destroyPort() ;
 		
 	}
 
@@ -129,7 +129,7 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	@Override
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		// TODO Auto-generated method stub
-		this.ntip.connect(address, communicationInboundPortURI);
+		this.ntcip.connect(address, communicationInboundPortURI);
 	}
 
 
@@ -137,28 +137,28 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI)
 			throws Exception {
 		// TODO Auto-generated method stub
-		this.ntip.connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
+		this.ntcip.connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
 	}
 
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
 		// TODO Auto-generated method stub
-		this.ntip.transmitMessage(m);
+		this.ntcip.transmitMessage(m);
 	}
 
 
 	@Override
 	public boolean hasRouteFor(AddressI address) throws Exception {
 		// TODO Auto-generated method stub
-		return this.ntip.hasRouteFor(address);
+		return this.ntcip.hasRouteFor(address);
 	}
 
 
 	@Override
 	public void ping() throws Exception {
 		// TODO Auto-generated method stub
-		this.ntip.ping();
+		this.ntcip.ping();
 	}
 
 
