@@ -179,7 +179,6 @@ public class Node_AccessPoint extends AbstractComponent{
 	}
 
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		System.out.println("ASKED CONN");
 		this.logMessage("Someone asked connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
 		CInfo.setcommunicationInboundPortURI(communicationInboundPortURI);
