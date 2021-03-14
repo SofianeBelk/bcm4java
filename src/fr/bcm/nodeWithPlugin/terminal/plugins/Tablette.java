@@ -21,7 +21,7 @@ import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
-public class NodeTerminalplugin extends AbstractPlugin implements CommunicationCI, Node_TerminalCI{
+public class Tablette extends AbstractPlugin {
 	private static final long serialVersionUID = 1L ;
 	protected ComponentI owner;
 	protected String URIportCommunication; 
@@ -126,14 +126,12 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	}
 
 
-	@Override
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		// TODO Auto-generated method stub
 		this.ntcip.connect(address, communicationInboundPortURI);
 	}
 
 
-	@Override
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI)
 			throws Exception {
 		// TODO Auto-generated method stub
@@ -141,40 +139,26 @@ public class NodeTerminalplugin extends AbstractPlugin implements CommunicationC
 	}
 
 
-	@Override
 	public void transmitMessage(MessageI m) throws Exception {
 		// TODO Auto-generated method stub
 		this.ntcip.transmitMessage(m);
 	}
 
 
-	@Override
+	
 	public boolean hasRouteFor(AddressI address) throws Exception {
 		// TODO Auto-generated method stub
 		return this.ntcip.hasRouteFor(address);
 	}
 
 
-	@Override
+	
 	public void ping() throws Exception {
 		// TODO Auto-generated method stub
 		this.ntcip.ping();
 	}
 
 
-	@Override
-	public Set<ConnectionInfoI> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange) throws Exception {
-		// TODO Auto-generated method stub
-		return this.ntop.registerTerminalNode(address, communicationInboundPortURI, initialPosition, initialRange);
-	}
-
-
-	@Override
-	public void unregister(AddressI address) throws Exception {
-		// TODO Auto-generated method stub
-		this.unregister(address);
-	}
 	
 	
 

@@ -1,6 +1,7 @@
 package fr.bcm.nodeWithPlugin;
 
 
+import fr.bcm.nodeWithPlugin.accesspoint.components.Node_AccessPoint;
 import fr.bcm.nodeWithPlugin.routing.components.Node_Routing;
 import fr.bcm.nodeWithPlugin.terminal.components.Node_Terminal;
 import fr.bcm.registration.component.GestionnaireReseau;
@@ -9,7 +10,6 @@ import fr.sorbonne_u.components.cvm.AbstractCVM;
 
 public class CVM extends AbstractCVM {
 
-public   static String URI__BROKER_PUBLISHER_MANAGEMENT = "URI_BROKER_PUBLISHER_MANAGEMENT";
 	
 	public CVM() throws Exception {}
 	
@@ -21,14 +21,37 @@ public   static String URI__BROKER_PUBLISHER_MANAGEMENT = "URI_BROKER_PUBLISHER_
 		this.toggleTracing(uri);
 		assert	this.isDeployedComponent(uri) ;
 		
+		uri =AbstractComponent.createComponent(
+				Node_AccessPoint.class.getCanonicalName(),
+				new Object[]{});
+		assert	this.isDeployedComponent(uri);
+
+		uri =AbstractComponent.createComponent(
+				Node_AccessPoint.class.getCanonicalName(),
+				new Object[]{});
+		assert	this.isDeployedComponent(uri);
+		
 		uri = AbstractComponent.createComponent(
 				Node_Terminal.class.getCanonicalName(),
 				new Object[]{}) ;
 		assert	this.isDeployedComponent(uri);
 		
 		
-		String nrURI1=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
-		String nrURI2=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		uri= AbstractComponent.createComponent(
+				Node_Routing.class.getCanonicalName(),
+				new Object[]{});
+		assert	this.isDeployedComponent(uri);
+
+		
+		uri= AbstractComponent.createComponent(
+				Node_Routing.class.getCanonicalName(),
+				new Object[]{});
+		assert	this.isDeployedComponent(uri);
+		
+		uri= AbstractComponent.createComponent(
+				Node_Routing.class.getCanonicalName(),
+				new Object[]{});
+		assert	this.isDeployedComponent(uri);
 		
 		super.deploy();
 	}
