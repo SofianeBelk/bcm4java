@@ -1,13 +1,14 @@
 package fr.bcm.nodeWithPlugin.terminal.components;
 
 
+import fr.bcm.nodeWithPlugin.terminal.interfaces.Node_TerminalI;
 import fr.bcm.nodeWithPlugin.terminal.plugins.Node_TerminalP;
 import fr.sorbonne_u.components.AbstractComponent;
 
 
 
 
-public class Tablette extends AbstractComponent{
+public class Tablette extends AbstractComponent implements Node_TerminalI{
 	
 	
  
@@ -29,6 +30,10 @@ public class Tablette extends AbstractComponent{
 		super.execute();
 		plugin.start();
 		
+	}
+	
+	public Node_TerminalP getPlugin() {
+		return this.plugin;
 	}
 
 

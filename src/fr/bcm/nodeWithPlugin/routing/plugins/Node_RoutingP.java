@@ -31,6 +31,7 @@ import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.bcm.utils.routing.classes.RoutingInfo;
 import fr.bcm.utils.routing.interfaces.RouteInfoI;
+import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
@@ -43,10 +44,10 @@ public class Node_RoutingP extends AbstractPlugin{
 	protected Node_RoutingOutBoundPort nrop;
 	protected Node_RoutingCommInboundPort nrcip;
 	protected Node_RoutingRoutingInboundPort nrrip;
-	private NodeAddress address = new NodeAddress();
-	private List<ConnectionInformation> addressConnected = new ArrayList<>();
-	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
-	private RouteInfoI routeToAccessPoint;
+	protected NodeAddress address = new NodeAddress();
+	protected List<ConnectionInformation> addressConnected = new ArrayList<>();
+	protected Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
+	protected RouteInfoI routeToAccessPoint;
 	
 	public static AddressI addressToSendMessage;
 	private int NumberOfNeighboorsToSend = 2;
@@ -62,11 +63,8 @@ public class Node_RoutingP extends AbstractPlugin{
 	public void	 installOn(ComponentI owner) throws Exception
 	{
 		super.installOn(owner);
-		System.out.println("plugin node routing started");
-		
-		System.out.println(owner.getTotalNumberOfThreads());
-		System.out.println(owner);
 		this.owner=owner;
+		
 
 		// Add interfaces 
 		this.addRequiredInterface(CommunicationCI.class);
@@ -149,7 +147,6 @@ public class Node_RoutingP extends AbstractPlugin{
 					e.printStackTrace();
 				}
 				nrcop.connectRouting(address, this.nrcip.getPortURI(), this.nrrip.getPortURI());
-				System.out.println("TEST");
 				ciToAdd.setRoutingInboundPortURI(CInfo.getRoutingInboundPortURI());
 
 				ciToAdd.setNrrop(nrrop);
@@ -204,6 +201,7 @@ public class Node_RoutingP extends AbstractPlugin{
 			Node_Routing.addressToSendMessage = this.address;
 		}
 		
+		Thread.yield();
 		Thread.sleep(3000);
 		// Sending a message to the first routing node from the third routing node
 		if(this.id == 3) {
@@ -255,12 +253,9 @@ public class Node_RoutingP extends AbstractPlugin{
 
 
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
+
 		boolean add;
-		
-		// PRINT BEFORE
-		String toString = "BEFORE " + this.routingTableToString();
-		this.logMessage(toString);
-		
+	
 		
 		// CORE
 		for(RouteInfoI riExt : routes) {	
@@ -292,9 +287,6 @@ public class Node_RoutingP extends AbstractPlugin{
 			}
 		}
 		
-		// PRINT AFTER
-		toString = "AFTER " + this.routingTableToString();
-		this.logMessage(toString);
 	}
 	
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
@@ -315,10 +307,10 @@ public class Node_RoutingP extends AbstractPlugin{
 		
 		this.logMessage("Added new devices to connections");
 		CInfo.setNrcop(nrcop);
-		routes.add(new RoutingInfo(address,address));
 		this.addressConnected.add(CInfo);
+		routes.add(new RoutingInfo(address,address));
 		
-		this.logMessage("Routing tables after connection " + this.routingTableToString());
+		// this.logMessage("Routing tables after connection " + this.routingTableToString());
 				
 		return null;
 	}
@@ -365,7 +357,7 @@ public class Node_RoutingP extends AbstractPlugin{
 			CInfo.getNrrop().updateAccessPoint(this.address, this.routeToAccessPoint.getNumberOfHops());
 		}
 		this.addressConnected.add(CInfo);
-		this.logMessage("Routing tables after connectionR " + this.routingTableToString());
+		// this.logMessage("Routing tables after connectionR " + this.routingTableToString());
 		return null;
 	}
 
@@ -418,9 +410,9 @@ public class Node_RoutingP extends AbstractPlugin{
 	
 	public boolean sendMessageViaRouting(MessageI m) throws Exception {
 		for(RouteInfoI ri: this.routes) {
-			if(ri.getDestination().equals(m.getAddress())) {
+			if(ri.getDestination().getAdress() == m.getAddress().getAdress()) {
 				for(ConnectionInformation ci: this.addressConnected) {
-					if(ci.getAddress().equals(ri.getDestination())) {
+					if(ci.getAddress().getAdress() == ri.getDestination().getAdress()) {
 						this.logMessage("(Via routing tables) Transmitting a Message to " + ci.getAddress().getAdress());
 						ci.getNrcop().transmitMessage(m);
 						return true;
@@ -480,6 +472,5 @@ public class Node_RoutingP extends AbstractPlugin{
 		toString += "]";
 		return toString;
 	}
-
 
 }

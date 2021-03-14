@@ -1,7 +1,7 @@
 package fr.bcm.nodeWithPlugin;
 
 
-import fr.bcm.nodeWithPlugin.accesspoint.components.Node_AccessPoint;
+import fr.bcm.nodeWithPlugin.accesspoint.components.PC_Terminal;
 import fr.bcm.nodeWithPlugin.routing.components.Ordinateur;
 import fr.bcm.nodeWithPlugin.terminal.components.Tablette;
 import fr.bcm.registration.component.GestionnaireReseau;
@@ -22,37 +22,37 @@ public class CVM extends AbstractCVM {
 		assert	this.isDeployedComponent(uri) ;
 		
 		
-		/*
+
 		uri =AbstractComponent.createComponent(
-				Node_AccessPoint.class.getCanonicalName(),
+				PC_Terminal.class.getCanonicalName(),
 				new Object[]{});
 		assert	this.isDeployedComponent(uri);
-		
+
 		
 		
 		uri = AbstractComponent.createComponent(
 				Tablette.class.getCanonicalName(),
 				new Object[]{}) ;
 		assert	this.isDeployedComponent(uri);
-		*/
-		
-		uri= AbstractComponent.createComponent(
-				Ordinateur.class.getCanonicalName(),
-				new Object[]{});
-		assert	this.isDeployedComponent(uri);
 		
 		
 		uri= AbstractComponent.createComponent(
 				Ordinateur.class.getCanonicalName(),
 				new Object[]{});
 		assert	this.isDeployedComponent(uri);
-		/*
+		
+		
+		uri= AbstractComponent.createComponent(
+				Ordinateur.class.getCanonicalName(),
+				new Object[]{});
+		assert	this.isDeployedComponent(uri);
+		
 
 		uri= AbstractComponent.createComponent(
-				Node_Routing.class.getCanonicalName(),
+				Ordinateur.class.getCanonicalName(),
 				new Object[]{});
 		assert	this.isDeployedComponent(uri);
-		*/
+		
 		super.deploy();
 	}
 	
@@ -60,7 +60,7 @@ public class CVM extends AbstractCVM {
 	public static void main(String[] args) {
 		try {
 			CVM c = new CVM() ;
-			c.startStandardLifeCycle(10000L) ;
+			c.startStandardLifeCycle(20000L) ;
 			System.exit(0) ;
 		} catch (Exception e) {
 			throw new RuntimeException(e) ;

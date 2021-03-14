@@ -10,6 +10,7 @@ import fr.bcm.node.routing.components.Node_Routing;
 import fr.bcm.node.routing.interfaces.Node_RoutingCI;
 import fr.bcm.node.terminal.components.Node_Terminal;
 import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
+import fr.bcm.nodeWithPlugin.routing.interfaces.Node_RoutingI;
 import fr.bcm.nodeWithPlugin.routing.plugins.Node_RoutingP;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.classes.NodeAddress;
@@ -39,43 +40,41 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 
 	@Override
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		this.getOwner().handleRequest(
-				new AbstractComponent.AbstractService<Void>(this.pluginURI) {
-					@Override
-					public Void call() throws Exception {
-						((Node_Routing)this.getServiceProviderReference()).connect(address, communicationInboundPortURI);
-						return null;
-					}
+		this.getOwner().runTask(				
+			nr -> {
+				try {
+					((Node_RoutingI)nr).getPlugin().connect(address, communicationInboundPortURI);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+			}
 		);
 	}
 
 	@Override
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		
-		this.getOwner().handleRequest(
-				new AbstractComponent.AbstractService<Void>(this.pluginURI) {
-					@Override
-					public Void call() throws Exception {
-						((Node_RoutingP)this.getServiceProviderReference()).connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
-						return null;
-					}
+		this.getOwner().runTask(				
+			nr -> {
+				try {
+					((Node_RoutingI)nr).getPlugin().connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+			}
 		);
 	}
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
-		this.getOwner().handleRequest(
-				
-				
-				new AbstractComponent.AbstractService<Void>(this.pluginURI) {
-					@Override
-					public Void call() throws Exception {
-						((Node_Routing)this.getServiceProviderReference()).transmitMessage(m);
-						return null;
-					}
+		this.getOwner().runTask(				
+			nr -> {
+				try {
+					((Node_RoutingI)nr).getPlugin().transmitMessage(m);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+			}
 		);
 	}
 
