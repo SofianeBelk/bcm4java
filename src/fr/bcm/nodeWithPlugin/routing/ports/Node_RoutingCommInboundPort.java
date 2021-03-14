@@ -1,4 +1,4 @@
-package fr.bcm.node.routing.ports;
+package fr.bcm.nodeWithPlugin.routing.ports;
 
 import java.util.Set;
 
@@ -10,6 +10,7 @@ import fr.bcm.node.routing.components.Node_Routing;
 import fr.bcm.node.routing.interfaces.Node_RoutingCI;
 import fr.bcm.node.terminal.components.Node_Terminal;
 import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
+import fr.bcm.nodeWithPlugin.routing.plugins.Node_RoutingP;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
@@ -21,20 +22,25 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
-
 public class Node_RoutingCommInboundPort extends AbstractInboundPort implements CommunicationCI{
 
 	private static final long serialVersionUID = 1L;
+	private String pluginURI;
 
 	public Node_RoutingCommInboundPort(ComponentI owner) throws Exception {
 		super(CommunicationCI.class, owner);
+	}
+	
+	public Node_RoutingCommInboundPort(ComponentI owner, String pluginURI) throws Exception{
+		super(CommunicationCI.class, owner);
+		this.pluginURI = pluginURI;
 	}
 
 
 	@Override
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		this.getOwner().handleRequest(
-				new AbstractComponent.AbstractService<Void>() {
+				new AbstractComponent.AbstractService<Void>(this.pluginURI) {
 					@Override
 					public Void call() throws Exception {
 						((Node_Routing)this.getServiceProviderReference()).connect(address, communicationInboundPortURI);
@@ -48,10 +54,10 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		
 		this.getOwner().handleRequest(
-				new AbstractComponent.AbstractService<Void>() {
+				new AbstractComponent.AbstractService<Void>(this.pluginURI) {
 					@Override
 					public Void call() throws Exception {
-						((Node_Routing)this.getServiceProviderReference()).connectRouting(address, communicationInboundPortURI,routingInboundPortURI);
+						((Node_RoutingP)this.getServiceProviderReference()).connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
 						return null;
 					}
 				}
@@ -63,7 +69,7 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 		this.getOwner().handleRequest(
 				
 				
-				new AbstractComponent.AbstractService<Void>() {
+				new AbstractComponent.AbstractService<Void>(this.pluginURI) {
 					@Override
 					public Void call() throws Exception {
 						((Node_Routing)this.getServiceProviderReference()).transmitMessage(m);

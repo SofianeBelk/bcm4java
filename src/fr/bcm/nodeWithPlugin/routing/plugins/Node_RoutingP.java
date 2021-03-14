@@ -1,9 +1,7 @@
-package fr.bcm.node.routing.components;
+package fr.bcm.nodeWithPlugin.routing.plugins;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,23 +10,20 @@ import fr.bcm.connexion.classes.ConnectionInformation;
 import fr.bcm.connexion.connectors.CommunicationConnector;
 import fr.bcm.connexion.interfaces.CommunicationCI;
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
-import fr.bcm.node.accesspoint.interfaces.Node_AccessPointCI;
-import fr.bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
-import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
+import fr.bcm.node.routing.components.Node_Routing;
 import fr.bcm.node.routing.connectors.RoutingConnector;
 import fr.bcm.node.routing.interfaces.Node_RoutingCI;
 import fr.bcm.node.routing.interfaces.RoutingCI;
+import fr.bcm.nodeWithPlugin.routing.ports.Node_RoutingCommInboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingCommOutboundPort;
-import fr.bcm.node.routing.ports.Node_RoutingCommInboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingOutBoundPort;
-import fr.bcm.node.routing.ports.Node_RoutingRoutingInboundPort;
+import fr.bcm.nodeWithPlugin.routing.ports.Node_RoutingRoutingInboundPort;
 import fr.bcm.node.routing.ports.Node_RoutingRoutingOutboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NetworkAddress;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
-import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.classes.Message;
 import fr.bcm.utils.message.interfaces.MessageI;
@@ -36,19 +31,13 @@ import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.bcm.utils.routing.classes.RoutingInfo;
 import fr.bcm.utils.routing.interfaces.RouteInfoI;
-import fr.sorbonne_u.components.AbstractComponent;
-import fr.sorbonne_u.components.annotations.OfferedInterfaces;
-import fr.sorbonne_u.components.annotations.RequiredInterfaces;
-import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
+import fr.sorbonne_u.components.AbstractPlugin;
+import fr.sorbonne_u.components.ComponentI;
 
+public class Node_RoutingP extends AbstractPlugin{
 
-@RequiredInterfaces(required = {Node_RoutingCI.class, CommunicationCI.class, RoutingCI.class})
-@OfferedInterfaces (offered = {RoutingCI.class, CommunicationCI.class})
-
-public class Node_Routing extends AbstractComponent{
-	
-
-	public static int node_routing_id = 1;
+	private static final long serialVersionUID = 1L;
+    public static int node_routing_id = 1;
 	
 	private int id;
 	protected Node_RoutingOutBoundPort nrop;
@@ -59,77 +48,67 @@ public class Node_Routing extends AbstractComponent{
 	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
 	private RouteInfoI routeToAccessPoint;
 	
-	
 	public static AddressI addressToSendMessage;
 	private int NumberOfNeighboorsToSend = 2;
 	
 	private PositionI pointInitial;
 	
-	protected Node_Routing() throws Exception {
-		super(2,0);
-		this.id = node_routing_id;
+	
+	protected ComponentI owner;
+	
+	
+
+	@Override
+	public void	 installOn(ComponentI owner) throws Exception
+	{
+		super.installOn(owner);
+		System.out.println("plugin node routing started");
+		
+		System.out.println(owner.getTotalNumberOfThreads());
+		System.out.println(owner);
+		this.owner=owner;
+
+		// Add interfaces 
+		this.addRequiredInterface(CommunicationCI.class);
+		this.addRequiredInterface(Node_RoutingCI.class);
+		this.addRequiredInterface(RoutingCI.class);
+
+        this.addOfferedInterface(CommunicationCI.class);
+        this.addOfferedInterface(RoutingCI.class);
+		
+		// Enable logs
+        this.id = node_routing_id;
 		node_routing_id += 1;
 		this.pointInitial = new Position(0,this.id);
-		this.nrop = new Node_RoutingOutBoundPort(this);
-		this.nrcip = new Node_RoutingCommInboundPort(this);
-		this.nrrip = new Node_RoutingRoutingInboundPort(this);
+		
+		
+		// Enables logs
+		this.owner.toggleLogging();
+		this.owner.toggleTracing();
+		this.logMessage("Node_Routing " + this.address.getAdress() + " " + this.id);
+        
+	}
+
+	
+	@Override
+	public void	initialise() throws Exception {
+        super.initialise();
+        //add port
+        //
+		this.nrop = new Node_RoutingOutBoundPort(this.owner);
+		this.nrcip = new Node_RoutingCommInboundPort(this.owner,this.getPluginURI());
+		this.nrrip = new Node_RoutingRoutingInboundPort(this.owner, this.getPluginURI());
 		this.nrop.publishPort();
 		this.nrcip.publishPort();
 		this.nrrip.publishPort();
-		this.doPortConnection(
+		this.owner.doPortConnection(
 				this.nrop.getPortURI(), 
 				GestionnaireReseau.GS_URI, 
 				NodeConnector.class.getCanonicalName());
 		
-		// Enables logs
-		this.toggleLogging();
-		this.toggleTracing();
-		this.logMessage("Node_Routing " + this.address.getAdress() + " " + this.id + " Position initiale : (" + pointInitial.getX() + ", " + pointInitial.getY() + ")");
 	}
-
-
-	@Override
-	public synchronized void finalise() throws Exception {
-		if(this.nrop.connected()) {
-			this.doPortDisconnection(nrop.getPortURI());
-		}
-		super.finalise();
-	}
-
-
-	@Override
-	public synchronized void shutdown() throws ComponentShutdownException {
-		try {
-			if(nrop.connected()) {
-				this.nrop.doDisconnection();
-			}
-			if(nrcip.connected()) {
-				this.nrcip.doDisconnection();
-			}
-			if(nrrip.connected()) {
-				this.nrrip.doDisconnection();
-			}
-			
-			for (ConnectionInformation ci: this.addressConnected) {
-				ci.disconnectAll();
-			}
-			
-			this.nrop.unpublishPort();
-			this.nrcip.unpublishPort();
-			this.nrrip.unpublishPort();
-		} catch (Exception e) {
-			return;
-		}
-		super.shutdown();
-	}
-
-
-	@Override
-	public synchronized void execute() throws Exception {
-		super.execute();
-		
-		Thread.yield();
-		Thread.sleep(2000);
+	
+	public void start() throws Exception {
 		this.logMessage("Tries to log in the manager");
 		
 		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrcip.getPortURI() , this.pointInitial, 1.5, nrrip.getPortURI());
@@ -142,11 +121,11 @@ public class Node_Routing extends AbstractComponent{
 			ConnectionInformation ciToAdd = new ConnectionInformation(CInfo.getAddress());
 			
 			
-			Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this);
+			Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this.owner);
 			this.logMessage("Creating communication Port");
 			nrcop.publishPort();
 			this.logMessage("Publish Port");
-			this.doPortConnection(
+			this.owner.doPortConnection(
 					nrcop.getPortURI(),
 					CInfo.getCommunicationInboundPortURI(),
 					CommunicationConnector.class.getCanonicalName()
@@ -159,10 +138,10 @@ public class Node_Routing extends AbstractComponent{
 			if(CInfo.getisRouting()) {
 				
 				this.logMessage("Ask for routing connection");
-				Node_RoutingRoutingOutboundPort nrrop = new Node_RoutingRoutingOutboundPort(this);
+				Node_RoutingRoutingOutboundPort nrrop = new Node_RoutingRoutingOutboundPort(this.owner);
 				nrrop.publishPort();
 				try {
-					this.doPortConnection(
+					this.owner.doPortConnection(
 							nrrop.getPortURI(), 
 							CInfo.getRoutingInboundPortURI(),
 							RoutingConnector.class.getCanonicalName());
@@ -170,7 +149,9 @@ public class Node_Routing extends AbstractComponent{
 					e.printStackTrace();
 				}
 				nrcop.connectRouting(address, this.nrcip.getPortURI(), this.nrrip.getPortURI());
+				System.out.println("TEST");
 				ciToAdd.setRoutingInboundPortURI(CInfo.getRoutingInboundPortURI());
+
 				ciToAdd.setNrrop(nrrop);
 				this.logMessage("Accepted connection to communication + routing port");
 			}
@@ -184,6 +165,7 @@ public class Node_Routing extends AbstractComponent{
 			
 			ciToAdd.setcommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
 			ciToAdd.setNrcop(nrcop);
+			
 			this.addressConnected.add(ciToAdd);
 			
 			// Route to an access point
@@ -244,15 +226,86 @@ public class Node_Routing extends AbstractComponent{
 		}
 	}
 
+	
+	@Override
+	public void	finalise() throws Exception
+	{		
+		super.finalise();
+		this.owner.doPortDisconnection(this.nrop.getPortURI());
+		
+
+	}
+
+	
+	@Override
+	public void	uninstall() throws Exception
+	{
+		super.uninstall();
+
+		this.nrop.unpublishPort();		
+		this.nrcip.unpublishPort();
+		this.nrrip.unpublishPort();
+		
+		this.nrop.destroyPort() ;
+		this.nrcip.destroyPort() ;
+		this.nrrip.destroyPort() ;
+
+		
+	}
+
+
+	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
+		boolean add;
+		
+		// PRINT BEFORE
+		String toString = "BEFORE " + this.routingTableToString();
+		this.logMessage(toString);
+		
+		
+		// CORE
+		for(RouteInfoI riExt : routes) {	
+			add = true;
+			if(riExt.getDestination().equals(this.address)) {
+				continue;
+			}
+			for(RouteInfoI riInt : this.routes) {	
+				
+				// If route exists in current table
+				if(riInt.getDestination().equals(riExt.getDestination())) {
+					// If the route is worth using
+					if(riInt.getNumberOfHops() > riExt.getNumberOfHops()+1 ) {
+						//route interessante on modifier notre table
+						riInt.setHops(riExt.getNumberOfHops() + 1);
+						riInt.setIntermediate(neighbour);
+					}
+					
+					// Route already exists and is not needed to be added in the current table
+					add = false;
+				}
+			}
+			// Adds a new route to the table
+			if(add) {
+				RouteInfoI riAdd = riExt.clone();
+				riAdd.setHops(riAdd.getNumberOfHops() + 1);
+				riAdd.setIntermediate(neighbour);
+				this.routes.add(riAdd);
+			}
+		}
+		
+		// PRINT AFTER
+		toString = "AFTER " + this.routingTableToString();
+		this.logMessage(toString);
+	}
+	
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		this.logMessage("Someone asked connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
 		CInfo.setcommunicationInboundPortURI(communicationInboundPortURI);
-		Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this);
+		Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this.owner);
 		nrcop.publishPort();
 
 		try {
-			this.doPortConnection(
+			this.owner.doPortConnection(
 					nrcop.getPortURI(), 
 					communicationInboundPortURI, 
 					CommunicationConnector.class.getCanonicalName());
@@ -278,19 +331,19 @@ public class Node_Routing extends AbstractComponent{
 		CInfo.setisRouting(true);
 		
 
-		Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this);
-		Node_RoutingRoutingOutboundPort nrrop = new Node_RoutingRoutingOutboundPort(this);
+		Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this.owner);
+		Node_RoutingRoutingOutboundPort nrrop = new Node_RoutingRoutingOutboundPort(this.owner);
 		nrcop.publishPort();
 		nrrop.publishPort();
 		
 		// Connection for comm + routing
 		this.logMessage("Trying connexion to communication + router port");
 		try {
-			this.doPortConnection(
+			this.owner.doPortConnection(
 					nrcop.getPortURI(), 
 					communicationInboundPortURI, 
 					CommunicationConnector.class.getCanonicalName());
-			this.doPortConnection(
+			this.owner.doPortConnection(
 					nrrop.getPortURI(), 
 					routingInboundPortURI, 
 					RoutingConnector.class.getCanonicalName());
@@ -402,50 +455,7 @@ public class Node_Routing extends AbstractComponent{
 		return null;
 	}
 	
-	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception{
-		boolean add;
-		
-		// PRINT BEFORE
-		String toString = "BEFORE " + this.routingTableToString();
-		this.logMessage(toString);
-		
-		
-		// CORE
-		for(RouteInfoI riExt : routes) {	
-			add = true;
-			if(riExt.getDestination().equals(this.address)) {
-				continue;
-			}
-			for(RouteInfoI riInt : this.routes) {	
-				
-				// If route exists in current table
-				if(riInt.getDestination().equals(riExt.getDestination())) {
-					// If the route is worth using
-					if(riInt.getNumberOfHops() > riExt.getNumberOfHops()+1 ) {
-						//route interessante on modifier notre table
-						riInt.setHops(riExt.getNumberOfHops() + 1);
-						riInt.setIntermediate(neighbour);
-					}
-					
-					// Route already exists and is not needed to be added in the current table
-					add = false;
-				}
-			}
-			// Adds a new route to the table
-			if(add) {
-				RouteInfoI riAdd = riExt.clone();
-				riAdd.setHops(riAdd.getNumberOfHops() + 1);
-				riAdd.setIntermediate(neighbour);
-				this.routes.add(riAdd);
-			}
-		}
-		
-		// PRINT AFTER
-		toString = "AFTER " + this.routingTableToString();
-		this.logMessage(toString);
-	}
-	
-	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
+	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception {
 		// Adding a new route to an access point if it doesn't exists
 		if(this.routeToAccessPoint == null) {
 			this.routeToAccessPoint = new RoutingInfo(null, neighbour, numberOfHops+1);
@@ -470,5 +480,6 @@ public class Node_Routing extends AbstractComponent{
 		toString += "]";
 		return toString;
 	}
-	
+
+
 }

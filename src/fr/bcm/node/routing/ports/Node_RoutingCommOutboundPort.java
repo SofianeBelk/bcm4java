@@ -34,6 +34,7 @@ public class Node_RoutingCommOutboundPort extends AbstractOutboundPort implement
 
 	@Override
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
+		
 		((CommunicationCI)this.getConnector()).connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
 	}
 

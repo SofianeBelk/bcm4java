@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import fr.bcm.connexion.classes.ConnectionInformation;
 import fr.bcm.connexion.connectors.CommunicationConnector;
 import fr.bcm.connexion.interfaces.CommunicationCI;
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
-import fr.bcm.node.terminal.ports.*;
+import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
+import fr.bcm.node.terminal.ports.Node_TerminalOutBoundPort;
+import fr.bcm.nodeWithPlugin.terminal.ports.Node_TerminalCommInboundPort;
 import fr.bcm.node.connectors.NodeConnector;
+import fr.bcm.node.terminal.components.Node_Terminal;
 import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.registration.interfaces.RegistrationCI;
@@ -21,8 +25,9 @@ import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
-public class Tablette extends AbstractPlugin {
+public class Node_TerminalP extends AbstractPlugin {
 	private static final long serialVersionUID = 1L ;
+	private int id;
 	protected ComponentI owner;
 	protected String URIportCommunication; 
 	protected String URIportNodeTerminale; 
@@ -30,9 +35,10 @@ public class Tablette extends AbstractPlugin {
 	protected Node_TerminalCommInboundPort ntcip;
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
 	private NodeAddress address = new NodeAddress();
-	private List<ConnectionInfoI> addressConnected= new ArrayList<>();
+	private List<ConnectionInformation> addressConnected= new ArrayList<>();
 
-	
+	private int NumberOfNeighboorsToSend = 2;
+	private PositionI pointInitial;
 
 	@Override
 	public void	 installOn(ComponentI owner) throws Exception
@@ -59,9 +65,14 @@ public class Tablette extends AbstractPlugin {
 	@Override
 	public void	initialise() throws Exception {
         super.initialise();
-        //add port
+        
+        this.id = Node_Terminal.node_terminal_id;
+		Node_Terminal.node_terminal_id += 1;
+		this.pointInitial = new Position(0,this.id);
+        
+        //add port 
         this.ntop = new Node_TerminalOutBoundPort(this.owner);
-		this.ntcip = new Node_TerminalCommInboundPort(this.owner);
+		this.ntcip = new Node_TerminalCommInboundPort(this.owner,this.getPluginURI());
 		this.ntop.publishPort();
 		this.ntcip.publishPort();
 		
@@ -74,17 +85,17 @@ public class Tablette extends AbstractPlugin {
 	
 	public void start() throws Exception {
 		 this.logMessage("Tries to log in the manager");
-			Position pointInitial= new Position(10,10);
-			Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntcip.getPortURI(),pointInitial , 20.00);
+			Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntcip.getPortURI(),this.pointInitial , 1.5);
 			this.logMessage("Logged");
 			
 			// Current node connects to others nodes
 			
 			for(ConnectionInfoI CInfo: devices) {
+				ConnectionInformation ciToAdd = new ConnectionInformation(CInfo.getAddress());
 				Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this.owner);
 				ntcop.publishPort();
 				
-				this.addressConnected.add(CInfo);
+				
 				try {
 					this.owner.doPortConnection(
 							ntcop.getPortURI(),
@@ -97,6 +108,10 @@ public class Tablette extends AbstractPlugin {
 				
 				ntcop.connect(address, this.ntcip.getPortURI());
 				node_CommOBP.add(ntcop);
+				
+				ciToAdd.setcommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
+				ciToAdd.setNtcop(ntcop);
+				this.addressConnected.add(ciToAdd);
 			}
 			this.logMessage("Connected to all nearby devices");
 	}
@@ -126,37 +141,75 @@ public class Tablette extends AbstractPlugin {
 	}
 
 
-	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		// TODO Auto-generated method stub
-		this.ntcip.connect(address, communicationInboundPortURI);
+	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {	
+		this.logMessage("Someone asked for connection");
+		ConnectionInformation CInfo = new ConnectionInformation(address);
+		CInfo.setCommunicationInboundPortURI(communicationInboundPortURI);
+		
+		this.logMessage("Creating comm port");
+		Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this.owner);
+		ntcop.publishPort();
+		
+		this.owner.doPortConnection(
+				ntcop.getPortURI(), 
+				communicationInboundPortURI, 
+				CommunicationConnector.class.getCanonicalName());
+		this.logMessage("Connected comm port to device");
+		
+		node_CommOBP.add(ntcop);
+		CInfo.setNtcop(ntcop);
+		this.addressConnected.add(CInfo);
+		this.logMessage("Added " + address.getAdress() + " to connections");
+
+		return null;
 	}
 
-
-	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI)
-			throws Exception {
-		// TODO Auto-generated method stub
-		this.ntcip.connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
+	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
+		return null;
 	}
 
-
-	public void transmitMessage(MessageI m) throws Exception {
-		// TODO Auto-generated method stub
-		this.ntcip.transmitMessage(m);
+	public Object transmitMessage(MessageI m) throws Exception {
+		
+		m.decrementHops();
+		m.addAddressToHistory(this.address);
+		
+		
+		
+		if(m.getAddress().equals(this.address)) {
+			this.logMessage("Received a message : " + m.getContent());
+		}
+		else {
+			if(m.stillAlive()) {
+				int numberSent = 0;
+				for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {					
+					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
+					if(!m.isInHistory(addressToTransmitTo)) {
+						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
+						MessageI messageToSend = m.copy();
+						this.node_CommOBP.get(i).transmitMessage(messageToSend);
+						numberSent += 1;
+					}
+					else {
+						this.logMessage("No node to send message to");
+					}
+				}
+			}
+			else {
+				this.logMessage("Message dead");
+			}
+		}
+		
+		return null;
 	}
 
+	public boolean hasRouteFor(AddressI address) throws Exception{
+		return false;
+	}
 
+	public Object ping() throws Exception{
+		return null;
+	}
 	
-	public boolean hasRouteFor(AddressI address) throws Exception {
-		// TODO Auto-generated method stub
-		return this.ntcip.hasRouteFor(address);
-	}
-
-
-	
-	public void ping() throws Exception {
-		// TODO Auto-generated method stub
-		this.ntcip.ping();
-	}
 
 
 	

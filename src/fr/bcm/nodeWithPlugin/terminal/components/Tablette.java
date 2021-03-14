@@ -1,22 +1,22 @@
 package fr.bcm.nodeWithPlugin.terminal.components;
 
 
-import fr.bcm.nodeWithPlugin.terminal.plugins.Tablette;
+import fr.bcm.nodeWithPlugin.terminal.plugins.Node_TerminalP;
 import fr.sorbonne_u.components.AbstractComponent;
 
 
 
 
-public class Node_Terminal extends AbstractComponent{
+public class Tablette extends AbstractComponent{
 	
 	
  
 	protected final static String MY_PLUGIN_URI = "map-Node_Terminal-plugin-uri" ;
-	private Tablette plugin;
+	private Node_TerminalP plugin;
 	
-	protected Node_Terminal() throws Exception {
-		super(1,0); 
-		this.plugin = new Tablette();
+	protected Tablette() throws Exception {
+		super(2,0); 
+		this.plugin = new Node_TerminalP();
 		this.plugin.setPluginURI(MY_PLUGIN_URI);
 		this.installPlugin(plugin); 
 		
