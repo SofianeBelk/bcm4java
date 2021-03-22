@@ -48,9 +48,9 @@ public class GestionnaireReseau extends AbstractComponent{
 
 	@SuppressWarnings("unchecked")
 	public Set<ConnectionInfoI> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
-			PositionI initialPosition, double initialRange, boolean isRouting) throws Exception {
+			PositionI initialPosition, double initialRange) throws Exception {
 		
-		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,isRouting);
+		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange);
 		mySet.add(n);
 	    Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 	    for(ConnectionInfoI ci : mySet) {
@@ -70,10 +70,15 @@ public class GestionnaireReseau extends AbstractComponent{
 	@SuppressWarnings("unchecked")
 	public Set<ConnectionInfoI> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception {
-		
-		
-		
-		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange,true,routingInboundPortURI);
+		Noeud n =new Noeud(
+				address,
+				communicationInboundPortURI,
+				initialPosition,
+				initialRange,
+				true,
+				routingInboundPortURI,
+				true
+		);
 		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 		for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {
@@ -98,7 +103,15 @@ public class GestionnaireReseau extends AbstractComponent{
 
 	public Object registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) {
-		Noeud n = new Noeud(address, communicationInboundPortURI, initialPosition, initialRange, true, routingInboundPortURI);
+		Noeud n = new Noeud(
+				address, 
+				communicationInboundPortURI, 
+				initialPosition, 
+				initialRange, 
+				true, 
+				routingInboundPortURI
+		);
+
 		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 		for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {

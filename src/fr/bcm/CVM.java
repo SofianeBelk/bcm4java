@@ -25,14 +25,14 @@ public class CVM extends AbstractCVM {
 
 	
 		String nacURI1=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
-		String nacURI2=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
+		// String nacURI2=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
 		
 		String ntURI1=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
-		String ntURI2=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
+		// String ntURI2=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
 		
-		String nrURI1=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
-		String nrURI2=AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
-		
+		AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+		AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
 		
 		
 		super.deploy();
@@ -41,7 +41,7 @@ public class CVM extends AbstractCVM {
 	public static void main(String[] args) {
 		try {
 			CVM c = new CVM();
-			c.startStandardLifeCycle(10000L);
+			c.startStandardLifeCycle(30000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();
