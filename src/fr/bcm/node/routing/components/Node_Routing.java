@@ -221,7 +221,7 @@ public class Node_Routing extends AbstractComponent{
 		if(this.id == 1) {
 			Node_Routing.addressToSendMessage = this.address;
 		}
-		
+		Thread.yield();
 		Thread.sleep(3000);
 		// Sending a message to the first routing node from the third routing node
 		if(this.id == 3) {
