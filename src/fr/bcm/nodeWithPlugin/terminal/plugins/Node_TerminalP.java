@@ -27,12 +27,10 @@ import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
 public class Node_TerminalP extends AbstractPlugin {
-	private static final long serialVersionUID = 1L ;
-	private static final String			ConnectRouting_URI = "Connexion_via_les_tables_de_routing" ;
-	private static final String			Connect_URI            = "Connexion" ;
-	private static final String		    Transmit_MESSAGES_URI            = "filtrer_des_messages" ;
-	private static final String         Has_Routes_URI                   ="Has_routes_for";
-	private static final String         Ping_URI = "ping";
+	public static final long 			serialVersionUID = 1L ;
+	
+	
+	
 	private int id;
 	protected ComponentI owner;
 	protected String URIportCommunication; 
@@ -42,10 +40,34 @@ public class Node_TerminalP extends AbstractPlugin {
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInformation> addressConnected= new ArrayList<>();
-	protected final ReentrantReadWriteLock	verou_terminale ;
+	
 	private int NumberOfNeighboorsToSend = 2;
 	private PositionI pointInitial;
-	private int nbThreadConnect,nbThreadConnectRouting,nbThreadTransmitMessage,nbThreadHasRouteFor,nbThreadPing;
+	
+	
+	// // Thread 
+	
+	// Thread URI
+	public static final String			ConnectRouting_URI 		= "Connexion_via_les_tables_de_routing" ;
+	public static final String			Connect_URI            	= "Connexion" ;
+	public static final String		   	Transmit_MESSAGES_URI	= "filtrer_des_messages" ;
+	public static final String         	Has_Routes_URI			= "Has_routes_for";
+	public static final String         	Ping_URI 				= "ping";
+	
+	// Thread Distribution
+	private int nbThreadConnect = 1;
+	private int nbThreadConnectRouting = 1;
+	private int nbThreadTransmitMessage = 1;
+	private int nbThreadHasRouteFor = 1;
+	private int nbThreadPing = 1;
+	
+	// Locks
+	protected ReentrantReadWriteLock lockForArrays = new ReentrantReadWriteLock();
+	
+	
+	public Node_TerminalP() {
+		
+	}
 	
 	public Node_TerminalP(int C, int nbThreadConnectRouting, int nbThreadTransmitMessage, int nbThreadHasRouteFor, int nbThreadPing) {
 		this.nbThreadPing=nbThreadPing;
@@ -70,10 +92,14 @@ public class Node_TerminalP extends AbstractPlugin {
        
 		//ExecutoreServices
         this.createNewExecutorService(ConnectRouting_URI, nbThreadConnectRouting, false);
-		this.createNewExecutorService(Connect_URI, nbThreadConnect, false);
+        this.createNewExecutorService(Connect_URI, nbThreadConnect, false);
+		
 		this.createNewExecutorService(Transmit_MESSAGES_URI, nbThreadTransmitMessage, false);
 		this.createNewExecutorService(Has_Routes_URI, nbThreadHasRouteFor, false);
+		
 		this.createNewExecutorService(Ping_URI, nbThreadPing, false);
+		
+		
 		// Enable logs
 		this.owner.toggleLogging();
 		this.owner.toggleTracing();
@@ -89,7 +115,6 @@ public class Node_TerminalP extends AbstractPlugin {
         this.id = Node_Terminal.node_terminal_id;
 		Node_Terminal.node_terminal_id += 1;
 		this.pointInitial = new Position(0,this.id);
-        //pullthread
         //add port 
         this.ntop = new Node_TerminalOutBoundPort(this.owner);
 		this.ntcip = new Node_TerminalCommInboundPort(this.owner,this.getPluginURI());
@@ -100,7 +125,6 @@ public class Node_TerminalP extends AbstractPlugin {
 				this.ntop.getPortURI(),
 				GestionnaireReseau.GS_URI,
 				NodeConnector.class.getCanonicalName());
-		
 	}
 	
 	public void start() throws Exception {
@@ -127,11 +151,13 @@ public class Node_TerminalP extends AbstractPlugin {
 				}
 				
 				ntcop.connect(address, this.ntcip.getPortURI());
+				lockForArrays.writeLock().lock();
 				node_CommOBP.add(ntcop);
 				
 				ciToAdd.setcommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
 				ciToAdd.setNtcop(ntcop);
 				this.addressConnected.add(ciToAdd);
+				lockForArrays.writeLock().unlock();
 			}
 			this.logMessage("Connected to all nearby devices");
 	}
@@ -176,9 +202,11 @@ public class Node_TerminalP extends AbstractPlugin {
 				CommunicationConnector.class.getCanonicalName());
 		this.logMessage("Connected comm port to device");
 		
+		lockForArrays.writeLock().lock();
 		node_CommOBP.add(ntcop);
 		CInfo.setNtcop(ntcop);
 		this.addressConnected.add(CInfo);
+		lockForArrays.writeLock().unlock();
 		this.logMessage("Added " + address.getAdress() + " to connections");
 
 		return null;
@@ -201,6 +229,8 @@ public class Node_TerminalP extends AbstractPlugin {
 		else {
 			if(m.stillAlive()) {
 				int numberSent = 0;
+				
+				lockForArrays.readLock().lock();
 				for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {					
 					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
 					if(!m.isInHistory(addressToTransmitTo)) {
@@ -213,6 +243,7 @@ public class Node_TerminalP extends AbstractPlugin {
 						this.logMessage("No node to send message to");
 					}
 				}
+				lockForArrays.readLock().unlock();
 			}
 			else {
 				this.logMessage("Message dead");

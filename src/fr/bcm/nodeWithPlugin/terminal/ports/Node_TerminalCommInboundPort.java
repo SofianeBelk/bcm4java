@@ -37,7 +37,7 @@ public class Node_TerminalCommInboundPort extends AbstractInboundPort implements
 
 	@Override
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_TerminalP.Connect_URI,
 				nr -> {
 					try {
 						((Node_TerminalI)nr).getPlugin().connect(address, communicationInboundPortURI);
@@ -50,7 +50,7 @@ public class Node_TerminalCommInboundPort extends AbstractInboundPort implements
 
 	@Override
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_TerminalP.ConnectRouting_URI,
 				nr -> {
 					try {
 						((Node_TerminalI)nr).getPlugin().connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
@@ -63,7 +63,7 @@ public class Node_TerminalCommInboundPort extends AbstractInboundPort implements
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_TerminalP.Transmit_MESSAGES_URI,				
 				nr -> {
 					try {
 						((Node_TerminalI)nr).getPlugin().transmitMessage(m);
@@ -76,12 +76,12 @@ public class Node_TerminalCommInboundPort extends AbstractInboundPort implements
 
 	@Override
 	public boolean hasRouteFor(AddressI address) throws Exception{
-		return this.getOwner().handleRequest(c -> ((Node_Terminal)c).hasRouteFor(address));
+		return this.getOwner().handleRequest(Node_TerminalP.Has_Routes_URI, c -> ((Node_Terminal)c).hasRouteFor(address));
 	}
 
 	@Override
 	public void ping() throws Exception{
-		this.getOwner().handleRequest(c -> ((Node_Terminal)c).ping());
+		this.getOwner().handleRequest(Node_TerminalP.Ping_URI, c -> ((Node_Terminal)c).ping());
 	}
 
 
