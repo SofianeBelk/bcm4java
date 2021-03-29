@@ -14,6 +14,7 @@ import fr.bcm.node.routing.interfaces.RoutingCI;
 import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
 import fr.bcm.nodeWithPlugin.accesspoint.interfaces.Node_AccessPointI;
 import fr.bcm.nodeWithPlugin.routing.interfaces.Node_RoutingI;
+import fr.bcm.nodeWithPlugin.routing.plugins.Node_RoutingP;
 import fr.bcm.registration.interfaces.RegistrationCI;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
@@ -42,7 +43,7 @@ public class Node_AccessPointRoutingInboundPort extends AbstractInboundPort impl
 
 	@Override
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_RoutingP.UpdateAccessPoint_URI,				
 			nr -> {
 				try {
 					((Node_AccessPointI)nr).getPlugin().updateRouting(neighbour, routes);
@@ -56,7 +57,7 @@ public class Node_AccessPointRoutingInboundPort extends AbstractInboundPort impl
 
 	@Override
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_RoutingP.UpdateAccessPoint_URI,				
 				nr -> {
 					try {
 						((Node_AccessPointI)nr).getPlugin().updateAccessPoint(neighbour, numberOfHops);
