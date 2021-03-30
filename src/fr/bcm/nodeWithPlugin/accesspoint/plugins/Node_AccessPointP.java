@@ -61,7 +61,7 @@ public class Node_AccessPointP extends AbstractPlugin {
 	public static final String          UpdateAccessPoint_URI   = "Uodate_Access_Point";
 	public static final String			ConnectRouting_URI 		= "Connexion_via_les_tables_de_routing" ;
 	public static final String			Connect_URI            	= "Connexion" ;
-	public static final String		   	Transmit_MESSAGES_URI	= "filtrer_des_messages" ;
+	public static final String		   	Transmit_MESSAGES_URI	= "Transmettre_Message" ;
 	public static final String         	Has_Routes_URI			= "Has_routes_for";
 	public static final String         	Ping_URI 				= "ping";
 	
@@ -99,7 +99,7 @@ public class Node_AccessPointP extends AbstractPlugin {
         this.addOfferedInterface(CommunicationCI.class);
         this.addOfferedInterface(RoutingCI.class);
 		
-      //Executor Service
+        //Executor Service
         this.createNewExecutorService(UpdateRouting_URI, nbThreadUpdateRouting, false);
         this.createNewExecutorService(UpdateAccessPoint_URI, nbThreadUpdateAccessPoint, false);
 
@@ -123,8 +123,6 @@ public class Node_AccessPointP extends AbstractPlugin {
 	@Override
 	public void	initialise() throws Exception {
         super.initialise();
-        //add port
-        //
         this.napop = new Node_AccessPointOutboundPort(this.owner);
 		this.napip = new Node_AccessPointCommInboundPort(this.owner,this.getPluginURI());
 		this.naprip = new Node_AccessPointRoutingInboundPort(this.owner, this.getPluginURI());

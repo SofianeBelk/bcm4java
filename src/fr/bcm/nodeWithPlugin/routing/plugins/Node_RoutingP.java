@@ -64,7 +64,7 @@ public class Node_RoutingP extends AbstractPlugin{
 	public static final String          UpdateAccessPoint_URI   = "Uodate_Access_Point";
 	public static final String			ConnectRouting_URI 		= "Connexion_via_les_tables_de_routing" ;
 	public static final String			Connect_URI            	= "Connexion" ;
-	public static final String		   	Transmit_MESSAGES_URI	= "filtrer_des_messages" ;
+	public static final String		   	Transmit_MESSAGES_URI	= "Transmettre_messages" ;
 	public static final String         	Has_Routes_URI			= "Has_routes_for";
 	public static final String         	Ping_URI 				= "ping";
 		
@@ -156,17 +156,17 @@ public class Node_RoutingP extends AbstractPlugin{
 	
 	public void start() throws Exception {
 		this.logMessage("Tries to log in the manager");
-		
+		// Retrieve the list of devices to connect with
 		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrcip.getPortURI() , this.pointInitial, 1.5, nrrip.getPortURI());
 		this.logMessage("Logged");
 		
 		
-		// Current node connects to others nodes
+		// Connects to every device
 		for(ConnectionInfoI CInfo: devices) {
 			
+			// Default connection
+			// ciToAdd holds all the information on the device connection
 			ConnectionInformation ciToAdd = new ConnectionInformation(CInfo.getAddress());
-			
-			
 			Node_RoutingCommOutboundPort nrcop = new Node_RoutingCommOutboundPort(this.owner);
 			this.logMessage("Creating communication Port");
 			nrcop.publishPort();
@@ -180,7 +180,7 @@ public class Node_RoutingP extends AbstractPlugin{
 			this.logMessage(CInfo.getAddress().getAdress());
 			
 		
-			// Routing connection
+			// Routing connection if the device is routing
 			if(CInfo.getisRouting()) {
 				
 				this.logMessage("Ask for routing connection");
@@ -200,8 +200,6 @@ public class Node_RoutingP extends AbstractPlugin{
 				ciToAdd.setNrrop(nrrop);
 				this.logMessage("Accepted connection to communication + routing port");
 			}
-			
-			// Normal connection
 			else {
 				this.logMessage("Ask for connection");
 				nrcop.connect(address, this.nrcip.getPortURI());
@@ -211,6 +209,7 @@ public class Node_RoutingP extends AbstractPlugin{
 			ciToAdd.setcommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
 			ciToAdd.setNrcop(nrcop);
 			
+			// This blocks locks the array to add a new connection
 			lockForArrays.writeLock().lock();
 			this.addressConnected.add(ciToAdd);
 			lockForArrays.writeLock().unlock();
@@ -225,13 +224,14 @@ public class Node_RoutingP extends AbstractPlugin{
 		this.logMessage("Connected to all nearby devices");
 		
 		// Init routes with connected nodes
-		lockForArrays.writeLock().lock();
+		lockForArrays.readLock().lock();
 		for(ConnectionInformation a : addressConnected) {
 			routes.add(new RoutingInfo(a.getAddress(),a.getAddress()));
 		}
-		lockForArrays.writeLock().unlock();
+		lockForArrays.readLock().unlock();
 
 		// Update routes
+		lockForArrays.readLock().lock();
 		for(ConnectionInformation a : addressConnected) {
 			if(!(a.getNrrop() == null)) {
 				a.getNrrop().updateRouting(this.address, this.routes);
@@ -241,6 +241,7 @@ public class Node_RoutingP extends AbstractPlugin{
 				}
 			}
 		}
+		lockForArrays.readLock().unlock();
 		
 		
 		
@@ -316,7 +317,7 @@ public class Node_RoutingP extends AbstractPlugin{
 				continue;
 			}
 			
-			lockForArrays.writeLock().lock();
+			lockForArrays.readLock().lock();
 			for(RouteInfoI riInt : this.routes) {	
 				
 				// If route exists in current table
@@ -332,8 +333,9 @@ public class Node_RoutingP extends AbstractPlugin{
 					add = false;
 				}
 			}
+			lockForArrays.readLock().unlock();
 			
-
+			lockForArrays.writeLock().lock();
 			// Adds a new route to the table
 			if(add) {
 				RouteInfoI riAdd = riExt.clone();
@@ -505,8 +507,19 @@ public class Node_RoutingP extends AbstractPlugin{
 		}
 	}
 
-	public boolean hasRouteFor(AddressI address) throws Exception{
-		return false;
+	public int hasRouteFor(AddressI address) throws Exception{
+		int hops = -1;
+		lockForArrays.readLock().lock();
+		for(RouteInfoI riInt : this.routes) {	
+			// If route exists in current table
+			if(riInt.getDestination().equals(address)) {
+				// If the route is worth using
+				hops = riInt.getNumberOfHops();
+				break;
+			}
+		}
+		lockForArrays.readLock().unlock();
+		return hops;
 	}
 
 	public Object ping() throws Exception{
