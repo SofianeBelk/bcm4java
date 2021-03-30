@@ -79,6 +79,7 @@ public class Node_RoutingP extends AbstractPlugin{
 	
 	//locks
 	protected ReentrantReadWriteLock lockForArrays = new ReentrantReadWriteLock();
+	protected ReentrantReadWriteLock lockForRouteToAP = new ReentrantReadWriteLock();
 
 	
 	public Node_RoutingP() {
@@ -216,7 +217,9 @@ public class Node_RoutingP extends AbstractPlugin{
 
 			// Route to an access point
 			if(CInfo.getisAccessPoint()) {
+				this.lockForRouteToAP.writeLock().lock();
 				this.routeToAccessPoint = new RoutingInfo(null, CInfo.getAddress());
+				this.lockForRouteToAP.writeLock().unlock();
 				ciToAdd.setisAccessPoint(CInfo.getisAccessPoint());
 			}
 		}
@@ -236,9 +239,11 @@ public class Node_RoutingP extends AbstractPlugin{
 			if(!(a.getNrrop() == null)) {
 				a.getNrrop().updateRouting(this.address, this.routes);
 				
+				this.lockForRouteToAP.readLock().lock();
 				if(this.routeToAccessPoint != null) {
 					a.getNrrop().updateAccessPoint(this.address, this.routeToAccessPoint.getNumberOfHops());
 				}
+				this.lockForRouteToAP.readLock().unlock();
 			}
 		}
 		lockForArrays.readLock().unlock();
@@ -417,9 +422,11 @@ public class Node_RoutingP extends AbstractPlugin{
 		CInfo.setNrcop(nrcop);
 		CInfo.setNrrop(nrrop);
 		CInfo.getNrrop().updateRouting(this.address, this.routes);
+		this.lockForRouteToAP.readLock().lock();
 		if(this.routeToAccessPoint != null) {
 			CInfo.getNrrop().updateAccessPoint(this.address, this.routeToAccessPoint.getNumberOfHops());
 		}
+		this.lockForRouteToAP.readLock().unlock();
 		
 		lockForArrays.writeLock().lock();
 		this.addressConnected.add(CInfo);
@@ -463,6 +470,7 @@ public class Node_RoutingP extends AbstractPlugin{
 	public boolean sendMessageToNetwork(MessageI m) throws Exception {
 		
 		if(m.getAddress().isNetworkAdress()) {
+			this.lockForRouteToAP.readLock().lock();
 			if(this.routeToAccessPoint != null) {
 				for(ConnectionInformation ci: this.addressConnected) {
 					if(ci.getAddress().equals(this.routeToAccessPoint.getIntermediate())) {
@@ -472,6 +480,7 @@ public class Node_RoutingP extends AbstractPlugin{
 					}
 				}
 			}
+			this.lockForRouteToAP.readLock().unlock();
 		}
 		return false;
 	}
@@ -509,6 +518,13 @@ public class Node_RoutingP extends AbstractPlugin{
 
 	public int hasRouteFor(AddressI address) throws Exception{
 		int hops = -1;
+		
+		lockForArrays.readLock().lock();
+		if(address.equals(routeToAccessPoint.getDestination())) {
+			return routeToAccessPoint.getNumberOfHops();
+		}
+		lockForArrays.readLock().unlock();
+		
 		lockForArrays.readLock().lock();
 		for(RouteInfoI riInt : this.routes) {	
 			// If route exists in current table
@@ -528,6 +544,7 @@ public class Node_RoutingP extends AbstractPlugin{
 	
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception {
 		// Adding a new route to an access point if it doesn't exists
+		this.lockForRouteToAP.writeLock().lock();
 		if(this.routeToAccessPoint == null) {
 			this.routeToAccessPoint = new RoutingInfo(null, neighbour, numberOfHops+1);
 		}
@@ -538,6 +555,7 @@ public class Node_RoutingP extends AbstractPlugin{
 				this.routeToAccessPoint.setHops(numberOfHops + 1);
 			}
 		}
+		this.lockForRouteToAP.writeLock().unlock();
 	}
 	
 	// Used to generate a string to display routing table's informations

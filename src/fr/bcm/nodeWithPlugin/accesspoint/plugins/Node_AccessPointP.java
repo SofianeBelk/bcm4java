@@ -140,10 +140,14 @@ public class Node_AccessPointP extends AbstractPlugin {
 	public void start() throws Exception {
 		this.logMessage("Tries to log in the manager");
 		PositionI pointInitial = new Position(0,0);
+		// Retrieve the list of devices to connect with
 		Set<ConnectionInfoI> devices = this.napop.registerAccessPoint(address,napip.getPortURI() , pointInitial, 25.00, naprip.getPortURI());
 		this.logMessage("Logged");
-		// Current node connects to others nodes
+		
+		// Connects to every device
 		for(ConnectionInfoI CInfo: devices) {
+			// Default connection
+			// ciToAdd holds all the information on the device connection
 			ConnectionInformation ciToAdd = new ConnectionInformation(CInfo.getAddress());
 			
 			
@@ -315,8 +319,24 @@ public class Node_AccessPointP extends AbstractPlugin {
 		return null;
 	}
 
-	public boolean hasRouteFor(AddressI address) throws Exception{
-		return false;
+	public int hasRouteFor(AddressI address) throws Exception{
+		if(address.isNetworkAdress()) {
+			return 1;
+		}
+		else {
+			int hops = -1;
+			lockForArrays.readLock().lock();
+			for(RouteInfoI riInt : this.routes) {	
+				// If route exists in current table
+				if(riInt.getDestination().equals(address)) {
+					// If the route is worth using
+					hops = riInt.getNumberOfHops();
+					break;
+				}
+			}
+			lockForArrays.readLock().unlock();
+			return hops;
+		}
 	}
 
 	public Object ping() throws Exception{
