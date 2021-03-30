@@ -50,28 +50,10 @@ public class Node_TerminalCommInboundPort extends AbstractInboundPort implements
 
 	@Override
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		this.getOwner().runTask(Node_TerminalP.ConnectRouting_URI,
-				nr -> {
-					try {
-						((Node_TerminalI)nr).getPlugin().connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			);
 	}
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
-		this.getOwner().runTask(Node_TerminalP.Transmit_MESSAGES_URI,				
-				nr -> {
-					try {
-						((Node_TerminalI)nr).getPlugin().transmitMessage(m);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			);
 	}
 
 	@Override
