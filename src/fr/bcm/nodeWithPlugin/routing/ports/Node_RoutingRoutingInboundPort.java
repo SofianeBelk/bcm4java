@@ -42,7 +42,7 @@ public class Node_RoutingRoutingInboundPort extends AbstractInboundPort implemen
 
 	@Override
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_RoutingP.UpdateRouting_URI,				
 			nr -> {
 				try {
 					((Node_RoutingI)nr).getPlugin().updateRouting(neighbour, routes);
@@ -56,7 +56,7 @@ public class Node_RoutingRoutingInboundPort extends AbstractInboundPort implemen
 
 	@Override
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_RoutingP.UpdateAccessPoint_URI,				
 				nr -> {
 					try {
 						((Node_RoutingI)nr).getPlugin().updateAccessPoint(neighbour, numberOfHops);

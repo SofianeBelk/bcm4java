@@ -47,12 +47,11 @@ public class CVM extends AbstractCVM {
 				new Object[]{});
 		assert	this.isDeployedComponent(uri);
 		
-
 		uri= AbstractComponent.createComponent(
 				Ordinateur.class.getCanonicalName(),
 				new Object[]{});
 		assert	this.isDeployedComponent(uri);
-		
+
 		super.deploy();
 	}
 	

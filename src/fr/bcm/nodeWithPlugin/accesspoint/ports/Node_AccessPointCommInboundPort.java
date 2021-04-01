@@ -7,7 +7,9 @@ import fr.bcm.connexion.interfaces.ConnectionInfoI;
 import fr.bcm.node.terminal.components.Node_Terminal;
 import fr.bcm.node.terminal.interfaces.Node_TerminalCI;
 import fr.bcm.nodeWithPlugin.accesspoint.interfaces.Node_AccessPointI;
+import fr.bcm.nodeWithPlugin.accesspoint.plugins.Node_AccessPointP;
 import fr.bcm.nodeWithPlugin.routing.interfaces.Node_RoutingI;
+import fr.bcm.nodeWithPlugin.routing.plugins.Node_RoutingP;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.interfaces.AddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
@@ -36,7 +38,7 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 
 	@Override
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_AccessPointP.Connect_URI,		
 			nr -> {
 				try {
 					((Node_AccessPointI)nr).getPlugin().connect(address, communicationInboundPortURI);
@@ -50,7 +52,7 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 	@Override
 	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_AccessPointP.ConnectRouting_URI,			
 			nr -> {
 				try {
 					((Node_AccessPointI)nr).getPlugin().connectRouting(address, communicationInboundPortURI, routingInboundPortURI);
@@ -63,7 +65,7 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
-		this.getOwner().runTask(				
+		this.getOwner().runTask(Node_AccessPointP.Transmit_MESSAGES_URI,
 			nr -> {
 				try {
 					((Node_AccessPointI)nr).getPlugin().transmitMessage(m);
@@ -76,12 +78,12 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 
 	@Override
 	public boolean hasRouteFor(AddressI address) throws Exception{
-		return this.getOwner().handleRequest(c -> ((Node_AccessPoint)c).hasRouteFor(address));
+		return this.getOwner().handleRequest(Node_AccessPointP.Has_Routes_URI,c -> ((Node_AccessPoint)c).hasRouteFor(address));
 	}
 
 	@Override
 	public void ping() throws Exception{
-		this.getOwner().handleRequest(c -> ((Node_AccessPoint)c).ping());
+		this.getOwner().handleRequest(Node_AccessPointP.Ping_URI,c -> ((Node_AccessPoint)c).ping());
 	}
 
 

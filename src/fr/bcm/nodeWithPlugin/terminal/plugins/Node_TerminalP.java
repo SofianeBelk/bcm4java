@@ -3,6 +3,7 @@ package fr.bcm.nodeWithPlugin.terminal.plugins;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import fr.bcm.connexion.classes.ConnectionInformation;
 import fr.bcm.connexion.connectors.CommunicationConnector;
@@ -26,7 +27,10 @@ import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
 public class Node_TerminalP extends AbstractPlugin {
-	private static final long serialVersionUID = 1L ;
+	public static final long 			serialVersionUID = 1L ;
+	
+	
+	
 	private int id;
 	protected ComponentI owner;
 	protected String URIportCommunication; 
@@ -36,10 +40,41 @@ public class Node_TerminalP extends AbstractPlugin {
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInformation> addressConnected= new ArrayList<>();
-
+	
 	private int NumberOfNeighboorsToSend = 2;
 	private PositionI pointInitial;
-
+	
+	
+	// // Thread 
+	
+	// Thread URI
+	public static final String			Connect_URI            	= "Connexion" ;
+	public static final String         	Has_Routes_URI			= "Has_routes_for";
+	public static final String         	Ping_URI 				= "ping";
+	
+	// Thread Distribution
+	private int nbThreadConnect = 1;
+	private int nbThreadConnectRouting = 1;
+	private int nbThreadTransmitMessage = 1;
+	private int nbThreadHasRouteFor = 1;
+	private int nbThreadPing = 1;
+	
+	// Locks
+	protected ReentrantReadWriteLock lockForArrays = new ReentrantReadWriteLock();
+	
+	
+	public Node_TerminalP() {
+		
+	}
+	
+	public Node_TerminalP(int C, int nbThreadConnectRouting, int nbThreadTransmitMessage, int nbThreadHasRouteFor, int nbThreadPing) {
+		this.nbThreadPing=nbThreadPing;
+		this.nbThreadConnectRouting=nbThreadConnectRouting;
+		this.nbThreadTransmitMessage=nbThreadTransmitMessage;
+		this.nbThreadHasRouteFor=nbThreadHasRouteFor;
+		this.nbThreadPing=nbThreadPing;
+	}
+	
 	@Override
 	public void	 installOn(ComponentI owner) throws Exception
 	{
@@ -53,6 +88,12 @@ public class Node_TerminalP extends AbstractPlugin {
 		this.addRequiredInterface(Node_TerminalCI.class);
         this.addOfferedInterface(CommunicationCI.class);
        
+		//ExecutoreServices
+        this.createNewExecutorService(Connect_URI, nbThreadConnect, false);
+		this.createNewExecutorService(Has_Routes_URI, nbThreadHasRouteFor, false);
+		
+		this.createNewExecutorService(Ping_URI, nbThreadPing, false);
+		
 		
 		// Enable logs
 		this.owner.toggleLogging();
@@ -69,7 +110,6 @@ public class Node_TerminalP extends AbstractPlugin {
         this.id = Node_Terminal.node_terminal_id;
 		Node_Terminal.node_terminal_id += 1;
 		this.pointInitial = new Position(0,this.id);
-        
         //add port 
         this.ntop = new Node_TerminalOutBoundPort(this.owner);
 		this.ntcip = new Node_TerminalCommInboundPort(this.owner,this.getPluginURI());
@@ -80,16 +120,16 @@ public class Node_TerminalP extends AbstractPlugin {
 				this.ntop.getPortURI(),
 				GestionnaireReseau.GS_URI,
 				NodeConnector.class.getCanonicalName());
-		
 	}
 	
 	public void start() throws Exception {
 		 this.logMessage("Tries to log in the manager");
+		 
+		 	// Retrieve the list of devices to connect with
 			Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntcip.getPortURI(),this.pointInitial , 1.5);
 			this.logMessage("Logged");
 			
-			// Current node connects to others nodes
-			
+			// Connects to every device
 			for(ConnectionInfoI CInfo: devices) {
 				ConnectionInformation ciToAdd = new ConnectionInformation(CInfo.getAddress());
 				Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this.owner);
@@ -105,13 +145,16 @@ public class Node_TerminalP extends AbstractPlugin {
 				}catch(Exception e) {
 					e.printStackTrace();
 				}
-				
 				ntcop.connect(address, this.ntcip.getPortURI());
-				node_CommOBP.add(ntcop);
 				
+				// This blocks lock arrays to add a new connection into it
+				lockForArrays.writeLock().lock();
+				node_CommOBP.add(ntcop);
 				ciToAdd.setcommunicationInboundPortURI(CInfo.getCommunicationInboundPortURI());
 				ciToAdd.setNtcop(ntcop);
 				this.addressConnected.add(ciToAdd);
+				lockForArrays.writeLock().unlock();
+				
 			}
 			this.logMessage("Connected to all nearby devices");
 	}
@@ -122,8 +165,6 @@ public class Node_TerminalP extends AbstractPlugin {
 	{		
 		super.finalise();
 		this.owner.doPortDisconnection(this.ntop.getPortURI());
-
-
 	}
 
 	
@@ -149,63 +190,38 @@ public class Node_TerminalP extends AbstractPlugin {
 		this.logMessage("Creating comm port");
 		Node_TerminalCommOutboundPort ntcop = new Node_TerminalCommOutboundPort(this.owner);
 		ntcop.publishPort();
-		
 		this.owner.doPortConnection(
 				ntcop.getPortURI(), 
 				communicationInboundPortURI, 
 				CommunicationConnector.class.getCanonicalName());
 		this.logMessage("Connected comm port to device");
 		
+		
+		// This blocks lock arrays to add a new connection into it
+		lockForArrays.writeLock().lock();
 		node_CommOBP.add(ntcop);
 		CInfo.setNtcop(ntcop);
 		this.addressConnected.add(CInfo);
+		lockForArrays.writeLock().unlock();
+		
 		this.logMessage("Added " + address.getAdress() + " to connections");
 
 		return null;
 	}
 
-	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
-		return null;
+	// Doesn't have a routing ability
+	public void connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 	}
-
-	public Object transmitMessage(MessageI m) throws Exception {
-		
-		m.decrementHops();
-		m.addAddressToHistory(this.address);
-		
-		
-		
-		if(m.getAddress().equals(this.address)) {
-			this.logMessage("Received a message : " + m.getContent());
-		}
-		else {
-			if(m.stillAlive()) {
-				int numberSent = 0;
-				for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {					
-					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
-					if(!m.isInHistory(addressToTransmitTo)) {
-						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
-						MessageI messageToSend = m.copy();
-						this.node_CommOBP.get(i).transmitMessage(messageToSend);
-						numberSent += 1;
-					}
-					else {
-						this.logMessage("No node to send message to");
-					}
-				}
-			}
-			else {
-				this.logMessage("Message dead");
-			}
-		}
-		
-		return null;
+	
+	// Doesn't transmit message
+	public void transmitMessage(MessageI m) throws Exception {
 	}
 
 	public boolean hasRouteFor(AddressI address) throws Exception{
 		return false;
 	}
 
+	// Used to answer if the node is still active
 	public Object ping() throws Exception{
 		return null;
 	}
