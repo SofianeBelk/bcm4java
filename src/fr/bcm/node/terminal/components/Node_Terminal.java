@@ -10,13 +10,9 @@ import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
 import fr.bcm.node.terminal.ports.Node_TerminalCommInboundPort;
 import fr.bcm.node.terminal.ports.Node_TerminalOutBoundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
-import fr.bcm.utils.address.classes.Address;
-import fr.bcm.utils.address.classes.NetworkAddress;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
-import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
-import fr.bcm.utils.message.classes.Message;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
 import fr.bcm.utils.nodeInfo.interfaces.PositionI;
@@ -27,30 +23,50 @@ import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
 import java.util.List;
 import java.util.Set;
-import java.awt.Point;
 import java.util.ArrayList;
-import java.util.UUID;
 
+/**
+ * classe Node_Terminal qui représente le nœud terminal dans notre réseau
+ * @author Nguyen, Belkhir
+ **/
 
 @RequiredInterfaces(required = {CommunicationCI.class, Node_TerminalCI.class})
 @OfferedInterfaces (offered = {CommunicationCI.class})
 
 public class Node_Terminal extends AbstractComponent{
 	
+	/** un compteur qui permet d'identifier notre noeud **/
 	public static int node_terminal_id = 1;
 	
+	/** l'identifiant de notre nœud terminal **/
 	private int id;
 	
+	/** le port sortant du nœud terminal **/
 	protected Node_TerminalOutBoundPort ntop;
+	
+	/** le port entrant "CommunicationCI" du nœud terminal **/
 	protected Node_TerminalCommInboundPort ntip;
 	
+	/** la liste des ports sortant "CommunicationCI" du nœud terminal **/
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
+	
+	/** l'adresse du nœud terminal **/
 	private NodeAddress address = new NodeAddress();
+	
+	/** la liste des adresses accessible à partir du nœud terminal **/
 	private List<ConnectionInformation> addressConnected= new ArrayList<>();
 	
+	/** le nombre e tentative pour envoyais un message **/
 	private int NumberOfNeighboorsToSend = 2;
+	
+	/** la position initial du nœud terminal **/
 	private PositionI pointInitial;
 	
+	
+	/**
+	 * Constructeur qui crée une instance du nœud terminal
+	 * @throws Exception
+	 */
 	protected Node_Terminal() throws Exception {
 		super(3,0); 
 		this.id = node_terminal_id;
@@ -74,6 +90,10 @@ public class Node_Terminal extends AbstractComponent{
 	}
 
 
+	/**--------------------------------------------------
+	 *--------------  Component life-cycle -------------
+	  --------------------------------------------------**/
+	
 	@Override
 	public synchronized void finalise() throws Exception {
 		super.finalise();
@@ -136,6 +156,15 @@ public class Node_Terminal extends AbstractComponent{
 		
 	}
 
+	/** ------------------------- Services ------------------------**/
+	
+	/**
+	 * cette méthode permet a un voisin de se connecter 
+	 * @param address : l'adresse du voisin
+	 * @param communicationInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		
 		this.logMessage("Someone asked for connection");
@@ -160,9 +189,24 @@ public class Node_Terminal extends AbstractComponent{
 		return null;
 	}
 
+	/**
+	 * Cette méthode est appeler par le nœud terminal s'il a la capacité à router des messages 
+	 * @param address
+	 * @param communicationInboundPortURI
+	 * @param routingInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		return null;
 	}
+	
+	/**
+	 * cette méthode permet de trasmettre un message
+	 * @param m : le message à transmettre
+	 * @return null
+	 * @throws Exception
+	 */
 
 	public Object transmitMessage(MessageI m) throws Exception {
 		
@@ -197,11 +241,23 @@ public class Node_Terminal extends AbstractComponent{
 		
 		return null;
 	}
+	
+	/**
+	 * Cette méthode vérifie s'il existe une route vers une adresse particulière
+	 * @param address : l'adresse a vérifié
+	 * @return true si il existe une route
+	 * @throws Exception
+	 */
 
 	public boolean hasRouteFor(AddressI address) throws Exception{
 		return false;
 	}
-
+   
+	/**
+	 * Cette méthode permet de vérifier le voisin est encore présent
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object ping() throws Exception{
 		return null;
 	}
