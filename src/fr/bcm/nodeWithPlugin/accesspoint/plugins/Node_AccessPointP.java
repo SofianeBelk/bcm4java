@@ -281,7 +281,7 @@ public class Node_AccessPointP extends AbstractPlugin {
 		return null;
 	}
 
-	public Object transmitMessage(MessageI m) throws Exception {
+	public void transmitMessage(MessageI m) throws Exception {
 		
 
 		m.decrementHops();
@@ -289,7 +289,7 @@ public class Node_AccessPointP extends AbstractPlugin {
 		
 		if(m.getAddress().isNetworkAdress()) {
 			this.logMessage("Sent " + m.getContent() + " to network");
-			return null;
+			return;
 		}
 		
 		if(m.getAddress().equals(this.address)) {
@@ -316,7 +316,7 @@ public class Node_AccessPointP extends AbstractPlugin {
 				this.logMessage("Message dead");
 			}
 		}
-		return null;
+		return;
 	}
 
 	public int hasRouteFor(AddressI address) throws Exception{

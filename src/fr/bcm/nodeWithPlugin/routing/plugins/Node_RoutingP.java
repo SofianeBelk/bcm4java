@@ -156,12 +156,13 @@ public class Node_RoutingP extends AbstractPlugin{
 	}
 	
 	public void start() throws Exception {
+		
 		this.logMessage("Tries to log in the manager");
 		// Retrieve the list of devices to connect with
 		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrcip.getPortURI() , this.pointInitial, 1.5, nrrip.getPortURI());
 		this.logMessage("Logged");
 		
-		
+
 		// Connects to every device
 		for(ConnectionInfoI CInfo: devices) {
 			
@@ -250,10 +251,15 @@ public class Node_RoutingP extends AbstractPlugin{
 		
 		
 		
-		
+		Thread.sleep(3000);
+		System.out.println("Sending ping");
+		for(ConnectionInformation ci: this.addressConnected) {
+			ci.getNrcop().ping();
+		}
+		System.out.println("Ending ping");
 		
 		/* Testing part, sending messages */
-		
+		/*
 		// Registering first routing node as the address to send the message to for testing
 		if(this.id == 1) {
 			Node_Routing.addressToSendMessage = this.address;
@@ -261,6 +267,8 @@ public class Node_RoutingP extends AbstractPlugin{
 		
 		Thread.yield();
 		Thread.sleep(3000);
+		
+		
 		// Sending a message to the first routing node from the third routing node
 		if(this.id == 3) {
 			if(Node_Routing.addressToSendMessage != null) {
@@ -280,6 +288,7 @@ public class Node_RoutingP extends AbstractPlugin{
 				this.transmitMessage(m);
 			}
 		}
+		*/
 	}
 
 	
@@ -436,7 +445,7 @@ public class Node_RoutingP extends AbstractPlugin{
 		return null;
 	}
 
-	public Object transmitMessage(MessageI m) throws Exception {
+	public void transmitMessage(MessageI m) throws Exception {
 		this.logMessage("Routing tables before sending message " + this.routingTableToString());
 		m.decrementHops();
 		m.addAddressToHistory(this.address);
@@ -449,12 +458,12 @@ public class Node_RoutingP extends AbstractPlugin{
 				
 				// Sending to nearest access point if possible
 				if(sendMessageToNetwork(m)) {
-					return null;
+					return;
 				}
 				
 				// Try to send it from routing tables
 				if(sendMessageViaRouting(m)) {
-					return null;
+					return;
 				}
 				
 				// Message par Innondation 
@@ -464,7 +473,7 @@ public class Node_RoutingP extends AbstractPlugin{
 				this.logMessage("Message dead");
 			}
 		}
-		return null;
+		return;
 	}
 	
 	public boolean sendMessageToNetwork(MessageI m) throws Exception {

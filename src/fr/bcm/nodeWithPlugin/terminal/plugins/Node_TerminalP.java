@@ -157,6 +157,29 @@ public class Node_TerminalP extends AbstractPlugin {
 				
 			}
 			this.logMessage("Connected to all nearby devices");
+			
+			Thread.sleep(2000);
+			this.logMessage("Disconnecting");
+			this.ntop.unregister(address);
+			this.disconnect();
+			this.logMessage("Disconnected");
+			
+	}
+	
+	public void disconnect() throws Exception{
+		this.ntcip.unpublishPort();
+		this.ntop.unpublishPort();
+		for(ConnectionInformation ci: this.addressConnected) {
+			ci.getNtcop().unpublishPort();
+			ci.getNtcop().doDisconnection();
+			ci.getNtcop().destroyPort();
+		}
+		this.ntop.doDisconnection();
+		this.ntop.destroyPort();
+		this.ntcip.doDisconnection();
+		this.ntcip.destroyPort();
+		
+		
 	}
 
 	
@@ -182,7 +205,7 @@ public class Node_TerminalP extends AbstractPlugin {
 	}
 
 
-	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {	
+	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {	
 		this.logMessage("Someone asked for connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
 		CInfo.setCommunicationInboundPortURI(communicationInboundPortURI);
@@ -205,8 +228,6 @@ public class Node_TerminalP extends AbstractPlugin {
 		lockForArrays.writeLock().unlock();
 		
 		this.logMessage("Added " + address.getAdress() + " to connections");
-
-		return null;
 	}
 
 	// Doesn't have a routing ability

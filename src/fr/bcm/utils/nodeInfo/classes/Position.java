@@ -11,10 +11,6 @@ public class Position implements PositionI{
 		this.y = y;
 	}
 	
-	public double distance(Position p) {
-		return Math.sqrt(Math.pow((p.getX()) - this.x, 2) + Math.pow((p.getY()) - this.y, 2));
-	}
-	
 	public int getX() {
 		return x;
 	}

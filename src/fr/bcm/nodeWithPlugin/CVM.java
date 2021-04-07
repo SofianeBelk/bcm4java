@@ -22,12 +22,12 @@ public class CVM extends AbstractCVM {
 		assert	this.isDeployedComponent(uri) ;
 		
 		
-
+		/*
 		uri =AbstractComponent.createComponent(
 				PC_Terminal.class.getCanonicalName(),
 				new Object[]{});
 		assert	this.isDeployedComponent(uri);
-
+		*/
 		
 		
 		uri = AbstractComponent.createComponent(
@@ -35,7 +35,7 @@ public class CVM extends AbstractCVM {
 				new Object[]{}) ;
 		assert	this.isDeployedComponent(uri);
 		
-		
+		/*
 		uri= AbstractComponent.createComponent(
 				Ordinateur.class.getCanonicalName(),
 				new Object[]{});
@@ -46,6 +46,7 @@ public class CVM extends AbstractCVM {
 				Ordinateur.class.getCanonicalName(),
 				new Object[]{});
 		assert	this.isDeployedComponent(uri);
+		*/
 		
 		uri= AbstractComponent.createComponent(
 				Ordinateur.class.getCanonicalName(),

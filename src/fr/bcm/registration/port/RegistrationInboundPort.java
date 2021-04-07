@@ -10,6 +10,8 @@ import fr.bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import fr.bcm.connexion.interfaces.ConnectionInfoI;
+import fr.bcm.nodeWithPlugin.routing.interfaces.Node_RoutingI;
+import fr.bcm.nodeWithPlugin.routing.plugins.Node_RoutingP;
 import fr.bcm.registration.component.GestionnaireReseau;
 
 public class RegistrationInboundPort 
@@ -58,7 +60,7 @@ implements RegistrationCI
 
 	@Override
 	public void unregister(AddressI address) throws Exception {
-		this.getOwner().handleRequest(c -> ((GestionnaireReseau)c).unregister(address));
+		this.getOwner().runTask(c -> ((GestionnaireReseau)c).unregister(address));
 	}
 
 	

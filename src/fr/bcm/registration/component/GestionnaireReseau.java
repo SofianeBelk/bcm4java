@@ -128,7 +128,7 @@ public class GestionnaireReseau extends AbstractComponent{
 		return (Set<ConnectionInfoI>) portee;		
 	}
 
-	public Object unregister(AddressI address) {
+	public void unregister(AddressI address) {
 		Iterator<ConnectionInfoI> iter = this.mySet.iterator();
 		while(iter.hasNext()) {
 			ConnectionInfoI cinfo = (ConnectionInfoI)iter.next();
@@ -138,7 +138,6 @@ public class GestionnaireReseau extends AbstractComponent{
 				break;
 			}
 		}
-		return null;
 	}
 
 
