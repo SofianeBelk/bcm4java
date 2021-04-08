@@ -1,5 +1,6 @@
 package fr.bcm.node.accesspoint.components;
 
+import java.rmi.ConnectException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,6 +51,7 @@ public class Node_AccessPoint extends AbstractComponent{
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInformation> addressConnected = new ArrayList<>();
 	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
+	private boolean isAlive = false;
 	
 	private int NumberOfNeighboorsToSend = 2;
 	
@@ -116,6 +118,7 @@ public class Node_AccessPoint extends AbstractComponent{
 		this.logMessage("Tries to log in the manager");
 		PositionI pointInitial = new Position(0,0);
 		Set<ConnectionInfoI> devices = this.napop.registerAccessPoint(address,napip.getPortURI() , pointInitial, 25.00, naprip.getPortURI());
+		this.isAlive=true;
 		this.logMessage("Logged");
 		// Current node connects to others nodes
 		for(ConnectionInfoI CInfo: devices) {
@@ -151,7 +154,8 @@ public class Node_AccessPoint extends AbstractComponent{
 		}
 
 		this.logMessage("Connected to all nearby devices");
-				
+		this.napop.unregister(this.address);
+		this.isAlive = false;
 	}
 	
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
@@ -264,7 +268,10 @@ public class Node_AccessPoint extends AbstractComponent{
 	}
 
 	public Object ping() throws Exception{
-		return null;
+		if(! this.isAlive) {
+			throw new ConnectException("node dead"); 
+		}
+		else return null;
 	}
 
 

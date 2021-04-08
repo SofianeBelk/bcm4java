@@ -1,5 +1,6 @@
 package fr.bcm.node.routing.components;
 
+import java.rmi.ConnectException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -80,6 +81,8 @@ public class Node_Routing extends AbstractComponent{
 	/** la position initial du nœud routing **/
 	private PositionI pointInitial;
 	
+	private boolean isAlive = false;
+	
 	/**
 	 * Constructeur qui crée une instance du nœud routing
 	 * @throws Exception
@@ -155,6 +158,7 @@ public class Node_Routing extends AbstractComponent{
 		this.logMessage("Tries to log in the manager");
 		
 		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrcip.getPortURI() , this.pointInitial, 1.5, nrrip.getPortURI());
+		this.isAlive = true;
 		this.logMessage("Logged");
 		
 		
@@ -264,6 +268,10 @@ public class Node_Routing extends AbstractComponent{
 				this.transmitMessage(m);
 			}
 		}
+		
+		//désenregistrement
+		this.nrop.unregister(this.address);
+		this.isAlive = false;
 	}
 
 	/** ------------------------- Services ------------------------**/
@@ -473,7 +481,10 @@ public class Node_Routing extends AbstractComponent{
 	 * @throws Exception
 	 */
 	public Object ping() throws Exception{
-		return null;
+		if(! this.isAlive) {
+			throw new ConnectException("node dead"); 
+		}
+		else return null;
 	}
 	
 	/**

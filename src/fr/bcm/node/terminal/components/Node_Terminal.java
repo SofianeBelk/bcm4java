@@ -23,6 +23,7 @@ import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
 import java.util.List;
 import java.util.Set;
+import java.rmi.ConnectException;
 import java.util.ArrayList;
 
 /**
@@ -61,6 +62,8 @@ public class Node_Terminal extends AbstractComponent{
 	
 	/** la position initial du nœud terminal **/
 	private PositionI pointInitial;
+	
+	private boolean isAlive = false;
 	
 	
 	/**
@@ -125,6 +128,7 @@ public class Node_Terminal extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),this.pointInitial , 1.5);
+		this.isAlive = true;
 		this.logMessage("Logged");
 		
 		// Current node connects to others nodes
@@ -153,7 +157,8 @@ public class Node_Terminal extends AbstractComponent{
 			this.addressConnected.add(ciToAdd);
 		}
 		this.logMessage("Connected to all nearby devices");
-		
+		this.ntop.unregister(this.address);
+		this.isAlive = false;
 	}
 
 	/** ------------------------- Services ------------------------**/
@@ -253,13 +258,17 @@ public class Node_Terminal extends AbstractComponent{
 		return false;
 	}
    
+	
 	/**
 	 * Cette méthode permet de vérifier le voisin est encore présent
 	 * @return null
 	 * @throws Exception
 	 */
 	public Object ping() throws Exception{
-		return null;
+		if(! this.isAlive) {
+			throw new ConnectException("node dead"); 
+		}
+		else return null;
 	}
 	
 }
