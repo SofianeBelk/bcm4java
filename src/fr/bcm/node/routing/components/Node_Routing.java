@@ -81,6 +81,7 @@ public class Node_Routing extends AbstractComponent{
 	/** la position initial du nœud routing **/
 	private PositionI pointInitial;
 	
+	/**un boolean qui nous permet de savoir si notre composant est toujours en vie**/
 	private boolean isAlive = false;
 	
 	/**
@@ -268,7 +269,14 @@ public class Node_Routing extends AbstractComponent{
 				this.transmitMessage(m);
 			}
 		}
-		
+		//ping
+		this.logMessage("Ping neighbour");
+		try {
+			this.nrcip.ping();
+		}catch(Exception e) {
+			this.logMessage("Dead neighbour");
+		}
+		this.logMessage("neighbour always alive");
 		//désenregistrement
 		this.nrop.unregister(this.address);
 		this.isAlive = false;
@@ -535,6 +543,7 @@ public class Node_Routing extends AbstractComponent{
 		toString = "AFTER " + this.routingTableToString();
 		this.logMessage(toString);
 	}
+	
 	/**
 	 * cette méthode nous permet de mettre à jour la route vers le point d’accès le plus proche 
 	 * @param neighbour

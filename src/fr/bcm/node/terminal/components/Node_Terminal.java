@@ -63,6 +63,7 @@ public class Node_Terminal extends AbstractComponent{
 	/** la position initial du nœud terminal **/
 	private PositionI pointInitial;
 	
+	/** un boolean qui permet de savoir si notre composant est toujours vivant**/
 	private boolean isAlive = false;
 	
 	
@@ -157,6 +158,13 @@ public class Node_Terminal extends AbstractComponent{
 			this.addressConnected.add(ciToAdd);
 		}
 		this.logMessage("Connected to all nearby devices");
+		this.logMessage("Ping neighbour");
+		try {
+			this.ntip.ping();
+		}catch(Exception e) {
+			this.logMessage("Dead neighbour");
+		}
+		this.logMessage("neighbour always alive");
 		this.ntop.unregister(this.address);
 		this.isAlive = false;
 	}

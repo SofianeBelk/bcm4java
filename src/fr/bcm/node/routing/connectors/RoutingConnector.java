@@ -9,12 +9,14 @@ import fr.sorbonne_u.components.connectors.AbstractConnector;
 
 public class RoutingConnector extends AbstractConnector implements RoutingCI {
 
+	/** appel au service qui permet de mettre a jour de la table de routage  si cette route est plus intéressante que la précédente*/
 	@Override
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
 		// TODO Auto-generated method stub
 		((RoutingCI)this.offering).updateRouting(neighbour, routes);
 	}
 
+	/** appel au service  qui permet de mettre à jour la route vers le point d’accès le plus proche*/
 	@Override
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception {
 		// TODO Auto-generated method stub

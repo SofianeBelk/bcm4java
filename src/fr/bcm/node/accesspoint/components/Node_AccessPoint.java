@@ -19,13 +19,9 @@ import fr.bcm.node.accesspoint.ports.Node_AccessPointRoutingOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.routing.connectors.RoutingConnector;
 import fr.bcm.node.routing.interfaces.RoutingCI;
-import fr.bcm.node.routing.ports.Node_RoutingCommOutboundPort;
-import fr.bcm.node.routing.ports.Node_RoutingRoutingOutboundPort;
-import fr.bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.bcm.utils.address.classes.NodeAddress;
 import fr.bcm.utils.address.interfaces.AddressI;
-import fr.bcm.utils.address.interfaces.NetworkAddressI;
 import fr.bcm.utils.address.interfaces.NodeAddressI;
 import fr.bcm.utils.message.interfaces.MessageI;
 import fr.bcm.utils.nodeInfo.classes.Position;
@@ -37,24 +33,47 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
+/**
+ * classe Node_AccessPoint qui représente le nœud Access point dans notre réseau
+ * @author Nguyen, Belkhir
+ **/
 
 @RequiredInterfaces(required = {Node_AccessPointCI.class, CommunicationCI.class, RoutingCI.class})
 @OfferedInterfaces (offered = {CommunicationCI.class, RoutingCI.class})
 
 public class Node_AccessPoint extends AbstractComponent{
 	
-
+	/** le port sortant du nœud access point **/
 	protected Node_AccessPointOutboundPort napop;
+	
+	/** le port entrant "CommunicationCI" du nœud access point **/
 	protected Node_AccessPointCommInboundPort napip;
+	
+	/** le port entrant du nœud access point **/
 	protected Node_AccessPointRoutingInboundPort naprip;
+	
+	/** la liste des ports sortant "CommunicationCI" du nœud access point  **/
 	protected List<Node_AccessPointCommOutboundPort> node_CommOBP = new ArrayList<>();
+	
+	/** l'adresse du nœud access point **/
 	private NodeAddress address = new NodeAddress();
+	
+	/** la liste des adresses accessible à partir du nœud access point **/
 	private List<ConnectionInformation> addressConnected = new ArrayList<>();
+	
+	/** la liste des adresses de la table de routage **/
 	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
+	
+	/**un boolean qui nous permet de savoir si notre composant est toujours en vie**/
 	private boolean isAlive = false;
 	
+	/** le nombre e tentative pour envoyais un message **/
 	private int NumberOfNeighboorsToSend = 2;
 	
+	/**
+	 * Constructeur qui crée une instance du nœud access point
+	 * @throws Exception
+	 */
 	protected Node_AccessPoint() throws Exception {
 		super(2,0);
 		this.napop = new Node_AccessPointOutboundPort(this);
@@ -75,6 +94,9 @@ public class Node_AccessPoint extends AbstractComponent{
 		this.logMessage("Node_AccessPoint " + this.address.getAdress());
 	}
 
+	/**--------------------------------------------------
+	 *--------------  Component life-cycle -------------
+	  --------------------------------------------------**/
 
 	@Override
 	public synchronized void finalise() throws Exception {
@@ -153,11 +175,27 @@ public class Node_AccessPoint extends AbstractComponent{
 			}
 		}
 
-		this.logMessage("Connected to all nearby devices");
+		this.logMessage("Connected to all nearby devices");this.logMessage("Ping neighbour");
+		try {
+			this.napip.ping();
+		}catch(Exception e) {
+			this.logMessage("Dead neighbour");
+		}
+		this.logMessage("neighbour always alive");
+		
 		this.napop.unregister(this.address);
 		this.isAlive = false;
 	}
 	
+	/** ------------------------- Services ------------------------**/
+
+	/**
+	 * cette méthode permet a un voisin de se connecter 
+	 * @param address : l'adresse du voisin
+	 * @param communicationInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		ConnectionInformation CInfo = new ConnectionInformation(address);
 		CInfo.setcommunicationInboundPortURI(communicationInboundPortURI);
@@ -182,6 +220,14 @@ public class Node_AccessPoint extends AbstractComponent{
 		return null;
 	}
 
+	/**
+	 * Cette méthode est appeler par le nœud  s'il a la capacité à router des messages 
+	 * @param address
+	 * @param communicationInboundPortURI
+	 * @param routingInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		this.logMessage("Someone asked connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
@@ -225,6 +271,12 @@ public class Node_AccessPoint extends AbstractComponent{
 		return null;
 	}
 
+	/**
+	 * cette méthode permet de trasmettre un message
+	 * @param m : le message à transmettre
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object transmitMessage(MessageI m) throws Exception {
 		
 
@@ -263,10 +315,21 @@ public class Node_AccessPoint extends AbstractComponent{
 		return null;
 	}
 
+	/**
+	 * Cette méthode vérifie s'il existe une route vers une adresse particulière
+	 * @param address : l'adresse a vérifié
+	 * @return true si il existe une route
+	 * @throws Exception
+	 */
 	public boolean hasRouteFor(AddressI address) throws Exception{
 		return false;
 	}
 
+	/**
+	 * Cette méthode permet de vérifier le voisin est encore présent
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object ping() throws Exception{
 		if(! this.isAlive) {
 			throw new ConnectException("node dead"); 
@@ -274,7 +337,12 @@ public class Node_AccessPoint extends AbstractComponent{
 		else return null;
 	}
 
-
+	/**
+	 * cette méthode nous permet de mettre a jours notre table de routage
+	 * @param neighbour
+	 * @param routes
+	 * @throws Exception
+	 */
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception{
 		boolean add;
 		
@@ -318,6 +386,12 @@ public class Node_AccessPoint extends AbstractComponent{
 		this.logMessage(toString);
 	}
 	
+	/**
+	 * cette méthode nous permet de mettre à jour la route vers le point d’accès le plus proche 
+	 * @param neighbour
+	 * @param numberOfHops
+	 * @throws Exception
+	 */
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
 		return;
 	}

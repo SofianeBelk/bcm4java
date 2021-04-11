@@ -11,17 +11,18 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 
 /**
- * Interface du port entrant "CommunicationCI"
+ * Classe Node_TerminalCommInboundPort definissant le comportement du port entrant obeissant a l'interface de CommunicationCI
  * @author Nguyen, belkhir
  *
  */
+
 public class Node_TerminalCommInboundPort extends AbstractInboundPort implements CommunicationCI{
 
 	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * Constructeur du port entrant
-	 * @param owner
+	 * @param owner : le composant utilisant ce port
 	 * @throws Exception
 	 */
 	public Node_TerminalCommInboundPort(ComponentI owner) throws Exception {
