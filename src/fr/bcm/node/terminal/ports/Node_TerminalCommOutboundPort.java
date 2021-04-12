@@ -9,7 +9,7 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
 /**
- * Interface du port sortant "CommunicationCI"
+ * classe du port sortant "CommunicationCI"
  * @author Nguyen, belkhir
  *
  */
@@ -19,7 +19,7 @@ public class Node_TerminalCommOutboundPort extends AbstractOutboundPort implemen
 	
 	/**
 	 * Constructeur du port sortant
-	 * @param owner
+	 * @param owner : le composant utilisant ce port
 	 * @throws Exception
 	 */
 
@@ -30,7 +30,7 @@ public class Node_TerminalCommOutboundPort extends AbstractOutboundPort implemen
 	/**
 	 * une variante du constructeur avec une URI 
 	 * @param ntopUri : l'URI
-	 * @param owner
+	 * @param owner : le composant utilisant ce port
 	 * @throws Exception
 	 */
 	public Node_TerminalCommOutboundPort(String ntopUri, ComponentI owner) throws Exception {

@@ -11,7 +11,7 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
 /**
- * Interface du port sortant "Node_TerminalCI"
+ * classe du port sortant "Node_TerminalCI"
  * @author Nguyen, belkhir
  *
  */
