@@ -16,11 +16,7 @@ import fr.bcm.node.accesspoint.ports.Node_AccessPointOutboundPort;
 import fr.bcm.node.accesspoint.ports.Node_AccessPointRoutingOutboundPort;
 import fr.bcm.node.connectors.NodeConnector;
 import fr.bcm.node.routing.connectors.RoutingConnector;
-import fr.bcm.node.routing.interfaces.Node_RoutingCI;
 import fr.bcm.node.routing.interfaces.RoutingCI;
-import fr.bcm.node.routing.ports.Node_RoutingCommInboundPort;
-import fr.bcm.node.routing.ports.Node_RoutingOutBoundPort;
-import fr.bcm.node.routing.ports.Node_RoutingRoutingInboundPort;
 import fr.bcm.nodeWithPlugin.accesspoint.ports.Node_AccessPointCommInboundPort;
 import fr.bcm.nodeWithPlugin.accesspoint.ports.Node_AccessPointRoutingInboundPort;
 import fr.bcm.registration.component.GestionnaireReseau;
@@ -35,43 +31,100 @@ import fr.bcm.utils.routing.interfaces.RouteInfoI;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
+/**
+ * classe Node_AccessPointP qui  est le plugin "greffons" qui correspand au  nœud AccessPoint dans notre réseau
+ * @author Nguyen, Belkhir
+ **/
 public class Node_AccessPointP extends AbstractPlugin {
+	
+	/** le port sortant du nœud access point **/
 	protected Node_AccessPointOutboundPort napop;
+	
+	/** le port entrant "CommunicationCI" du nœud access point **/
 	protected Node_AccessPointCommInboundPort napip;
+	
+	/** le port entrant du nœud access point **/
 	protected Node_AccessPointRoutingInboundPort naprip;
+	
+	/** la liste des ports sortant "CommunicationCI" du nœud access point  **/
 	protected List<Node_AccessPointCommOutboundPort> node_CommOBP = new ArrayList<>();
+	
+	/** l'adresse du nœud access point **/
 	private NodeAddress address = new NodeAddress();
+	
+	/** la liste des adresses accessible à partir du nœud access point **/
 	private List<ConnectionInformation> addressConnected = new ArrayList<>();
+	
+	/** la liste des adresses de la table de routage **/
 	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
 	
+	/** le nombre e tentative pour envoyais un message **/
 	private int NumberOfNeighboorsToSend = 2;
+	
 	protected ComponentI owner;
 	
-	
+	/**le nombre initial de thread pour la méthode UpdateRouting**/
 	private int nbThreadUpdateRouting =1;
+	
+	/**le nombre initial de thread pour la méthode Connect**/
 	private int nbThreadConnect = 1;
+	
+	/**le nombre initial de thread pour la méthode ConnectRouting**/
 	private int nbThreadConnectRouting = 1;
+	
+	/**le nombre initial de thread pour la méthode TransmitMessage**/
 	private int nbThreadTransmitMessage = 1;
+	
+	/**le nombre initial de thread pour la méthode HasRouteFor**/
 	private int nbThreadHasRouteFor = 1;
+	
+	/**le nombre initial de thread pour la méthode Ping**/
 	private int nbThreadPing = 1;
+	
+	/**le nombre initial de thread pour la méthode UpdateAccessPoint**/
 	private int nbThreadUpdateAccessPoint =1 ;
 	
 	// Thread URI
+	/**l'URI de la méthode UpdateRouting**/
 	public static final String          UpdateRouting_URI       = "Update_Routing";
+	
+	/**l'URI de la méthode UpdateAccessPoint**/
 	public static final String          UpdateAccessPoint_URI   = "Uodate_Access_Point";
+	
+	/**l'URI de la méthode ConnectRouting**/
 	public static final String			ConnectRouting_URI 		= "Connexion_via_les_tables_de_routing" ;
+	
+	/**l'URI de la méthode Connect**/
 	public static final String			Connect_URI            	= "Connexion" ;
+	
+	/**l'URI de la méthode TransmitMESSAGES**/
 	public static final String		   	Transmit_MESSAGES_URI	= "Transmettre_Message" ;
+	
+	/**l'URI de la méthode HasRoutesFor**/
 	public static final String         	Has_Routes_URI			= "Has_routes_for";
+	
+	/**l'URI de la méthode Ping**/
 	public static final String         	Ping_URI 				= "ping";
 	
 	protected ReentrantReadWriteLock lockForArrays = new ReentrantReadWriteLock();
 
-	
+	/**
+	 * Constructeur vide
+	 */
 	public Node_AccessPointP() {
 		
 	}
 
+	/**
+	 * Constructeur qui permet d'initialiser le nombre maximum de thread pour chaque méthode
+	 * @param nbThreadUpdateRouting
+	 * @param nbThreadConnect
+	 * @param nbThreadConnectRouting
+	 * @param nbThreadTransmitMessage
+	 * @param nbThreadHasRouteFor
+	 * @param nbThreadPing
+	 * @param nbThreadUpdateAccessPoint
+	 */
 	public Node_AccessPointP(int nbThreadUpdateRouting, int nbThreadConnect, int nbThreadConnectRouting, int nbThreadTransmitMessage, int nbThreadHasRouteFor, int nbThreadPing, int nbThreadUpdateAccessPoint) {
 		this.nbThreadUpdateRouting=nbThreadUpdateRouting;
 		this.nbThreadConnect=nbThreadConnect;
@@ -82,6 +135,10 @@ public class Node_AccessPointP extends AbstractPlugin {
 		this.nbThreadUpdateAccessPoint=nbThreadUpdateAccessPoint;
 	}
 	
+	
+	/**--------------------------------------------------
+	 *--------------  Component life-cycle -------------
+	  --------------------------------------------------**/
 	
 	@Override
 	public void	 installOn(ComponentI owner) throws Exception
@@ -211,6 +268,15 @@ public class Node_AccessPointP extends AbstractPlugin {
 		
 	}
 	
+	/** ------------------------- Services ------------------------**/
+
+	/**
+	 * cette méthode permet a un voisin de se connecter 
+	 * @param address : l'adresse du voisin
+	 * @param communicationInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		ConnectionInformation CInfo = new ConnectionInformation(address);
 		CInfo.setcommunicationInboundPortURI(communicationInboundPortURI);
@@ -236,6 +302,15 @@ public class Node_AccessPointP extends AbstractPlugin {
 		return null;
 	}
 
+	
+	/**
+	 * Cette méthode est appeler par le nœud routing s'il a la capacité à router des messages 
+	 * @param address
+	 * @param communicationInboundPortURI
+	 * @param routingInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		this.logMessage("Someone asked connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
@@ -281,6 +356,12 @@ public class Node_AccessPointP extends AbstractPlugin {
 		return null;
 	}
 
+	/**
+	 * cette méthode permet de trasmettre un message
+	 * @param m : le message à transmettre
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object transmitMessage(MessageI m) throws Exception {
 		
 
@@ -319,6 +400,13 @@ public class Node_AccessPointP extends AbstractPlugin {
 		return null;
 	}
 
+	
+	/**
+	 * Cette méthode vérifie s'il existe une route vers une adresse particulière
+	 * @param address : l'adresse a vérifié
+	 * @return true si il existe une route
+	 * @throws Exception
+	 */
 	public int hasRouteFor(AddressI address) throws Exception{
 		if(address.isNetworkAdress()) {
 			return 1;
@@ -339,11 +427,21 @@ public class Node_AccessPointP extends AbstractPlugin {
 		}
 	}
 
+	/**
+	 * Cette méthode permet de vérifier le voisin est encore présent
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object ping() throws Exception{
 		return null;
 	}
 
-
+	/**
+	 * cette méthode nous permet de mettre a jours notre table de routage
+	 * @param neighbour
+	 * @param routes
+	 * @throws Exception
+	 */
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception{
 		boolean add;
 		
@@ -391,6 +489,12 @@ public class Node_AccessPointP extends AbstractPlugin {
 		this.logMessage(toString);
 	}
 	
+	/**
+	 * cette méthode nous permet de mettre à jour la route vers le point d’accès le plus proche 
+	 * @param neighbour
+	 * @param numberOfHops
+	 * @throws Exception
+	 */
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
 		return;
 	}

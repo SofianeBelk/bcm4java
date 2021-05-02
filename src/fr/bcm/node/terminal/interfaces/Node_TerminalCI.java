@@ -10,7 +10,7 @@ import fr.sorbonne_u.components.interfaces.RequiredCI;
 
 /**
  * <p>
- * 	Interface de Composant pour le composant Node_Terminal  definissant toutes les foncationnalitéed que require par ce composant  
+ * 	Interface de Composant pour le composant Node_Terminal  definissant toutes les foncationnalitées  require par ce composant  
  * </p>
  * @author  Nguyen, Belkhir
  *
