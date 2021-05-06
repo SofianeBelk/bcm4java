@@ -1,0 +1,31 @@
+<deployment>
+   <hosts>
+    <host name="localhost"
+          dir="/home/belkhir/Documents/CPS/bcm4java/deploiement"/>
+  </hosts>
+  <cyclicBarrier   hostname="localhost" port="55253"/>
+  <globalRegistry  hostname="localhost" port="55252"/>
+  <rmiRegistryPort no="55999"/>
+  <jvms2hostnames>
+    <jvm2hostname jvmuri="NodeTerminaljvm"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="fr.bcm.DistributedCVM"/>
+        
+    <jvm2hostname jvmuri="NodeRoutingjvm"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="fr.bcm.DistributedCVM"/>
+        
+    <jvm2hostname jvmuri="NodeAccessPointjvm"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="fr.bcm.DistributedCVM"/>
+        
+    <jvm2hostname jvmuri="GestionnaireReseaujvm"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="fr.bcm.DistributedCVM"/>
+    
+  </jvms2hostnames>
+</deployment>

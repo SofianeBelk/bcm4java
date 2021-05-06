@@ -1,0 +1,4 @@
+#!/bin/bash
+java -ea -Xms2m -cp 'jars/*' -Djava.security.manager \
+     -Djava.security.policy=dcvm.policy \
+     /home/belkhir/Documents/CPS/bcm4java/src/fr/sorbonne_u/components/cvm/utils/DCVMCyclicBarrier.java config.xml
