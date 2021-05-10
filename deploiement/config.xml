@@ -7,25 +7,28 @@
   <globalRegistry  hostname="localhost" port="55252"/>
   <rmiRegistryPort no="55999"/>
   <jvms2hostnames>
-    <jvm2hostname jvmuri="NodeTerminaljvm"
+  
+  <jvm2hostname jvmuri="GestionnaireReseaujvm"
         rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="fr.bcm.DistributedCVM"/>
+        
+    <jvm2hostname jvmuri="NodeTerminaljvm"
+        rmiRegistryCreator="false"
         hostname="localhost"
         mainclass="fr.bcm.DistributedCVM"/>
         
     <jvm2hostname jvmuri="NodeRoutingjvm"
-        rmiRegistryCreator="true"
+        rmiRegistryCreator="false"
         hostname="localhost"
         mainclass="fr.bcm.DistributedCVM"/>
         
     <jvm2hostname jvmuri="NodeAccessPointjvm"
-        rmiRegistryCreator="true"
+        rmiRegistryCreator="false"
         hostname="localhost"
         mainclass="fr.bcm.DistributedCVM"/>
         
-    <jvm2hostname jvmuri="GestionnaireReseaujvm"
-        rmiRegistryCreator="true"
-        hostname="localhost"
-        mainclass="fr.bcm.DistributedCVM"/>
+    
     
   </jvms2hostnames>
 </deployment>

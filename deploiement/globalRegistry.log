@@ -1,0 +1,48 @@
+1620656471177|Global registry up and running!
+1620656564121|Global registry accepted the 1th connection.
+1620656564124|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-878f48f2-0125-4cdc-a43d-be8c1745ee72 rmi=localhost
+1620656564186|GlobalRegistry processing put GestionnaireReseaujvm-dcc rmi=localhost
+1620656564300|Global registry accepted the 2th connection.
+1620656564303|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-d79fc9b7-d4b1-46e8-9d3d-ea4bf899f968 rmi=localhost
+1620656564312|Global registry accepted the 3th connection.
+1620656564321|Global registry accepted the 4th connection.
+1620656564321|All (4) connected!
+1620656564327|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-f83bedbd-2964-454f-9a0a-101656a7ae61 rmi=localhost
+1620656564327|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-2d31e00b-c748-421d-88cb-121a938648a5 rmi=localhost
+1620656564344|GlobalRegistry processing put NodeTerminaljvm-dcc rmi=localhost
+1620656564388|GlobalRegistry processing put NodeRoutingjvm-dcc rmi=localhost
+1620656564390|GlobalRegistry processing put NodeAccessPointjvm-dcc rmi=localhost
+1620656564399|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-ee3b00c4-9f00-49a5-a3eb-9c26e8982730 rmi=localhost
+1620656564404|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-da270897-2e98-4e21-acda-8128afc4d947 rmi=localhost
+1620656564410|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-522a9967-db64-472e-a724-a3cd844fdcc6 rmi=localhost
+1620656564424|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-c03f9ae0-e261-42ef-9fe7-6dccaf70579f rmi=localhost
+1620656564454|GlobalRegistry processing put gs-uri rmi=localhost
+1620656564496|GlobalRegistry processing put fr.bcm.node.terminal.interfaces.Node_TerminalCI-b73b80fc-28ce-483b-9bf7-85b82690edc2 rmi=localhost
+1620656564524|GlobalRegistry processing put fr.bcm.node.accesspoint.interfaces.Node_AccessPointCI-5499922c-b677-4b71-8e7a-ced9fe318973 rmi=localhost
+1620656564560|GlobalRegistry processing put fr.bcm.node.routing.interfaces.Node_RoutingCI-04437632-5804-407e-a574-0695336f51ab rmi=localhost
+1620656564562|GlobalRegistry processing put fr.bcm.connexion.interfaces.CommunicationCI-09ee42db-5f55-4a19-bbcc-04227a945fe0 rmi=localhost
+1620656564566|GlobalRegistry processing lookup gs-uri
+1620656564582|GlobalRegistry processing put fr.bcm.connexion.interfaces.CommunicationCI-e7a197f2-9b21-47f1-8551-a7ab6a9f37cf rmi=localhost
+1620656564597|GlobalRegistry processing put fr.bcm.node.routing.interfaces.RoutingCI-8bbf3236-be0b-4c1e-a8e9-3d8b6e511cf6 rmi=localhost
+1620656564631|GlobalRegistry processing put fr.bcm.connexion.interfaces.CommunicationCI-fd3c296d-7c3f-43db-8aa2-88813a8d7191 rmi=localhost
+1620656564642|GlobalRegistry processing lookup gs-uri
+1620656564651|GlobalRegistry processing put fr.bcm.node.routing.interfaces.RoutingCI-8bdd35d5-9672-4022-b252-330111b4e593 rmi=localhost
+1620656564655|GlobalRegistry processing lookup gs-uri
+1620656595713|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-878f48f2-0125-4cdc-a43d-be8c1745ee72
+1620656595730|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-da270897-2e98-4e21-acda-8128afc4d947
+1620656595732|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-ee3b00c4-9f00-49a5-a3eb-9c26e8982730
+1620656595732|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-f83bedbd-2964-454f-9a0a-101656a7ae61
+1620656595734|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-d79fc9b7-d4b1-46e8-9d3d-ea4bf899f968
+1620656595758|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-522a9967-db64-472e-a724-a3cd844fdcc6
+1620656595760|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-2d31e00b-c748-421d-88cb-121a938648a5
+1620656595778|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-c03f9ae0-e261-42ef-9fe7-6dccaf70579f
+1620656595805|GlobalRegistry processing remove NodeAccessPointjvm-dcc
+1620656595811|GlobalRegistry processing remove NodeRoutingjvm-dcc
+1620656595818|GlobalRegistry processing remove NodeTerminaljvm-dcc
+1620656595846|GlobalRegistry processing remove GestionnaireReseaujvm-dcc
+1620656595890|GlobalRegistry processing remove gs-uri
+1620656595892|GlobalRegistry processing shutdown
+1620656595892|GlobalRegistry processing shutdown
+1620656595894|GlobalRegistry processing shutdown
+1620656595978|GlobalRegistry processing shutdown
+1620656595980|Global registry shuts down!
