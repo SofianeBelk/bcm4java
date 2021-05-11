@@ -3,6 +3,9 @@ package fr.bcm;
 import fr.bcm.node.accesspoint.components.Node_AccessPoint;
 import fr.bcm.node.routing.components.Node_Routing;
 import fr.bcm.node.terminal.components.Node_Terminal;
+import fr.bcm.nodeWithPlugin.accesspoint.components.PC_Terminal;
+import fr.bcm.nodeWithPlugin.routing.components.Ordinateur;
+import fr.bcm.nodeWithPlugin.terminal.components.Tablette;
 import fr.bcm.registration.component.GestionnaireReseau;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
@@ -20,7 +23,34 @@ public class DistributedCVM extends AbstractDistributedCVM{
 	}
 
 	@Override
-	public void instantiateAndPublish() throws Exception {
+	public void instantiateAndPublish()  throws Exception {
+		if(AbstractCVM.getThisJVMURI().equals(NodeTerminal_JVM_URI)) {
+			String ntURI1=AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
+
+		}else {
+			if(AbstractCVM.getThisJVMURI().equals(NodeRouting_JVM_URI)) {
+				AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+			}else {
+				if(AbstractCVM.getThisJVMURI().equals(NodeAccessPoint_JVM_URI)) {
+					
+					String nacURI1=AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
+
+				}else {
+					if(AbstractCVM.getThisJVMURI().equals(GestionnaireReseau_JVM_URI)) {
+						AbstractComponent.createComponent(GestionnaireReseau.class.getCanonicalName(), new Object[]{});
+
+					}else {
+						System.out.println("JVM URI Inconnu : "+AbstractCVM.getThisJVMURI());
+					}
+				}
+			}
+		}
+		super.instantiateAndPublish();
+
+	}
+	
+	@Override
+	public void interconnect() throws Exception {
 		if(AbstractCVM.getThisJVMURI().equals(NodeTerminal_JVM_URI)) {
 			
 		}else {
@@ -38,33 +68,11 @@ public class DistributedCVM extends AbstractDistributedCVM{
 				}
 			}
 		}
-		super.instantiateAndPublish();
-	}
-
-	@Override
-	public void interconnect() throws Exception {
-if(AbstractCVM.getThisJVMURI().equals(NodeTerminal_JVM_URI)) {
-	AbstractComponent.createComponent(Node_Terminal.class.getCanonicalName(), new Object[]{});
-		}else {
-			if(AbstractCVM.getThisJVMURI().equals(NodeRouting_JVM_URI)) {
-				AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
-
-			}else {
-				if(AbstractCVM.getThisJVMURI().equals(NodeAccessPoint_JVM_URI)) {
-					AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
-
-				}else {
-					if(AbstractCVM.getThisJVMURI().equals(GestionnaireReseau_JVM_URI)) {
-						AbstractComponent.createComponent(GestionnaireReseau.class.getCanonicalName(), new Object[]{});
-
-					}else {
-						System.out.println("JVM URI Inconnu : "+AbstractCVM.getThisJVMURI());
-					}
-				}
-			}
-		}
 		super.interconnect();
+
 	}
+
+	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
