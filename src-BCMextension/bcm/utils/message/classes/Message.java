@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import bcm.utils.address.interfaces.AddressI;
 import bcm.utils.message.interfaces.MessageI;
 
-public class Message implements MessageI {
+public class Message implements MessageI, Serializable {
 	
 	public static int MessageSent = 0;
 	public static int MessageLost = 0;

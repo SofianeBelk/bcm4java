@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import bcm.utils.address.interfaces.AddressI;
 
-public class Address implements AddressI{
+public class Address implements AddressI, Serializable{
 	
 	private String address;
 	

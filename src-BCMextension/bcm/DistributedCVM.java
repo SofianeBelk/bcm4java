@@ -39,6 +39,9 @@ public class DistributedCVM extends AbstractDistributedCVM{
 		}else {
 			if(AbstractCVM.getThisJVMURI().equals(NodeRouting_JVM_URI)) {
 				nrURI1 = AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+				nrURI1 = AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+				nrURI1 = AbstractComponent.createComponent(Node_Routing.class.getCanonicalName(), new Object[]{});
+
 			}else {
 				if(AbstractCVM.getThisJVMURI().equals(NodeAccessPoint_JVM_URI)) {
 					nacURI1 = AbstractComponent.createComponent(Node_AccessPoint.class.getCanonicalName(), new Object[]{});
@@ -87,7 +90,7 @@ public class DistributedCVM extends AbstractDistributedCVM{
 		try {
 			DistributedCVM dcvm = new DistributedCVM(args);
 			dcvm.startStandardLifeCycle(30000L);
-			Thread.sleep(5000L);
+			Thread.sleep(50000L);
 			System.exit(0);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

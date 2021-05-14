@@ -50,18 +50,18 @@ public class Node_Routing extends AbstractComponent{
 	/** un compteur qui permet d'identifier notre noeud **/
 	public static int node_routing_id = 1;
 	
-	/** l'identifiant de notre nœud routing **/
+	/** l'identifiant de notre nï¿½ud routing **/
 	private int id;
 	
-	/** le port sortant du nœud routing **/
+	/** le port sortant du nï¿½ud routing **/
 	protected Node_RoutingOutBoundPort nrop;
-	/** le port entrant "CommunicationCI" du nœud routing **/
+	/** le port entrant "CommunicationCI" du nï¿½ud routing **/
 	protected Node_RoutingCommInboundPort nrcip;
-	/** le port entrant du nœud routing **/
+	/** le port entrant du nï¿½ud routing **/
 	protected Node_RoutingRoutingInboundPort nrrip;
-	/** l'adresse du nœud routing **/
+	/** l'adresse du nï¿½ud routing **/
 	private NodeAddress address = new NodeAddress();
-	/** la liste des adresses accessible à partir du nœud routing **/
+	/** la liste des adresses accessible ï¿½ partir du nï¿½ud routing **/
 	private List<ConnectionInformation> addressConnected = new ArrayList<>();
 	/** la liste des adresses de la table de routage **/
 	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
@@ -75,7 +75,7 @@ public class Node_Routing extends AbstractComponent{
 	private PositionI pointInitial;
 	
 	/**
-	 * Constructeur qui crée une instance du nœud routing
+	 * Constructeur qui crï¿½e une instance du nï¿½ud routing
 	 * @throws Exception
 	 */
 	protected Node_Routing() throws Exception {
@@ -241,6 +241,7 @@ public class Node_Routing extends AbstractComponent{
 		
 		Thread.sleep(3000);
 		// Sending a message to the first routing node from the third routing node
+		this.logMessage("hello "+ this.id);
 		if(this.id == 3) {
 			if(Node_Routing.addressToSendMessage != null) {
 				Message m = new Message(Node_Routing.addressToSendMessage,"Hello from : " + this.address.getAdress());
@@ -264,7 +265,7 @@ public class Node_Routing extends AbstractComponent{
 	/** ------------------------- Services ------------------------**/
 
 	/**
-	 * cette méthode permet a un voisin de se connecter 
+	 * cette mï¿½thode permet a un voisin de se connecter 
 	 * @param address : l'adresse du voisin
 	 * @param communicationInboundPortURI
 	 * @return null
@@ -299,7 +300,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * Cette méthode est appeler par le nœud routing s'il a la capacité à router des messages 
+	 * Cette mï¿½thode est appeler par le nï¿½ud routing s'il a la capacitï¿½ ï¿½ router des messages 
 	 * @param address
 	 * @param communicationInboundPortURI
 	 * @param routingInboundPortURI
@@ -354,8 +355,8 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode permet de trasmettre un message
-	 * @param m : le message à transmettre
+	 * cette mï¿½thode permet de trasmettre un message
+	 * @param m : le message ï¿½ transmettre
 	 * @return null
 	 * @throws Exception
 	 */
@@ -395,7 +396,7 @@ public class Node_Routing extends AbstractComponent{
 	/**
 	 * cette methode nous permet d'envoyer un message to network
 	 * @param m : le message
-	 * @return true si on réussi a envoyais le message to Network
+	 * @return true si on rï¿½ussi a envoyais le message to Network
 	 * @throws Exception
 	 */
 	public boolean sendMessageToNetwork(MessageI m) throws Exception {
@@ -415,9 +416,9 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode nous permet d'envyer un message via le routeur
+	 * cette mï¿½thode nous permet d'envyer un message via le routeur
 	 * @param m : le message
-	 * @return true si on réussit a envoyer un message via le routeur
+	 * @return true si on rï¿½ussit a envoyer un message via le routeur
 	 * @throws Exception
 	 */
 	public boolean sendMessageViaRouting(MessageI m) throws Exception {
@@ -436,7 +437,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode nous permets d'envoyer un message via l'innondation
+	 * cette mï¿½thode nous permets d'envoyer un message via l'innondation
 	 * @param m : le message
 	 * @throws Exception
 	 */
@@ -457,8 +458,8 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * Cette méthode vérifie s'il existe une route vers une adresse particulière
-	 * @param address : l'adresse a vérifié
+	 * Cette mï¿½thode vï¿½rifie s'il existe une route vers une adresse particuliï¿½re
+	 * @param address : l'adresse a vï¿½rifiï¿½
 	 * @return true si il existe une route
 	 * @throws Exception
 	 */
@@ -467,7 +468,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * Cette méthode permet de vérifier le voisin est encore présent
+	 * Cette mï¿½thode permet de vï¿½rifier le voisin est encore prï¿½sent
 	 * @return null
 	 * @throws Exception
 	 */
@@ -476,7 +477,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode nous permet de mettre a jours notre table de routage
+	 * cette mï¿½thode nous permet de mettre a jours notre table de routage
 	 * @param neighbour
 	 * @param routes
 	 * @throws Exception
@@ -501,7 +502,7 @@ public class Node_Routing extends AbstractComponent{
 				if(riInt.getDestination().equals(riExt.getDestination())) {
 					// If the route is worth using
 					if(riInt.getNumberOfHops() > riExt.getNumberOfHops()+1 ) {
-						//route interessante on modifier notre table
+						//route interessante on modifier) notre table
 						riInt.setHops(riExt.getNumberOfHops() + 1);
 						riInt.setIntermediate(neighbour);
 					}
@@ -525,7 +526,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode nous permet de mettre à jour la route vers le point d’accès le plus proche 
+	 * cette mï¿½thode nous permet de mettre ï¿½ jour la route vers le point dï¿½accï¿½s le plus proche 
 	 * @param neighbour
 	 * @param numberOfHops
 	 * @throws Exception
@@ -545,7 +546,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * Permet de créer une string représentant la table de routage
+	 * Permet de crï¿½er une string reprï¿½sentant la table de routage
 	 */
 	public String routingTableToString() {
 		String toString = "Routes :";

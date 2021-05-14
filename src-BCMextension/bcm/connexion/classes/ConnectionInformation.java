@@ -1,5 +1,7 @@
 package bcm.connexion.classes;
 
+import java.io.Serializable;
+
 import bcm.node.accesspoint.ports.Node_AccessPointCommOutboundPort;
 import bcm.node.accesspoint.ports.Node_AccessPointRoutingOutboundPort;
 import bcm.node.routing.ports.Node_RoutingCommOutboundPort;
@@ -7,7 +9,7 @@ import bcm.node.routing.ports.Node_RoutingRoutingOutboundPort;
 import bcm.node.terminal.ports.Node_TerminalCommOutboundPort;
 import bcm.utils.address.interfaces.AddressI;
 
-public class ConnectionInformation{
+public class ConnectionInformation implements Serializable{
 	private AddressI address;
 	private String communicationInboundPortURI = "";
 	private String routingInboundPortURI = "";

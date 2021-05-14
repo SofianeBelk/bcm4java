@@ -1,9 +1,11 @@
 package bcm.utils.address.classes;
 
+import java.io.Serializable;
+
 import bcm.utils.address.interfaces.AddressI;
 import bcm.utils.address.interfaces.NetworkAddressI;
 
-public class NetworkAddress implements NetworkAddressI{
+public class NetworkAddress implements NetworkAddressI, Serializable{
 	
 	private String address;
 	
