@@ -91,9 +91,12 @@ public class Node_Terminal extends AbstractComponent{
 				this.ntip.doDisconnection();
 			}
 			
-			
-			this.ntop.unpublishPort();
-			this.ntip.unpublishPort();
+			if(ntop.isPublished()) {
+				this.ntop.unpublishPort();
+			}
+			if(ntip.isPublished()) {
+				this.ntip.unpublishPort();
+			}
 		} catch (Exception e) {
 			return;
 		}

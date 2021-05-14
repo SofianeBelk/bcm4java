@@ -1,5 +1,6 @@
 package bcm.utils.address.classes;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import bcm.utils.address.interfaces.AddressI;
