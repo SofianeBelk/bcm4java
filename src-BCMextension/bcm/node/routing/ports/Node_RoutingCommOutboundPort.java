@@ -40,6 +40,7 @@ public class Node_RoutingCommOutboundPort extends AbstractOutboundPort implement
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
+		
 		((CommunicationCI)this.getConnector()).transmitMessage(m);
 		
 	}
@@ -50,8 +51,8 @@ public class Node_RoutingCommOutboundPort extends AbstractOutboundPort implement
 	}
 
 	@Override
-	public void ping() throws Exception{
-		((CommunicationCI)this.getConnector()).ping();
+	public Void ping() throws Exception{
+		return ((CommunicationCI)this.getConnector()).ping();
 	}
 
 

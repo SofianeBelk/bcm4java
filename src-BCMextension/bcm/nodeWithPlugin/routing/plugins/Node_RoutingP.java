@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import bcm.connexion.classes.ConnectionInformation;
@@ -52,8 +54,9 @@ public class Node_RoutingP extends AbstractPlugin{
 	protected Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
 	protected RouteInfoI routeToAccessPoint;
 	
+	
 	public static AddressI addressToSendMessage;
-	private int NumberOfNeighboorsToSend = 2;
+	private int NumberOfNeighboorsToSend = 3;
 	
 	private PositionI pointInitial;
 	
@@ -70,16 +73,20 @@ public class Node_RoutingP extends AbstractPlugin{
 	public static final String         	Ping_URI 				= "ping";
 		
 	
-	private int nbThreadUpdateRouting =1;
+	private int nbThreadUpdateRouting =3;
+	private int nbThreadTransmitMessage = 5;
+	private int nbThreadPing = 2;
+	
 	private int nbThreadConnect = 1;
 	private int nbThreadConnectRouting = 1;
-	private int nbThreadTransmitMessage = 1;
 	private int nbThreadHasRouteFor = 1;
-	private int nbThreadPing = 1;
 	private int nbThreadUpdateAccessPoint =1 ;
 	
 	// Locks
 	protected ReentrantReadWriteLock lockForArrays = new ReentrantReadWriteLock();
+	protected ReentrantReadWriteLock lockForCI = new ReentrantReadWriteLock();
+	protected ReentrantReadWriteLock lockForRoutes = new ReentrantReadWriteLock();
+	
 	protected ReentrantReadWriteLock lockForRouteToAP = new ReentrantReadWriteLock();
 
 	
@@ -127,13 +134,13 @@ public class Node_RoutingP extends AbstractPlugin{
 		// Enable logs
         this.id = node_routing_id;
 		node_routing_id += 1;
-		this.pointInitial = new Position(0,this.id);
+		this.pointInitial = new Position();
 		
 		
 		// Enables logs
 		this.owner.toggleLogging();
 		this.owner.toggleTracing();
-		this.logMessage("Node_Routing " + this.address.getAdress() + " " + this.id);
+		this.logMessage("Node_Routing " + this.address.getAdress() + " " + this.pointInitial.toString());
         
 	}
 
@@ -160,7 +167,7 @@ public class Node_RoutingP extends AbstractPlugin{
 		
 		this.logMessage("Tries to log in the manager");
 		// Retrieve the list of devices to connect with
-		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrcip.getPortURI() , this.pointInitial, 1.5, nrrip.getPortURI());
+		Set<ConnectionInfoI> devices = this.nrop.registerRoutingNode(address,nrcip.getPortURI() , this.pointInitial, 2.5, nrrip.getPortURI());
 		this.logMessage("Logged");
 		
 
@@ -213,9 +220,9 @@ public class Node_RoutingP extends AbstractPlugin{
 			ciToAdd.setNrcop(nrcop);
 			
 			// This blocks locks the array to add a new connection
-			lockForArrays.writeLock().lock();
+			lockForCI.writeLock().lock();
 			this.addressConnected.add(ciToAdd);
-			lockForArrays.writeLock().unlock();
+			lockForCI.writeLock().unlock();
 
 			// Route to an access point
 			if(CInfo.getisAccessPoint()) {
@@ -229,17 +236,21 @@ public class Node_RoutingP extends AbstractPlugin{
 		this.logMessage("Connected to all nearby devices");
 		
 		// Init routes with connected nodes
-		lockForArrays.readLock().lock();
+		lockForCI.readLock().lock();
+		
 		for(ConnectionInformation a : addressConnected) {
+			lockForRoutes.writeLock().lock();
 			routes.add(new RoutingInfo(a.getAddress(),a.getAddress()));
+			lockForRoutes.writeLock().unlock();
 		}
-		lockForArrays.readLock().unlock();
+		
+		lockForCI.readLock().unlock();
 
 		// Update routes
-		lockForArrays.readLock().lock();
+		lockForCI.readLock().lock();
 		for(ConnectionInformation a : addressConnected) {
 			if(!(a.getNrrop() == null)) {
-				a.getNrrop().updateRouting(this.address, this.routes);
+				a.getNrrop().updateRouting(this.address, copyRouteInfo());
 				
 				this.lockForRouteToAP.readLock().lock();
 				if(this.routeToAccessPoint != null) {
@@ -248,59 +259,68 @@ public class Node_RoutingP extends AbstractPlugin{
 				this.lockForRouteToAP.readLock().unlock();
 			}
 		}
-		lockForArrays.readLock().unlock();
+		lockForCI.readLock().unlock();
 		
 		
 		
-		Thread.sleep(5000);
-		Thread.yield();
-		System.out.println("Sending ping");
-		// To remove safely during loop
-		Iterator<ConnectionInformation> i = this.addressConnected.iterator();
-		ConnectionInformation ci;
-		while(i.hasNext()) {
-			ci = i.next();
-			try {
-				ci.getNrcop().ping();
-			}
-			catch(Exception e) {
-				i.remove();
-				this.logMessage("Removed dead connection");
-			}
-		}
-		System.out.println("Ending ping");
+	
 		
-		/* Testing part, sending messages */
-		/*
-		// Registering first routing node as the address to send the message to for testing
-		if(this.id == 1) {
-			Node_Routing.addressToSendMessage = this.address;
-		}
-		
-		Thread.yield();
-		Thread.sleep(3000);
-		
-		
-		// Sending a message to the first routing node from the third routing node
-		if(this.id == 3) {
-			if(Node_Routing.addressToSendMessage != null) {
-				Message m = new Message(Node_Routing.addressToSendMessage,"Hello from : " + this.address.getAdress());
-				this.logMessage("Sending message to " + Node_Routing.addressToSendMessage.getAdress());
-				this.transmitMessage(m);
-			}
-		}
-		
-		// Sending a message to the network from the second routing node
-		if(this.id == 2) {
+		int cpt = 0;
+		while(true) {
+			Random rand = new Random();
 			Thread.yield();
-			if(this.addressConnected.size()>0) {
+			Thread.sleep(rand.nextInt(4) * 2000);
+			
+			if(cpt % 5 == 0) {
+				this.checkPingOthers();
+			}
+			if(cpt % 10 == 0) {
+				lockForCI.readLock().lock();
+				for(ConnectionInformation a : addressConnected) {
+					if(!(a.getNrrop() == null)) {
+						a.getNrrop().updateRouting(this.address, copyRouteInfo());
+						
+						this.lockForRouteToAP.readLock().lock();
+						if(this.routeToAccessPoint != null) {
+							a.getNrrop().updateAccessPoint(this.address, this.routeToAccessPoint.getNumberOfHops());
+						}
+						this.lockForRouteToAP.readLock().unlock();
+					}
+				}
+				lockForCI.readLock().unlock();
+			}
+			
+			
+			
+			if(rand.nextFloat() < 0.15) {
 				NetworkAddress toSend = new NetworkAddress();
 				Message m = new Message(toSend,"Hello to Network from : " + toSend.getAdress());						
 				this.logMessage("Sending message to network " + toSend.getAdress());
+				Message.newMessageSent();
 				this.transmitMessage(m);
 			}
+			if(rand.nextFloat() < 0.10){
+				lockForCI.readLock().lock();
+				ConnectionInfoI ci;
+				do {
+					ci = this.nrop.getRandomConn();
+				}while(ci.getAddress().equals(this.address));
+				lockForCI.readLock().unlock();
+				Message m = new Message(ci.getAddress(), "Hello from : " + this.address.getAdress());	
+				this.logMessage("Sending message to " + ci.getAddress().getAdress());
+				Message.newMessageSent();
+				this.transmitMessage(m);
+				
+			
+			}
+			
+			cpt++;
+			
+			
 		}
-		*/
+		
+				
+		
 	}
 
 	
@@ -331,21 +351,26 @@ public class Node_RoutingP extends AbstractPlugin{
 	}
 
 
-	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
-
+	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routesExt) throws Exception {
 		boolean add;
 	
 		
 		// CORE
-		for(RouteInfoI riExt : routes) {	
+		lockForRoutes.writeLock().lock();
+		Iterator<RouteInfoI> iterRoutesExt = routesExt.iterator();
+		RouteInfoI riExt;
+		while(iterRoutesExt.hasNext()) {
+			riExt = iterRoutesExt.next();
 			add = true;
 			if(riExt.getDestination().equals(this.address)) {
 				continue;
 			}
 			
-			lockForArrays.readLock().lock();
-			for(RouteInfoI riInt : this.routes) {	
-				
+			
+			Iterator<RouteInfoI> iterRoutesInt = this.routes.iterator();
+			RouteInfoI riInt;
+			while(iterRoutesInt.hasNext()) {
+				riInt = iterRoutesInt.next();
 				// If route exists in current table
 				if(riInt.getDestination().equals(riExt.getDestination())) {
 					// If the route is worth using
@@ -354,14 +379,11 @@ public class Node_RoutingP extends AbstractPlugin{
 						riInt.setHops(riExt.getNumberOfHops() + 1);
 						riInt.setIntermediate(neighbour);
 					}
-					
 					// Route already exists and is not needed to be added in the current table
 					add = false;
 				}
 			}
-			lockForArrays.readLock().unlock();
 			
-			lockForArrays.writeLock().lock();
 			// Adds a new route to the table
 			if(add) {
 				RouteInfoI riAdd = riExt.clone();
@@ -369,8 +391,8 @@ public class Node_RoutingP extends AbstractPlugin{
 				riAdd.setIntermediate(neighbour);
 				this.routes.add(riAdd);
 			}
-			lockForArrays.writeLock().unlock();
 		}
+		lockForRoutes.writeLock().unlock();
 		
 	}
 	
@@ -393,17 +415,20 @@ public class Node_RoutingP extends AbstractPlugin{
 		this.logMessage("Added new devices to connections");
 		CInfo.setNrcop(nrcop);
 		
-		lockForArrays.writeLock().lock();
+		lockForCI.writeLock().lock();
 		this.addressConnected.add(CInfo);
-		routes.add(new RoutingInfo(address,address));
-		lockForArrays.writeLock().unlock();
-
+		lockForCI.writeLock().unlock();
+		lockForRoutes.writeLock().lock();
+		this.routes.add(new RoutingInfo(address,address));
+		lockForRoutes.writeLock().unlock();
+		
 		// this.logMessage("Routing tables after connection " + this.routingTableToString());
 				
 		return null;
 	}
 
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
+		
 		this.logMessage("Someone asked connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
 		CInfo.setcommunicationInboundPortURI(communicationInboundPortURI);
@@ -433,53 +458,58 @@ public class Node_RoutingP extends AbstractPlugin{
 		
 		this.logMessage("Successful connection to communication + routing port");
 		this.logMessage("Added new devices to connections");
-		lockForArrays.writeLock().lock();
-		routes.add(new RoutingInfo(address,address));
-		lockForArrays.writeLock().unlock();
+		lockForRoutes.writeLock().lock();
+		this.routes.add(new RoutingInfo(address,address));
+		lockForRoutes.writeLock().unlock();
 		this.logMessage("Sending routing informations");
 		
 		
 		
 		CInfo.setNrcop(nrcop);
 		CInfo.setNrrop(nrrop);
-		CInfo.getNrrop().updateRouting(this.address, this.routes);
+		CInfo.getNrrop().updateRouting(this.address, this.copyRouteInfo());
 		this.lockForRouteToAP.readLock().lock();
 		if(this.routeToAccessPoint != null) {
 			CInfo.getNrrop().updateAccessPoint(this.address, this.routeToAccessPoint.getNumberOfHops());
 		}
 		this.lockForRouteToAP.readLock().unlock();
 		
-		lockForArrays.writeLock().lock();
+		lockForCI.writeLock().lock();
 		this.addressConnected.add(CInfo);
-		lockForArrays.writeLock().unlock();
+		lockForCI.writeLock().unlock();
 
 		// this.logMessage("Routing tables after connectionR " + this.routingTableToString());
 		return null;
 	}
+	
 
 	public void transmitMessage(MessageI m) throws Exception {
-		this.logMessage("Routing tables before sending message " + this.routingTableToString());
+	
+		// this.logMessage("Routing tables before sending message " + this.routingTableToString());
 		m.decrementHops();
-		m.addAddressToHistory(this.address);
 		
 		if(m.getAddress().equals(this.address)) {
 			this.logMessage("Received a message : " + m.getContent());
+			Message.newMessageReceived();
 		}
 		else {
 			if(m.stillAlive()) {
 				
 				// Sending to nearest access point if possible
 				if(sendMessageToNetwork(m)) {
+					Message.newMessageViaTableRouting();
 					return;
 				}
 				
 				// Try to send it from routing tables
 				if(sendMessageViaRouting(m)) {
+					Message.newMessageViaTableRouting();
 					return;
 				}
 				
 				// Message par Innondation 
 				sendMessageViaInnondation(m);
+				Message.newMessageViaInnondation();
 			}
 			else {
 				this.logMessage("Message dead");
@@ -489,14 +519,15 @@ public class Node_RoutingP extends AbstractPlugin{
 	}
 	
 	public boolean sendMessageToNetwork(MessageI m) throws Exception {
-		
+		MessageI messageToTransmit = m.copy();
 		if(m.getAddress().isNetworkAdress()) {
 			this.lockForRouteToAP.readLock().lock();
 			if(this.routeToAccessPoint != null) {
 				for(ConnectionInformation ci: this.addressConnected) {
 					if(ci.getAddress().equals(this.routeToAccessPoint.getIntermediate())) {
 						this.logMessage("(Via routing tables) Transmitting a Message to network by " + ci.getAddress().getAdress());
-						ci.getNrcop().transmitMessage(m);
+						ci.getNrcop().transmitMessage(messageToTransmit);
+						this.lockForRouteToAP.readLock().unlock();
 						return true;
 					}
 				}
@@ -507,46 +538,63 @@ public class Node_RoutingP extends AbstractPlugin{
 	}
 	
 	public boolean sendMessageViaRouting(MessageI m) throws Exception {
+		MessageI messageToTransmit = m.copy();
+		this.lockForRoutes.readLock().lock();
 		for(RouteInfoI ri: this.routes) {
-			if(ri.getDestination().getAdress() == m.getAddress().getAdress()) {
+			if(ri.getDestination().equals(m.getAddress())) {
+				
+				this.lockForCI.readLock().lock();
 				for(ConnectionInformation ci: this.addressConnected) {
-					if(ci.getAddress().getAdress() == ri.getDestination().getAdress()) {
+					if(ci.getAddress().getAdress() == ri.getIntermediate().getAdress()) {
 						this.logMessage("(Via routing tables) Transmitting a Message to " + ci.getAddress().getAdress());
-						ci.getNrcop().transmitMessage(m);
+						ci.getNrcop().transmitMessage(messageToTransmit);
+						this.lockForCI.readLock().unlock();
 						return true;
 					}
 				}
+				this.lockForCI.readLock().unlock();
 			}
 		}
+		this.lockForRoutes.readLock().unlock();
 		return false;
 	}
 	
 	public void sendMessageViaInnondation(MessageI m) throws Exception{
-		int numberSent = 0;
-		for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {
-			// No blocking mechanism
-			AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
-			if(!m.isInHistory(addressToTransmitTo)) {
-				this.logMessage("(Via innondation) Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
-				this.addressConnected.get(i).getNrcop().transmitMessage(m);
-				numberSent += 1;
-			}
-			else {
-				this.logMessage("No node to send message to");
+		
+		this.lockForCI.readLock().lock();
+		
+		List<Integer> listIndex = new ArrayList<Integer>();
+		
+		int i = 0;
+		while(i < NumberOfNeighboorsToSend) {
+			
+			Random rand = new Random();
+			int index = rand.nextInt(this.addressConnected.size());
+			
+			if(!listIndex.contains(index)) {
+				MessageI messageToTransmit = m.copy();
+				Message.newMessageDuplicated();
+				
+				ConnectionInformation addressToTransmitTo = this.addressConnected.get(index);
+				
+				this.logMessage("(Via innondation) Transmitting a Message to " + addressToTransmitTo.getAddress().getAdress());
+				addressToTransmitTo.getNrcop().transmitMessage(messageToTransmit);
+				i++;
 			}
 		}
+		this.lockForCI.readLock().unlock();
 	}
 
 	public int hasRouteFor(AddressI address) throws Exception{
 		int hops = -1;
 		
-		lockForArrays.readLock().lock();
+		lockForRouteToAP.readLock().lock();
 		if(address.equals(routeToAccessPoint.getDestination())) {
 			return routeToAccessPoint.getNumberOfHops();
 		}
-		lockForArrays.readLock().unlock();
+		lockForRouteToAP.readLock().unlock();
 		
-		lockForArrays.readLock().lock();
+		lockForRoutes.readLock().lock();
 		for(RouteInfoI riInt : this.routes) {	
 			// If route exists in current table
 			if(riInt.getDestination().equals(address)) {
@@ -555,11 +603,11 @@ public class Node_RoutingP extends AbstractPlugin{
 				break;
 			}
 		}
-		lockForArrays.readLock().unlock();
+		lockForRoutes.readLock().unlock();
 		return hops;
 	}
 
-	public Object ping() throws Exception{
+	public Void ping() throws Exception{
 		return null;
 	}
 	
@@ -581,6 +629,7 @@ public class Node_RoutingP extends AbstractPlugin{
 	
 	// Used to generate a string to display routing table's informations
 	public String routingTableToString() {
+		this.lockForRoutes.readLock().lock();
 		String toString = "Routes :";
 		toString += "[";
 		for(RouteInfoI riDisplay : this.routes) {
@@ -588,7 +637,57 @@ public class Node_RoutingP extends AbstractPlugin{
 			toString += riDisplay.getDestination().getAdress() + ", " + riDisplay.getIntermediate().getAdress() + ", " +riDisplay.getNumberOfHops();
 		}
 		toString += "]";
+		this.lockForRoutes.readLock().unlock();
 		return toString;
+	}
+	
+	public Set<RouteInfoI> copyRouteInfo(){
+		this.lockForRoutes.readLock().lock();;
+		Set<RouteInfoI> copy = new HashSet<RouteInfoI>();
+		for(RouteInfoI ri: this.routes) {
+			copy.add(ri);
+		}
+		this.lockForRoutes.readLock().unlock();
+		return copy;
+	}
+	
+	public void checkPingOthers() {
+		this.logMessage("Sending ping");
+		
+		
+		lockForCI.writeLock().lock();
+		Iterator<ConnectionInformation> i = this.addressConnected.iterator();
+		ConnectionInformation ci;
+		while(i.hasNext()) {
+			ci = i.next();
+			try {
+				ci.getNrcop().ping();
+			}
+			
+			// Ne pas détruire le port, Voir mail
+			catch(Exception e) {
+				lockForRoutes.writeLock().lock();
+				Iterator<RouteInfoI> iri = this.routes.iterator();
+				RouteInfoI ri;
+				while(iri.hasNext()) {
+					ri = iri.next();
+					if (ci.getAddress().equals(ri.getIntermediate())){
+						iri.remove();
+					}
+				}
+			
+				i.remove();
+				lockForRoutes.writeLock().unlock();
+				// e.printStackTrace();
+				this.logMessage("Removed dead connection");
+			}
+			finally {
+				this.logMessage("Ping successful");
+			}
+		}
+		lockForCI.writeLock().unlock();
+		
+		
 	}
 
 }

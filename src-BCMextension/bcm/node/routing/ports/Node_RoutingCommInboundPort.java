@@ -79,8 +79,8 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 	}
 
 	@Override
-	public void ping() throws Exception{
-		this.getOwner().handleRequest(c -> ((Node_Routing)c).ping());
+	public Void ping() throws Exception{
+		return this.getOwner().handleRequest(c -> ((Node_Routing)c).ping());
 	}
 
 

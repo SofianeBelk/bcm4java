@@ -2,6 +2,7 @@ package bcm.nodeWithPlugin.terminal.plugins;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -21,6 +22,7 @@ import bcm.registration.interfaces.RegistrationCI;
 import bcm.utils.address.classes.NodeAddress;
 import bcm.utils.address.interfaces.AddressI;
 import bcm.utils.address.interfaces.NodeAddressI;
+import bcm.utils.message.classes.Message;
 import bcm.utils.message.interfaces.MessageI;
 import bcm.utils.nodeInfo.classes.Position;
 import bcm.utils.nodeInfo.interfaces.PositionI;
@@ -50,7 +52,9 @@ public class Node_TerminalP extends AbstractPlugin {
 	
 	// Thread URI
 	public static final String			Connect_URI            	= "Connexion" ;
+	public static final String         	Transmit_MESSAGES_URI 	= "Transmission";
 	public static final String         	Has_Routes_URI			= "Has_routes_for";
+	
 	public static final String         	Ping_URI 				= "ping";
 	
 	// Thread Distribution
@@ -58,7 +62,7 @@ public class Node_TerminalP extends AbstractPlugin {
 	private int nbThreadConnectRouting = 1;
 	private int nbThreadTransmitMessage = 1;
 	private int nbThreadHasRouteFor = 1;
-	private int nbThreadPing = 1;
+	private int nbThreadPing = 2;
 	
 	// Locks
 	protected ReentrantReadWriteLock lockForArrays = new ReentrantReadWriteLock();
@@ -80,7 +84,6 @@ public class Node_TerminalP extends AbstractPlugin {
 	public void	 installOn(ComponentI owner) throws Exception
 	{
 		super.installOn(owner);
-		System.out.println("plugin node terminal started");
 
 		this.owner=owner;
 
@@ -92,14 +95,15 @@ public class Node_TerminalP extends AbstractPlugin {
 		//ExecutoreServices
         this.createNewExecutorService(Connect_URI, nbThreadConnect, false);
 		this.createNewExecutorService(Has_Routes_URI, nbThreadHasRouteFor, false);
-		
 		this.createNewExecutorService(Ping_URI, nbThreadPing, false);
+		this.createNewExecutorService(Transmit_MESSAGES_URI, nbThreadTransmitMessage, false);
 		
+		this.pointInitial = new Position();
 		
 		// Enable logs
 		this.owner.toggleLogging();
-		this.owner.toggleTracing();
-		this.owner.logMessage("Node Terminal " + this.address.getAdress());
+		// this.owner.toggleTracing();
+		this.owner.logMessage("Node Terminal " + this.address.getAdress() + " " + this.pointInitial.toString());
         
 	}
 
@@ -108,9 +112,10 @@ public class Node_TerminalP extends AbstractPlugin {
 	public void	initialise() throws Exception {
         super.initialise();
         
+        lockForArrays.writeLock().lock();
         this.id = Node_Terminal.node_terminal_id;
 		Node_Terminal.node_terminal_id += 1;
-		this.pointInitial = new Position(0,this.id);
+		lockForArrays.writeLock().unlock();
         //add port 
 		
 		lockForConnections.lock();
@@ -164,12 +169,20 @@ public class Node_TerminalP extends AbstractPlugin {
 			lockForConnections.unlock();
 			this.logMessage("Connected to all nearby devices");
 			
-			Thread.sleep(2000);
-			this.logMessage("Disconnecting");
-			this.ntop.unregister(address);
-			this.logMessage("Unregistered");
-			this.disconnect();
-			this.logMessage("Disconnected");
+			
+			while(true) {
+				Thread.yield();
+				Thread.sleep(5000);
+				Random rand = new Random();
+				if(rand.nextFloat() < 0.05) {
+					this.logMessage("Disconnecting");
+					this.ntop.unregister(address);
+					this.logMessage("Unregistered");
+					this.disconnect();
+					this.logMessage("Disconnected");
+				}
+			}
+			
 			
 	}
 	
@@ -270,6 +283,11 @@ public class Node_TerminalP extends AbstractPlugin {
 	
 	// Doesn't transmit message
 	public void transmitMessage(MessageI m) throws Exception {
+		
+		if(m.getAddress().equals(this.address)) {
+			this.logMessage("Received a message : " + m.getContent());
+			Message.newMessageReceived();
+		}
 	}
 
 	public boolean hasRouteFor(AddressI address) throws Exception{
@@ -277,8 +295,8 @@ public class Node_TerminalP extends AbstractPlugin {
 	}
 
 	// Used to answer if the node is still active
-	public void ping() throws Exception{
-		
+	public Void ping() throws Exception{
+		return null;
 	}
 	
 

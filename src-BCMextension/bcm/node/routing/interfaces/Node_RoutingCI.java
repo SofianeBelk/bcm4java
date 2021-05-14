@@ -16,5 +16,6 @@ public interface Node_RoutingCI extends RequiredCI, OfferedCI{
 			PositionI initialPosition, 
 			double initialRange,
 			String routingInBoundPortURI) throws Exception;
+	public ConnectionInfoI getRandomConn() throws Exception;
 	public void unregister(AddressI address) throws Exception;
 }

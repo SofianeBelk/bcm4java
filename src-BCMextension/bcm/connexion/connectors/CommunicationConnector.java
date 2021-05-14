@@ -29,8 +29,8 @@ public class CommunicationConnector extends AbstractConnector implements Communi
 	}
 
 	@Override
-	public void ping() throws Exception {
-		((CommunicationCI)this.offering).ping();
+	public Void ping() throws Exception {
+		return ((CommunicationCI)this.offering).ping();
 	}
 
 }

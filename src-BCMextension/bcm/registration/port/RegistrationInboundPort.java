@@ -57,6 +57,11 @@ implements RegistrationCI
 				c -> ((GestionnaireReseau)c).registerRoutingNode(address, communicationInboundPortURI, initialPosition, initialRange, routingInBoundPortURI)
 		);
 	}
+	
+	@Override
+	public ConnectionInfoI getRandomConn() throws Exception {
+		return this.getOwner().handleRequest(c -> ((GestionnaireReseau)c).getRandomConn());
+	}
 
 	@Override
 	public void unregister(AddressI address) throws Exception {

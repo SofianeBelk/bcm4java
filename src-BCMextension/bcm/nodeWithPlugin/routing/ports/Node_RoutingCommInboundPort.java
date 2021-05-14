@@ -12,6 +12,7 @@ import bcm.node.terminal.components.Node_Terminal;
 import bcm.node.terminal.interfaces.Node_TerminalCI;
 import bcm.nodeWithPlugin.routing.interfaces.Node_RoutingI;
 import bcm.nodeWithPlugin.routing.plugins.Node_RoutingP;
+import bcm.nodeWithPlugin.terminal.interfaces.Node_TerminalI;
 import bcm.nodeWithPlugin.terminal.plugins.Node_TerminalP;
 import bcm.registration.interfaces.RegistrationCI;
 import bcm.utils.address.classes.NodeAddress;
@@ -85,8 +86,8 @@ public class Node_RoutingCommInboundPort extends AbstractInboundPort implements 
 	}
 
 	@Override
-	public void ping() throws Exception{
-		this.getOwner().handleRequest(c -> ((Node_Routing)c).ping());
+	public Void ping() throws Exception{
+		return this.getOwner().handleRequest(Node_RoutingP.Ping_URI, nr -> ((Node_RoutingI)nr).getPlugin().ping());
 	}
 
 

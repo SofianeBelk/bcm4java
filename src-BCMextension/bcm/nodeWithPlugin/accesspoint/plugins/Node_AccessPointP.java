@@ -27,6 +27,7 @@ import bcm.registration.component.GestionnaireReseau;
 import bcm.utils.address.classes.NodeAddress;
 import bcm.utils.address.interfaces.AddressI;
 import bcm.utils.address.interfaces.NodeAddressI;
+import bcm.utils.message.classes.Message;
 import bcm.utils.message.interfaces.MessageI;
 import bcm.utils.nodeInfo.classes.Position;
 import bcm.utils.nodeInfo.interfaces.PositionI;
@@ -43,6 +44,7 @@ public class Node_AccessPointP extends AbstractPlugin {
 	private NodeAddress address = new NodeAddress();
 	private List<ConnectionInformation> addressConnected = new ArrayList<>();
 	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
+	PositionI pointInitial;
 	
 	private int NumberOfNeighboorsToSend = 2;
 	protected ComponentI owner;
@@ -87,7 +89,6 @@ public class Node_AccessPointP extends AbstractPlugin {
 	public void	 installOn(ComponentI owner) throws Exception
 	{
 		super.installOn(owner);
-		System.out.println("plugin node access point started");
 
 		this.owner=owner;
 
@@ -114,8 +115,10 @@ public class Node_AccessPointP extends AbstractPlugin {
         
 		// Enables logs
 		this.owner.toggleLogging();
-		this.owner.toggleTracing();
-		this.logMessage("Node_AccessPoint " + this.address.getAdress());
+		// this.owner.toggleTracing();
+		this.pointInitial = new Position();
+		
+		this.logMessage("Node_AccessPoint " + this.address.getAdress() + " " + this.pointInitial.toString());
         
 	}
 
@@ -127,7 +130,6 @@ public class Node_AccessPointP extends AbstractPlugin {
 		this.napip = new Node_AccessPointCommInboundPort(this.owner,this.getPluginURI());
 		this.naprip = new Node_AccessPointRoutingInboundPort(this.owner, this.getPluginURI());
 		
-		System.out.println("AP PORT URI " + naprip.getPortURI());
 		this.napop.publishPort();
 		this.napip.publishPort();
 		this.naprip.publishPort();
@@ -139,9 +141,9 @@ public class Node_AccessPointP extends AbstractPlugin {
 	
 	public void start() throws Exception {
 		this.logMessage("Tries to log in the manager");
-		PositionI pointInitial = new Position(0,0);
+		
 		// Retrieve the list of devices to connect with
-		Set<ConnectionInfoI> devices = this.napop.registerAccessPoint(address,napip.getPortURI() , pointInitial, 25.00, naprip.getPortURI());
+		Set<ConnectionInfoI> devices = this.napop.registerAccessPoint(address,napip.getPortURI() , this.pointInitial, 1.5, naprip.getPortURI());
 		this.logMessage("Logged");
 		
 		// Connects to every device
@@ -175,7 +177,7 @@ public class Node_AccessPointP extends AbstractPlugin {
 			// Update routes
 			for(ConnectionInformation a : addressConnected) {
 				if(!(a.getNaprop() == null)) {
-					a.getNaprop().updateRouting(this.address, this.routes);
+					a.getNaprop().updateRouting(this.address, this.copyRouteInfo());
 					a.getNaprop().updateAccessPoint(this.address, 0);
 				}
 			}
@@ -270,11 +272,10 @@ public class Node_AccessPointP extends AbstractPlugin {
 		routes.add(new RoutingInfo(address,address));
 		this.logMessage("Sending routing informations");
 		
-		this.logMessage("Routing tables after connectionR " + this.routingTableToString());
 		
 		CInfo.setNapcop(napcop);
 		CInfo.setNaprop(naprop);
-		CInfo.getNaprop().updateRouting(this.address, this.routes);
+		CInfo.getNaprop().updateRouting(this.address, this.copyRouteInfo());
 		CInfo.getNaprop().updateAccessPoint(this.address, 0);
 		this.addressConnected.add(CInfo);
 		lockForArrays.writeLock().unlock();
@@ -285,38 +286,68 @@ public class Node_AccessPointP extends AbstractPlugin {
 		
 
 		m.decrementHops();
-		m.addAddressToHistory(this.address);
 		
 		if(m.getAddress().isNetworkAdress()) {
 			this.logMessage("Sent " + m.getContent() + " to network");
+			Message.newMessageReceived();
 			return;
 		}
-		
 		if(m.getAddress().equals(this.address)) {
 			this.logMessage("Received a message : " + m.getContent());
+			Message.newMessageReceived();
 		}
 		else {
-			
 			if(m.stillAlive()) {
-				int numberSent = 0;
-				for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {		
-					// No blocking mechanism
-					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
-					if(!m.isInHistory(addressToTransmitTo)) {
-						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
-						this.node_CommOBP.get(i).transmitMessage(m);
-						numberSent += 1;
-					}
-					else {
-						this.logMessage("No node to send message to");
-					}
+				// Try to send it from routing tables
+				if(sendMessageViaRouting(m)) {
+					Message.newMessageViaTableRouting();
+					return;
 				}
+				
+				// Message par Innondation 
+				this.sendMessageViaInnondation(m);
+				Message.newMessageViaInnondation();
 			}
 			else {
 				this.logMessage("Message dead");
 			}
 		}
 		return;
+	}
+	
+	public boolean sendMessageViaRouting(MessageI m) throws Exception {
+		this.lockForArrays.readLock().lock();
+		for(RouteInfoI ri: this.routes) {
+			if(ri.getDestination().getAdress() == m.getAddress().getAdress()) {
+				for(ConnectionInformation ci: this.addressConnected) {
+					if(ci.getAddress().getAdress() == ri.getIntermediate().getAdress()) {
+						this.logMessage("(Via routing tables) Transmitting a Message to " + ci.getAddress().getAdress());
+						ci.getNapcop().transmitMessage(m);
+						this.lockForArrays.readLock().unlock();
+						return true;
+					}
+				}
+			}
+		}
+		this.lockForArrays.readLock().unlock();
+		return false;
+	}
+	
+	public void sendMessageViaInnondation(MessageI m) throws Exception{
+		int numberSent = 0;
+		this.lockForArrays.readLock().lock();
+		for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {
+			// No blocking mechanism
+			Message.newMessageDuplicated();
+			
+			AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
+			this.logMessage("(Via innondation) Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
+			
+			this.addressConnected.get(i).getNapcop().transmitMessage(m);
+			numberSent += 1;
+		
+		}
+		this.lockForArrays.readLock().unlock();
 	}
 
 	public int hasRouteFor(AddressI address) throws Exception{
@@ -339,7 +370,7 @@ public class Node_AccessPointP extends AbstractPlugin {
 		}
 	}
 
-	public Object ping() throws Exception{
+	public Void ping() throws Exception{
 		return null;
 	}
 
@@ -347,18 +378,16 @@ public class Node_AccessPointP extends AbstractPlugin {
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception{
 		boolean add;
 		
-		// PRINT BEFORE
-		String toString = "BEFORE " + this.routingTableToString();
-		this.logMessage(toString);
 		
 		
 		// CORE
+		lockForArrays.writeLock().lock();
 		for(RouteInfoI riExt : routes) {	
 			add = true;
 			if(riExt.getDestination().equals(this.address)) {
 				continue;
 			}
-			lockForArrays.writeLock().lock();
+			
 			for(RouteInfoI riInt : this.routes) {	
 				
 				// If route exists in current table
@@ -382,17 +411,23 @@ public class Node_AccessPointP extends AbstractPlugin {
 				riAdd.setIntermediate(neighbour);
 				this.routes.add(riAdd);
 			}
-			lockForArrays.writeLock().unlock();
-
 		}
+		lockForArrays.writeLock().unlock();
 		
-		// PRINT AFTER
-		toString = "AFTER " + this.routingTableToString();
-		this.logMessage(toString);
 	}
 	
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
 		return;
+	}
+	
+	public Set<RouteInfoI> copyRouteInfo(){
+		this.lockForArrays.readLock().lock();;
+		Set<RouteInfoI> copy = new HashSet<RouteInfoI>();
+		for(RouteInfoI ri: this.routes) {
+			copy.add(ri);
+		}
+		this.lockForArrays.readLock().unlock();
+		return copy;
 	}
 	
 	public String routingTableToString() {

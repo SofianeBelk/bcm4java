@@ -82,8 +82,8 @@ public class Node_AccessPointCommInboundPort extends AbstractInboundPort impleme
 	}
 
 	@Override
-	public void ping() throws Exception{
-		this.getOwner().handleRequest(Node_AccessPointP.Ping_URI,c -> ((Node_AccessPoint)c).ping());
+	public Void ping() throws Exception{
+		return this.getOwner().handleRequest(Node_AccessPointP.Ping_URI,c -> ((Node_AccessPointI)c).getPlugin().ping());
 	}
 
 

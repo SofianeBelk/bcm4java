@@ -8,6 +8,8 @@ import bcm.node.accesspoint.components.Node_AccessPoint;
 import bcm.node.routing.components.Node_Routing;
 import bcm.node.terminal.components.Node_Terminal;
 import bcm.node.terminal.interfaces.Node_TerminalCI;
+import bcm.nodeWithPlugin.accesspoint.interfaces.Node_AccessPointI;
+import bcm.nodeWithPlugin.accesspoint.plugins.Node_AccessPointP;
 import bcm.nodeWithPlugin.routing.interfaces.Node_RoutingI;
 import bcm.nodeWithPlugin.terminal.interfaces.Node_TerminalI;
 import bcm.nodeWithPlugin.terminal.plugins.Node_TerminalP;
@@ -54,6 +56,15 @@ public class Node_TerminalCommInboundPort extends AbstractInboundPort implements
 
 	@Override
 	public void transmitMessage(MessageI m) throws Exception {
+		this.getOwner().runTask(Node_TerminalP.Transmit_MESSAGES_URI,
+			nr -> {
+				try {
+					((Node_TerminalI)nr).getPlugin().transmitMessage(m);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		);
 	}
 
 	@Override
@@ -62,16 +73,8 @@ public class Node_TerminalCommInboundPort extends AbstractInboundPort implements
 	}
 
 	@Override
-	public void ping() throws Exception{
-		this.getOwner().runTask(Node_TerminalP.Ping_URI,
-				nr -> {
-					try {
-						((Node_TerminalI)nr).getPlugin().ping();;
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			);
+	public Void ping() throws Exception{
+		return this.getOwner().handleRequest(Node_TerminalP.Ping_URI, nr -> ((Node_TerminalI)nr).getPlugin().ping());
 	}
 
 

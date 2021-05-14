@@ -263,7 +263,7 @@ public class Node_AccessPoint extends AbstractComponent{
 		return false;
 	}
 
-	public Object ping() throws Exception{
+	public Void ping() throws Exception{
 		return null;
 	}
 

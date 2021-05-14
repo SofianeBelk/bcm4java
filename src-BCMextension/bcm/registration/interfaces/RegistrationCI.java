@@ -16,6 +16,7 @@ public interface RegistrationCI extends OfferedCI{
 	public Set<ConnectionInfoI> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception;
 	public Set<ConnectionInfoI> registreRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInBoundPortURI) throws Exception;
+	public ConnectionInfoI getRandomConn() throws Exception;
 	public void unregister(AddressI address) throws Exception;
 	
 }

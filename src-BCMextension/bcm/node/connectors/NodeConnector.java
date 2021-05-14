@@ -41,6 +41,10 @@ public class NodeConnector extends AbstractConnector implements Node_TerminalCI,
 		return ((RegistrationCI)this.offering).registreRoutingNode(address, communicationInboundPortURI, initialPosition, initialRange, routingInBoundPortURI);
 	}
 	
+	public ConnectionInfoI getRandomConn() throws Exception {
+		return ((RegistrationCI)this.offering).getRandomConn();
+	}
+	
 	
 	
 	

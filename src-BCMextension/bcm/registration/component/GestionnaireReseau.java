@@ -3,7 +3,10 @@ package bcm.registration.component;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import bcm.connexion.interfaces.ConnectionInfoI;
 import bcm.registration.interfaces.RegistrationCI;
@@ -22,6 +25,7 @@ public class GestionnaireReseau extends AbstractComponent{
 	
 	public static final String GS_URI="gs-uri";
 	protected RegistrationInboundPort rip;
+	protected ReentrantReadWriteLock lockforArray = new ReentrantReadWriteLock();
     Set<ConnectionInfoI> mySet= new HashSet<>();
     
 	protected GestionnaireReseau() throws Exception {
@@ -51,7 +55,8 @@ public class GestionnaireReseau extends AbstractComponent{
 			PositionI initialPosition, double initialRange) throws Exception {
 		
 		Noeud n =new Noeud(address,communicationInboundPortURI,initialPosition,initialRange);
-		mySet.add(n);
+		
+		lockforArray.readLock().lock();;
 	    Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 	    for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {
@@ -62,6 +67,11 @@ public class GestionnaireReseau extends AbstractComponent{
 	    		}
 	    	}
 	    }
+	    lockforArray.readLock().unlock();;
+		
+	    lockforArray.writeLock().lock();;
+	    mySet.add(n);
+	    lockforArray.writeLock().unlock();
 	    
 	    this.logMessage("New node has registered");
 	    return (Set<ConnectionInfoI>) portee;
@@ -79,6 +89,7 @@ public class GestionnaireReseau extends AbstractComponent{
 				routingInboundPortURI,
 				true
 		);
+		lockforArray.readLock().lock();
 		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 		for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {
@@ -95,7 +106,11 @@ public class GestionnaireReseau extends AbstractComponent{
 	    		}
 	    	}
 	    }
+		lockforArray.readLock().unlock();
+		
+		lockforArray.writeLock().lock();
 		mySet.add(n);
+		lockforArray.writeLock().unlock();
 		this.logMessage("New node has registered");
 		return (Set<ConnectionInfoI>) portee;		
 	}
@@ -111,7 +126,7 @@ public class GestionnaireReseau extends AbstractComponent{
 				true, 
 				routingInboundPortURI
 		);
-
+		lockforArray.readLock().lock();
 		Set<ConnectionInfoI> portee= new HashSet<ConnectionInfoI>();
 		for(ConnectionInfoI ci : mySet) {
 	    	if(ci instanceof Noeud) {
@@ -122,13 +137,46 @@ public class GestionnaireReseau extends AbstractComponent{
 	    		}
 	    	}
 	    }
+		lockforArray.readLock().unlock();
 		
+		lockforArray.writeLock().lock();
 		mySet.add(n);
+		lockforArray.writeLock().unlock();
 		this.logMessage("New node has registered");
 		return (Set<ConnectionInfoI>) portee;		
 	}
+	
+	public ConnectionInfoI getRandomConn() {
+		Random rand = new Random();
+		int index;
+		
+		lockforArray.readLock().lock();
+		if(mySet.size() == 1) {
+			index = 0;
+		}
+		else {
+			index = rand.nextInt(mySet.size());
+		}
+		
+		Iterator<ConnectionInfoI> iter = this.mySet.iterator();
+		int cpt = 0;
+		while(iter.hasNext()) {
+			if(cpt == index) {
+				lockforArray.readLock().unlock();
+				return iter.next();
+			}
+			else {
+				iter.next();
+				cpt ++;
+			}
+		}
+		lockforArray.readLock().unlock();
+		return null;
+		
+	}
 
 	public void unregister(AddressI address) {
+		lockforArray.writeLock().lock();
 		Iterator<ConnectionInfoI> iter = this.mySet.iterator();
 		while(iter.hasNext()) {
 			ConnectionInfoI cinfo = (ConnectionInfoI)iter.next();
@@ -138,6 +186,7 @@ public class GestionnaireReseau extends AbstractComponent{
 				break;
 			}
 		}
+		lockforArray.writeLock().unlock();
 	}
 
 

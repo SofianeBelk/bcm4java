@@ -34,7 +34,10 @@ public class Node_RoutingOutBoundPort extends AbstractOutboundPort implements No
 				initialRange,
 				routingInboundPortURI);
 	}
-
+	
+	public ConnectionInfoI getRandomConn() throws Exception{
+		return ((Node_RoutingCI)this.getConnector()).getRandomConn();
+	}
 
 	@Override
 	public void unregister(AddressI address) throws Exception {

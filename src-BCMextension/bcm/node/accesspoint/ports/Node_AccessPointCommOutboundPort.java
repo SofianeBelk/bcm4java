@@ -49,8 +49,8 @@ public class Node_AccessPointCommOutboundPort extends AbstractOutboundPort imple
 	}
 
 	@Override
-	public void ping() throws Exception{
-		((CommunicationCI)this.getConnector()).ping();
+	public Void ping() throws Exception{
+		return ((CommunicationCI)this.getConnector()).ping();
 	}
 
 
