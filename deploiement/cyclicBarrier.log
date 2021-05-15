@@ -1,0 +1,79 @@
+1621106374174|DCVM Cyclic Barrier up and running!
+1621106379548|DCVM Cyclic Barrier accepts: GestionnaireReseaujvm localhost 34842
+1621106379549|DCVM Cyclic Barrier has received 1 out of 4 expected.
+1621106384033|DCVM Cyclic Barrier accepts: NodeTerminaljvm localhost 34844
+1621106384036|DCVM Cyclic Barrier has received 2 out of 4 expected.
+1621106387057|DCVM Cyclic Barrier accepts: NodeRoutingjvm localhost 34846
+1621106387058|DCVM Cyclic Barrier has received 3 out of 4 expected.
+1621106389487|All connected!
+1621106389491|DCVM Cyclic Barrier accepts: NodeAccessPointjvm localhost 34848
+1621106389492|DCVM Cyclic Barrier has received 4 out of 4 expected.
+1621106389492|DCVM Cyclic Barrier releases 4 sites.
+1621106389515|DCVM Cyclic Barrier accepts: GestionnaireReseaujvm localhost 34842
+1621106389535|DCVM Cyclic Barrier has received 1 out of 4 expected.
+1621106389550|DCVM Cyclic Barrier accepts: NodeAccessPointjvm localhost 34848
+1621106389551|DCVM Cyclic Barrier has received 2 out of 4 expected.
+1621106389601|DCVM Cyclic Barrier accepts: NodeTerminaljvm localhost 34844
+1621106389602|DCVM Cyclic Barrier has received 3 out of 4 expected.
+1621106389611|DCVM Cyclic Barrier accepts: NodeRoutingjvm localhost 34846
+1621106389611|DCVM Cyclic Barrier has received 4 out of 4 expected.
+1621106389611|DCVM Cyclic Barrier releases 4 sites.
+1621106390965|DCVM Cyclic Barrier accepts: GestionnaireReseaujvm localhost 34842
+1621106390965|DCVM Cyclic Barrier has received 1 out of 4 expected.
+1621106391359|DCVM Cyclic Barrier accepts: NodeTerminaljvm localhost 34844
+1621106391360|DCVM Cyclic Barrier has received 2 out of 4 expected.
+1621106391699|DCVM Cyclic Barrier accepts: NodeAccessPointjvm localhost 34848
+1621106391700|DCVM Cyclic Barrier has received 3 out of 4 expected.
+1621106392054|DCVM Cyclic Barrier accepts: NodeRoutingjvm localhost 34846
+1621106392054|DCVM Cyclic Barrier has received 4 out of 4 expected.
+1621106392054|DCVM Cyclic Barrier releases 4 sites.
+1621106392057|DCVM Cyclic Barrier accepts: NodeAccessPointjvm localhost 34848
+1621106392058|DCVM Cyclic Barrier has received 1 out of 4 expected.
+1621106392058|DCVM Cyclic Barrier accepts: NodeTerminaljvm localhost 34844
+1621106392058|DCVM Cyclic Barrier has received 2 out of 4 expected.
+1621106392059|DCVM Cyclic Barrier accepts: NodeRoutingjvm localhost 34846
+1621106392059|DCVM Cyclic Barrier accepts: GestionnaireReseaujvm localhost 34842
+1621106392061|DCVM Cyclic Barrier has received 3 out of 4 expected.
+1621106392062|DCVM Cyclic Barrier has received 4 out of 4 expected.
+1621106392062|DCVM Cyclic Barrier releases 4 sites.
+1621106392064|DCVM Cyclic Barrier accepts: NodeTerminaljvm localhost 34844
+1621106392064|DCVM Cyclic Barrier accepts: NodeAccessPointjvm localhost 34848
+1621106392064|DCVM Cyclic Barrier accepts: GestionnaireReseaujvm localhost 34842
+1621106392065|DCVM Cyclic Barrier has received 1 out of 4 expected.
+1621106392066|DCVM Cyclic Barrier has received 2 out of 4 expected.
+1621106392066|DCVM Cyclic Barrier has received 3 out of 4 expected.
+1621106392108|DCVM Cyclic Barrier accepts: NodeRoutingjvm localhost 34846
+1621106392109|DCVM Cyclic Barrier has received 4 out of 4 expected.
+1621106392109|DCVM Cyclic Barrier releases 4 sites.
+1621106422119|DCVM Cyclic Barrier accepts: NodeTerminaljvm localhost 34844
+1621106422119|DCVM Cyclic Barrier accepts: NodeAccessPointjvm localhost 34848
+1621106422119|DCVM Cyclic Barrier accepts: NodeRoutingjvm localhost 34846
+1621106422121|DCVM Cyclic Barrier has received 1 out of 4 expected.
+1621106422123|DCVM Cyclic Barrier has received 2 out of 4 expected.
+1621106422130|DCVM Cyclic Barrier has received 3 out of 4 expected.
+1621106422167|DCVM Cyclic Barrier accepts: GestionnaireReseaujvm localhost 34842
+1621106422169|DCVM Cyclic Barrier has received 4 out of 4 expected.
+1621106422169|DCVM Cyclic Barrier releases 4 sites.
+1621106422222|DCVM Cyclic Barrier accepts: GestionnaireReseaujvm localhost 34842
+1621106422223|DCVM Cyclic Barrier has received 1 out of 4 expected.
+1621106422242|DCVM Cyclic Barrier accepts: NodeAccessPointjvm localhost 34848
+1621106422243|DCVM Cyclic Barrier has received 2 out of 4 expected.
+1621106422249|DCVM Cyclic Barrier accepts: NodeTerminaljvm localhost 34844
+1621106422252|DCVM Cyclic Barrier has received 3 out of 4 expected.
+1621106422279|DCVM Cyclic Barrier accepts: NodeRoutingjvm localhost 34846
+1621106422280|DCVM Cyclic Barrier has received 4 out of 4 expected.
+1621106422280|DCVM Cyclic Barrier releases 4 sites.
+1621106422294|DCVM Cyclic Barrier accepts: GestionnaireReseaujvm localhost 34842
+1621106422294|DCVM Cyclic Barrier has received 1 out of 4 expected.
+1621106422384|DCVM Cyclic Barrier accepts: NodeTerminaljvm localhost 34844
+1621106422385|DCVM Cyclic Barrier has received 2 out of 4 expected.
+1621106422403|DCVM Cyclic Barrier accepts: NodeAccessPointjvm localhost 34848
+1621106422403|DCVM Cyclic Barrier has received 3 out of 4 expected.
+1621106422445|DCVM Cyclic Barrier accepts: NodeRoutingjvm localhost 34846
+1621106422446|DCVM Cyclic Barrier has received 4 out of 4 expected.
+1621106422446|DCVM Cyclic Barrier releases 4 sites.
+1621106422451|DCVMCyclicBarrier.run() finished.
+1621106422452|DCVMCyclicBarrier.run() finished.
+1621106422452|DCVMCyclicBarrier.run() finished.
+1621106422453|DCVMCyclicBarrier.run() finished.
+1621106422453|DCVM Cyclic Barrier shuts down!

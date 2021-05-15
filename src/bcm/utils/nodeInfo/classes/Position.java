@@ -1,11 +1,16 @@
 package bcm.utils.nodeInfo.classes;
 
+import java.io.Serializable;
 import java.util.concurrent.locks.ReentrantLock;
 
 import bcm.utils.nodeInfo.interfaces.PositionI;
 
-public class Position implements PositionI{
+public class Position implements PositionI , Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int x,y;
 	private ReentrantLock lock = new ReentrantLock();
 	

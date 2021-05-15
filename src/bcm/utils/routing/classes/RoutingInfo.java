@@ -1,9 +1,15 @@
 package bcm.utils.routing.classes;
 
+import java.io.Serializable;
+
 import bcm.utils.address.interfaces.AddressI;
 import bcm.utils.routing.interfaces.RouteInfoI;
 
-public class RoutingInfo implements RouteInfoI{
+public class RoutingInfo implements RouteInfoI, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private AddressI destination;
 	private AddressI intermediate;
 	private int numberOfhops;

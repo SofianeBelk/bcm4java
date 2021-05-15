@@ -1,0 +1,136 @@
+1621106370034|Global registry up and running!
+1621106390074|Global registry accepted the 1th connection.
+1621106390074|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-c81c8ca4-fc00-473c-be97-b391ae52f5d6 rmi=localhost
+1621106390149|GlobalRegistry processing put gs-uri rmi=localhost
+1621106390270|Global registry accepted the 2th connection.
+1621106390274|Global registry accepted the 3th connection.
+1621106390284|Global registry accepted the 4th connection.
+1621106390284|All (4) connected!
+1621106390287|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-10ff48d1-bc5f-4158-8a36-8270c9d10ea9 rmi=localhost
+1621106390289|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-61f1ec3e-80e6-4a00-9a4f-6af5da82fa96 rmi=localhost
+1621106390289|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-55105c98-e89a-46be-977f-501addbab617 rmi=localhost
+1621106390941|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-4eda2d40-a29f-4115-9edd-414a50eb8fe2 rmi=localhost
+1621106390954|GlobalRegistry processing put GestionnaireReseaujvm-dcc rmi=localhost
+1621106391001|GlobalRegistry processing put bcm.node.accesspoint.interfaces.Node_AccessPointCI-607acc86-1951-469e-b783-9a77e2262aeb rmi=localhost
+1621106391028|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-3febcf3f-efd6-4c66-8556-d67eea423ed9 rmi=localhost
+1621106391084|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-98d3e407-da0f-49af-8d07-142f6d9614c1 rmi=localhost
+1621106391106|GlobalRegistry processing lookup gs-uri
+1621106391285|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-73fd3a4e-8d9b-42ef-adaa-285bc7a3b6bf rmi=localhost
+1621106391358|GlobalRegistry processing put NodeTerminaljvm-dcc rmi=localhost
+1621106391401|GlobalRegistry processing put bcm.node.accesspoint.interfaces.Node_AccessPointCI-4383e411-3d8a-42d2-9f5c-bd23868717b3 rmi=localhost
+1621106391413|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-999731ed-7c6a-470a-9d8e-171b65c8e25a rmi=localhost
+1621106391429|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-f1273f11-2721-43dc-8d22-65c54c90a865 rmi=localhost
+1621106391472|GlobalRegistry processing lookup gs-uri
+1621106391543|GlobalRegistry processing put bcm.node.routing.interfaces.Node_RoutingCI-305f09c5-483f-4d5a-9062-1ee0822972ea rmi=localhost
+1621106391552|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-94c8067d-7ba6-44d9-bcf0-efc3b243bbba rmi=localhost
+1621106391574|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-ed7da83d-da79-41c7-ba53-a1afe5d53530 rmi=localhost
+1621106391614|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-3d084dc5-164d-4306-a1cc-998982605ea8 rmi=localhost
+1621106391624|GlobalRegistry processing lookup gs-uri
+1621106391691|GlobalRegistry processing put NodeAccessPointjvm-dcc rmi=localhost
+1621106391747|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-ebb9d26c-6070-499d-99a2-bb3f21bdb59c rmi=localhost
+1621106391780|GlobalRegistry processing put bcm.node.routing.interfaces.Node_RoutingCI-e91a6d12-d7de-4fd6-911b-672c05bcd5d2 rmi=localhost
+1621106391832|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-df8e178d-4401-4f4e-9801-5d9162998aed rmi=localhost
+1621106391880|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-474873d2-244c-4770-ba0b-a8a49536117b rmi=localhost
+1621106391881|GlobalRegistry processing lookup gs-uri
+1621106391891|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-d3a9723d-d993-4561-8806-d8b5ce9acadd rmi=localhost
+1621106391913|GlobalRegistry processing put bcm.node.routing.interfaces.Node_RoutingCI-d268da15-33a6-4fee-bf7d-131bcca671ee rmi=localhost
+1621106391964|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-cc0c1c94-6dd2-4b22-af51-3adfc817af09 rmi=localhost
+1621106391969|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-ea3fda84-1253-47d7-aa82-0e02a548ede8 rmi=localhost
+1621106391971|GlobalRegistry processing lookup gs-uri
+1621106391978|GlobalRegistry processing put fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-92749b30-4adc-40c5-84d5-dd109ae91c62 rmi=localhost
+1621106392052|GlobalRegistry processing put NodeRoutingjvm-dcc rmi=localhost
+1621106392256|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-7f55f8dd-7d53-4023-924c-4737a54243e9 rmi=localhost
+1621106392262|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-3febcf3f-efd6-4c66-8556-d67eea423ed9
+1621106392312|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-3828601e-14e3-4114-b820-92d61d86ba96 rmi=localhost
+1621106392314|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-3febcf3f-efd6-4c66-8556-d67eea423ed9
+1621106392348|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-380209c1-e3af-435d-be82-ce542ffcb764 rmi=localhost
+1621106392360|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-9c35472f-be01-4106-b898-5fe4d02a47ac rmi=localhost
+1621106392367|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-3febcf3f-efd6-4c66-8556-d67eea423ed9
+1621106392393|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-8713062c-4e6e-40ad-ba48-e01be70bb6bb rmi=localhost
+1621106392395|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-cc0c1c94-6dd2-4b22-af51-3adfc817af09
+1621106392412|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-36d8377f-c72c-448b-acb0-5a7b1416f821 rmi=localhost
+1621106392418|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-c47db41a-4135-4901-a088-cfd3e08a52fa rmi=localhost
+1621106392419|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-d716545d-28db-4ca6-99c7-ddac9f95bd8f rmi=localhost
+1621106392420|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-98d3e407-da0f-49af-8d07-142f6d9614c1
+1621106392422|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-98d3e407-da0f-49af-8d07-142f6d9614c1
+1621106392470|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-0b39d5ee-b561-44ad-a83d-257403b8f83e rmi=localhost
+1621106392472|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-3febcf3f-efd6-4c66-8556-d67eea423ed9
+1621106392477|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-315cf4e1-53ab-440d-b3af-2cede86b3f04 rmi=localhost
+1621106392512|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-59930b81-71bd-4f2d-af0f-513b8207f877 rmi=localhost
+1621106392513|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-a5d0040e-210f-43ee-a839-e8e6ca416569 rmi=localhost
+1621106392515|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-999731ed-7c6a-470a-9d8e-171b65c8e25a
+1621106392519|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-7cd53a23-1955-4184-b499-94257df5e15a rmi=localhost
+1621106392523|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-94c8067d-7ba6-44d9-bcf0-efc3b243bbba
+1621106392524|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-d38190ea-a631-4496-85ee-035ec734329f rmi=localhost
+1621106392526|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-b735cc5b-1773-4c57-9627-9240b8016a9f rmi=localhost
+1621106392529|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-b3698a39-7518-4e6e-993b-ed5ed9f5a291 rmi=localhost
+1621106392537|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-0241dedd-77cd-4285-afb8-f40c500e6c69 rmi=localhost
+1621106392582|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-98d3e407-da0f-49af-8d07-142f6d9614c1
+1621106392587|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-827c0b4e-e6a0-4cef-bb23-a99561fe4f13 rmi=localhost
+1621106392594|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-68f811e0-7812-4a92-b518-5760b8a25f75 rmi=localhost
+1621106392637|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-ed7da83d-da79-41c7-ba53-a1afe5d53530
+1621106392673|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-1b06678c-cce8-407a-832e-9515326e56d7 rmi=localhost
+1621106392680|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-a7bb9037-b2ae-4988-9285-3874682d80a5 rmi=localhost
+1621106392680|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-999731ed-7c6a-470a-9d8e-171b65c8e25a
+1621106392683|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-a154eecc-0bb0-42b2-934f-906df8a2b98a rmi=localhost
+1621106392688|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-4229ef2a-fa1b-4d15-bfc6-91cc71c25a73 rmi=localhost
+1621106392696|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-e962c148-1c10-48a0-b24a-7063e81b9b5f rmi=localhost
+1621106392725|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-cc0c1c94-6dd2-4b22-af51-3adfc817af09
+1621106392740|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-1ccd465c-d735-4102-bc38-55f58a303e12 rmi=localhost
+1621106392741|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-ca9d399c-3e48-4cd3-9d95-2e4fa9acb16c rmi=localhost
+1621106392745|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-defba899-033b-4f70-8898-442f54b024b9 rmi=localhost
+1621106392746|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-999731ed-7c6a-470a-9d8e-171b65c8e25a
+1621106392750|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-a342dd46-e331-4cd1-bf26-0c242a2a07ca rmi=localhost
+1621106392779|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-ea3fda84-1253-47d7-aa82-0e02a548ede8
+1621106392794|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-999731ed-7c6a-470a-9d8e-171b65c8e25a
+1621106392798|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-d4a2a394-597b-46c0-a4e3-678d947f520d rmi=localhost
+1621106392800|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-f1273f11-2721-43dc-8d22-65c54c90a865
+1621106392818|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-7b54485e-0766-4584-bdb5-d1834619b619 rmi=localhost
+1621106392864|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-26aec458-b3ec-4a9b-b792-cb5011439109 rmi=localhost
+1621106392873|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-df8e178d-4401-4f4e-9801-5d9162998aed
+1621106392880|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-474873d2-244c-4770-ba0b-a8a49536117b
+1621106392884|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-72e18117-cfb5-4de1-951a-19a30c011001 rmi=localhost
+1621106392886|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-f1273f11-2721-43dc-8d22-65c54c90a865
+1621106392918|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-7cf02e9e-41f9-47ee-bd23-54bb659dcb0e rmi=localhost
+1621106392976|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-bc95a104-4301-4e00-b851-db885fc4f4ab rmi=localhost
+1621106392978|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-df8e178d-4401-4f4e-9801-5d9162998aed
+1621106392986|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-474873d2-244c-4770-ba0b-a8a49536117b
+1621106393017|GlobalRegistry processing put bcm.connexion.interfaces.CommunicationCI-2df6a305-d2c1-4f9a-a2d3-f2bcb03d2e3a rmi=localhost
+1621106393068|GlobalRegistry processing put bcm.node.routing.interfaces.RoutingCI-909e02ff-bef8-4467-82a0-d07eeff23ac7 rmi=localhost
+1621106393113|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-94c8067d-7ba6-44d9-bcf0-efc3b243bbba
+1621106393117|GlobalRegistry processing lookup bcm.connexion.interfaces.CommunicationCI-ed7da83d-da79-41c7-ba53-a1afe5d53530
+1621106422184|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-92749b30-4adc-40c5-84d5-dd109ae91c62
+1621106422190|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-d3a9723d-d993-4561-8806-d8b5ce9acadd
+1621106422194|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-3d084dc5-164d-4306-a1cc-998982605ea8
+1621106422217|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-4eda2d40-a29f-4115-9edd-414a50eb8fe2
+1621106422218|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-c81c8ca4-fc00-473c-be97-b391ae52f5d6
+1621106422240|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-55105c98-e89a-46be-977f-501addbab617
+1621106422241|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-73fd3a4e-8d9b-42ef-adaa-285bc7a3b6bf
+1621106422248|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-10ff48d1-bc5f-4158-8a36-8270c9d10ea9
+1621106422276|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-ebb9d26c-6070-499d-99a2-bb3f21bdb59c
+1621106422278|GlobalRegistry processing remove fr.sorbonne_u.components.reflection.interfaces.ReflectionCI-61f1ec3e-80e6-4a00-9a4f-6af5da82fa96
+1621106422281|GlobalRegistry processing remove GestionnaireReseaujvm-dcc
+1621106422281|GlobalRegistry processing remove NodeRoutingjvm-dcc
+1621106422285|GlobalRegistry processing remove NodeTerminaljvm-dcc
+1621106422290|GlobalRegistry processing remove NodeAccessPointjvm-dcc
+1621106422291|GlobalRegistry processing remove bcm.node.routing.interfaces.Node_RoutingCI-d268da15-33a6-4fee-bf7d-131bcca671ee
+1621106422292|GlobalRegistry processing remove gs-uri
+1621106422304|GlobalRegistry processing remove bcm.node.accesspoint.interfaces.Node_AccessPointCI-4383e411-3d8a-42d2-9f5c-bd23868717b3
+1621106422334|GlobalRegistry processing remove bcm.node.accesspoint.interfaces.Node_AccessPointCI-607acc86-1951-469e-b783-9a77e2262aeb
+1621106422335|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-3febcf3f-efd6-4c66-8556-d67eea423ed9
+1621106422336|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-98d3e407-da0f-49af-8d07-142f6d9614c1
+1621106422336|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-cc0c1c94-6dd2-4b22-af51-3adfc817af09
+1621106422339|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-ea3fda84-1253-47d7-aa82-0e02a548ede8
+1621106422340|GlobalRegistry processing remove bcm.node.routing.interfaces.Node_RoutingCI-e91a6d12-d7de-4fd6-911b-672c05bcd5d2
+1621106422344|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-df8e178d-4401-4f4e-9801-5d9162998aed
+1621106422390|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-474873d2-244c-4770-ba0b-a8a49536117b
+1621106422392|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-999731ed-7c6a-470a-9d8e-171b65c8e25a
+1621106422393|GlobalRegistry processing remove bcm.node.routing.interfaces.Node_RoutingCI-305f09c5-483f-4d5a-9062-1ee0822972ea
+1621106422395|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-f1273f11-2721-43dc-8d22-65c54c90a865
+1621106422399|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-94c8067d-7ba6-44d9-bcf0-efc3b243bbba
+1621106422444|GlobalRegistry processing remove bcm.connexion.interfaces.CommunicationCI-ed7da83d-da79-41c7-ba53-a1afe5d53530
+1621106422451|GlobalRegistry processing shutdown
+1621106422453|GlobalRegistry processing shutdown
+1621106422459|GlobalRegistry processing shutdown
+1621106422492|GlobalRegistry processing shutdown
+1621106422493|Global registry shuts down!

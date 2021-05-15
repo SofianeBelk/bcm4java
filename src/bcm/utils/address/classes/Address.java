@@ -1,11 +1,16 @@
 package bcm.utils.address.classes;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import bcm.utils.address.interfaces.AddressI;
 
-public class Address implements AddressI{
+public class Address implements AddressI, Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String address;
 	
 	public Address() {

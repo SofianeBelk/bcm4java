@@ -1,12 +1,18 @@
 package bcm.utils.nodeInfo.classes;
 
 
+import java.io.Serializable;
+
 import bcm.connexion.interfaces.ConnectionInfoI;
 import bcm.utils.address.interfaces.AddressI;
 import bcm.utils.address.interfaces.NodeAddressI;
 import bcm.utils.nodeInfo.interfaces.PositionI;
 
-public class Noeud implements ConnectionInfoI {
+public class Noeud implements ConnectionInfoI, Serializable  {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private AddressI address;
 	private String communicationInboundPortURI;
 	private PositionI initialPosition;

@@ -8,8 +8,12 @@ import java.util.concurrent.locks.ReentrantLock;
 import bcm.utils.address.interfaces.AddressI;
 import bcm.utils.message.interfaces.MessageI;
 
-public class Message implements MessageI {
+public class Message implements MessageI, Serializable  {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Variables pour tracer les messages et garder des statistiques dessus
 	public static int MessageSent = 0;
 	public static int MessageLost = 0;
@@ -20,7 +24,7 @@ public class Message implements MessageI {
 	
 	public static ReentrantLock lock = new ReentrantLock();
 	
-	// Représente le nombre de bonds que le message peut faire
+	// Reprï¿½sente le nombre de bonds que le message peut faire
 	private int hops = 3;
 	private AddressI address;
 	private String content = "";

@@ -176,7 +176,7 @@ public class Node_AccessPointP extends AbstractPlugin {
         
 		// Enables logs
 		this.owner.toggleLogging();
-		// this.owner.toggleTracing();
+		this.owner.toggleTracing();
 		this.pointInitial = new Position();
 		
 		this.logMessage("Node_AccessPoint " + this.address.getAdress() + " " + this.pointInitial.toString());

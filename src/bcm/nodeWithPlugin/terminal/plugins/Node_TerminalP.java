@@ -144,7 +144,7 @@ public class Node_TerminalP extends AbstractPlugin {
 		
 		// Enable logs
 		this.owner.toggleLogging();
-		// this.owner.toggleTracing();
+		this.owner.toggleTracing();
 		this.owner.logMessage("Node Terminal " + this.address.getAdress() + " " + this.pointInitial.toString());
         
 	}
@@ -212,7 +212,7 @@ public class Node_TerminalP extends AbstractPlugin {
 			this.logMessage("Connected to all nearby devices");
 			
 			
-			// Toutes les 5 secondes, le noeud à 10% de chance de se déconnecter
+			// Toutes les 5 secondes, le noeud ï¿½ 10% de chance de se dï¿½connecter
 			while(true) {
 				Thread.yield();
 				Thread.sleep(5000);
