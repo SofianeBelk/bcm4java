@@ -11,7 +11,5 @@ public interface MessageI {
 	public boolean stillAlive();
 	public void decrementHops();
 	public MessageI copy();
-	public void addAddressToHistory(AddressI a);
-	public boolean isInHistory(AddressI a);
 }
 

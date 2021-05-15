@@ -40,46 +40,96 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
+
+/**
+ * classe Node_RoutingP qui  est le plugin "greffons" qui correspand au  nœud routing dans notre réseau
+ * @author Nguyen, Belkhir
+ **/
 public class Node_RoutingP extends AbstractPlugin{
 
 	private static final long serialVersionUID = 1L;
+	
+	/** un compteur qui permet d'identifier notre noeud **/
     public static int node_routing_id = 1;
 	
+	/** l'identifiant de notre nœud routing **/
 	private int id;
+	
+	/** le port sortant du nœud routing **/
 	protected Node_RoutingOutBoundPort nrop;
+	
+	/** le port entrant "CommunicationCI" du nœud routing **/
 	protected Node_RoutingCommInboundPort nrcip;
+	
+	/** le port entrant du nœud routing **/
 	protected Node_RoutingRoutingInboundPort nrrip;
+	
+	/** l'adresse du nœud routing **/
 	protected NodeAddress address = new NodeAddress();
+	
+	/** la liste des adresses accessible à partir du nœud routing **/
 	protected List<ConnectionInformation> addressConnected = new ArrayList<>();
+	
+	/** la liste des adresses de la table de routage **/
 	protected Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
+	
+	/** l'adresse de l'access Point**/
 	protected RouteInfoI routeToAccessPoint;
 	
-	
+	/**l'adresse a qui on envoi le message**/
 	public static AddressI addressToSendMessage;
-	private int NumberOfNeighboorsToSend = 3;
 	
+	/** le nombre e tentative pour envoyais un message **/
+	private int NumberOfNeighboorsToSend = 2;
+	
+	/** la position initial du nœud routing **/
 	private PositionI pointInitial;
 	
 	
 	protected ComponentI owner;
 	
 	// Thread URI
+	/**l'URI de la méthode UpdateRouting**/
 	public static final String          UpdateRouting_URI       = "Update_Routing";
+	
+	/**l'URI de la méthode UpdateAccessPoint**/
 	public static final String          UpdateAccessPoint_URI   = "Uodate_Access_Point";
+	
+	/**l'URI de la méthode ConnectRouting**/
 	public static final String			ConnectRouting_URI 		= "Connexion_via_les_tables_de_routing" ;
+	
+	/**l'URI de la méthode Connect**/
 	public static final String			Connect_URI            	= "Connexion" ;
+	
+	/**l'URI de la méthode TransmitMESSAGES**/
 	public static final String		   	Transmit_MESSAGES_URI	= "Transmettre_messages" ;
+	
+	/**l'URI de la méthode HasRoutesFor**/
 	public static final String         	Has_Routes_URI			= "Has_routes_for";
+	
+	/**l'URI de la méthode Ping**/
 	public static final String         	Ping_URI 				= "ping";
 		
 	
-	private int nbThreadUpdateRouting =3;
-	private int nbThreadTransmitMessage = 5;
-	private int nbThreadPing = 2;
+	/**le nombre initial de thread pour la méthode UpdateRouting**/
+	private int nbThreadUpdateRouting =1;
 	
+	/**le nombre initial de thread pour la méthode Connect**/
 	private int nbThreadConnect = 1;
+	
+	/**le nombre initial de thread pour la méthode ConnectRouting**/
 	private int nbThreadConnectRouting = 1;
+
+	/**le nombre initial de thread pour la méthode TransmitMessage**/
+    private int nbThreadTransmitMessage = 1;
+    
+	/**le nombre initial de thread pour la méthode HasRouteFor**/
 	private int nbThreadHasRouteFor = 1;
+	
+	/**le nombre initial de thread pour la méthode Ping**/
+	private int nbThreadPing = 1;
+	
+	/**le nombre initial de thread pour la méthode UpdateAccessPoint**/
 	private int nbThreadUpdateAccessPoint =1 ;
 	
 	// Locks
@@ -89,11 +139,23 @@ public class Node_RoutingP extends AbstractPlugin{
 	
 	protected ReentrantReadWriteLock lockForRouteToAP = new ReentrantReadWriteLock();
 
-	
+	/**
+	 * Constructeur vide
+	 */
 	public Node_RoutingP() {
 		
 	}
 	
+	/**
+	 * Constructeur qui permet d'initialiser le nombre maximum de thread pour chaque méthode
+	 * @param nbThreadUpdateRouting
+	 * @param nbThreadConnect
+	 * @param nbThreadConnectRouting
+	 * @param nbThreadTransmitMessage
+	 * @param nbThreadHasRouteFor
+	 * @param nbThreadPing
+	 * @param nbThreadUpdateAccessPoint
+	 */
 	public Node_RoutingP(int nbThreadUpdateRouting, int nbThreadConnect, int nbThreadConnectRouting, int nbThreadTransmitMessage, int nbThreadHasRouteFor,int nbThreadPing, int nbThreadUpdateAccessPoint) {
 		this.nbThreadUpdateRouting=nbThreadUpdateRouting;
 		this.nbThreadConnect=nbThreadConnect;
@@ -103,6 +165,11 @@ public class Node_RoutingP extends AbstractPlugin{
 		this.nbThreadPing=nbThreadPing;
 		this.nbThreadUpdateAccessPoint=nbThreadUpdateAccessPoint;
 	}
+	
+	/**--------------------------------------------------
+	 *--------------  Component life-cycle -------------
+	  --------------------------------------------------**/
+	
 
 	@Override
 	public void	 installOn(ComponentI owner) throws Exception
@@ -149,7 +216,6 @@ public class Node_RoutingP extends AbstractPlugin{
 	public void	initialise() throws Exception {
         super.initialise();
         //add port
-        //
 		this.nrop = new Node_RoutingOutBoundPort(this.owner);
 		this.nrcip = new Node_RoutingCommInboundPort(this.owner,this.getPluginURI());
 		this.nrrip = new Node_RoutingRoutingInboundPort(this.owner, this.getPluginURI());
@@ -269,11 +335,13 @@ public class Node_RoutingP extends AbstractPlugin{
 		while(true) {
 			Random rand = new Random();
 			Thread.yield();
-			Thread.sleep(rand.nextInt(4) * 2000);
+			Thread.sleep(rand.nextInt(4) * 250);
 			
+			// Tous les 5 tours de boucle, nous v�rifions les voisins
 			if(cpt % 5 == 0) {
 				this.checkPingOthers();
 			}
+			// Tous les 10 tours de boucle, nous updatons nos voisins sur la table de routing
 			if(cpt % 10 == 0) {
 				lockForCI.readLock().lock();
 				for(ConnectionInformation a : addressConnected) {
@@ -291,7 +359,7 @@ public class Node_RoutingP extends AbstractPlugin{
 			}
 			
 			
-			
+			// Le noeud � 15% de chance d'envoyer un message � une adresse du r�seau classique
 			if(rand.nextFloat() < 0.15) {
 				NetworkAddress toSend = new NetworkAddress();
 				Message m = new Message(toSend,"Hello to Network from : " + toSend.getAdress());						
@@ -299,6 +367,7 @@ public class Node_RoutingP extends AbstractPlugin{
 				Message.newMessageSent();
 				this.transmitMessage(m);
 			}
+			// Le noeud � 10% de chance d'envoyer un message � une adresse al�atoire du r�seau
 			if(rand.nextFloat() < 0.10){
 				lockForCI.readLock().lock();
 				ConnectionInfoI ci;
@@ -350,7 +419,14 @@ public class Node_RoutingP extends AbstractPlugin{
 		
 	}
 
-
+	/** ------------------------- Services ------------------------**/
+	
+	/**
+	 * cette méthode nous permet de mettre a jours notre table de routage
+	 * @param neighbour
+	 * @param routes
+	 * @throws Exception
+	 */
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routesExt) throws Exception {
 		boolean add;
 	
@@ -396,6 +472,13 @@ public class Node_RoutingP extends AbstractPlugin{
 		
 	}
 	
+	/**
+	 * cette méthode permet a un voisin de se connecter 
+	 * @param address : l'adresse du voisin
+	 * @param communicationInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		this.logMessage("Someone asked connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
@@ -427,6 +510,14 @@ public class Node_RoutingP extends AbstractPlugin{
 		return null;
 	}
 
+	/**
+	 * Cette méthode est appeler par le nœud routing s'il a la capacité à router des messages 
+	 * @param address
+	 * @param communicationInboundPortURI
+	 * @param routingInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		
 		this.logMessage("Someone asked connection");
@@ -483,8 +574,16 @@ public class Node_RoutingP extends AbstractPlugin{
 	}
 	
 
-	public void transmitMessage(MessageI m) throws Exception {
 	
+	
+		// this.logMessage("Routing tables before sending message " + this.routingTableToString());
+	/**
+	 * cette méthode permet de trasmettre un message
+	 * @param m : le message à transmettre
+	 * @return null
+	 * @throws Exception
+	 */
+	public void transmitMessage(MessageI m) throws Exception {
 		// this.logMessage("Routing tables before sending message " + this.routingTableToString());
 		m.decrementHops();
 		
@@ -518,6 +617,12 @@ public class Node_RoutingP extends AbstractPlugin{
 		return;
 	}
 	
+	/**
+	 * cette methode nous permet d'envoyer un message to network
+	 * @param m : le message
+	 * @return true si on réussi a envoyais le message to Network
+	 * @throws Exception
+	 */
 	public boolean sendMessageToNetwork(MessageI m) throws Exception {
 		MessageI messageToTransmit = m.copy();
 		if(m.getAddress().isNetworkAdress()) {
@@ -537,6 +642,12 @@ public class Node_RoutingP extends AbstractPlugin{
 		return false;
 	}
 	
+	/**
+	 * cette méthode nous permet d'envyer un message via le routeur
+	 * @param m : le message
+	 * @return true si on réussit a envoyer un message via le routeur
+	 * @throws Exception
+	 */
 	public boolean sendMessageViaRouting(MessageI m) throws Exception {
 		MessageI messageToTransmit = m.copy();
 		this.lockForRoutes.readLock().lock();
@@ -559,6 +670,11 @@ public class Node_RoutingP extends AbstractPlugin{
 		return false;
 	}
 	
+	/**
+	 * cette méthode nous permets d'envoyer un message via l'innondation
+	 * @param m : le message
+	 * @throws Exception
+	 */
 	public void sendMessageViaInnondation(MessageI m) throws Exception{
 		
 		this.lockForCI.readLock().lock();
@@ -585,6 +701,12 @@ public class Node_RoutingP extends AbstractPlugin{
 		this.lockForCI.readLock().unlock();
 	}
 
+	/**
+	 * Cette méthode vérifie s'il existe une route vers une adresse particulière
+	 * @param address : l'adresse a vérifié
+	 * @return true si il existe une route
+	 * @throws Exception
+	 */
 	public int hasRouteFor(AddressI address) throws Exception{
 		int hops = -1;
 		
@@ -607,10 +729,22 @@ public class Node_RoutingP extends AbstractPlugin{
 		return hops;
 	}
 
+	
+	/**
+	 * Cette méthode permet de vérifier le voisin est encore présent
+	 * @return null
+	 * @throws Exception
+	 */
 	public Void ping() throws Exception{
 		return null;
 	}
 	
+	/**
+	 * cette méthode nous permet de mettre à jour la route vers le point d’accès le plus proche 
+	 * @param neighbour
+	 * @param numberOfHops
+	 * @throws Exception
+	 */
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception {
 		// Adding a new route to an access point if it doesn't exists
 		this.lockForRouteToAP.writeLock().lock();
@@ -627,7 +761,12 @@ public class Node_RoutingP extends AbstractPlugin{
 		this.lockForRouteToAP.writeLock().unlock();
 	}
 	
-	// Used to generate a string to display routing table's informations
+	/**
+	 * Permet de transformer en string une table de routage 
+	 * @param neighbour
+	 * @param numberOfHops
+	 * @throws Exception
+	 */
 	public String routingTableToString() {
 		this.lockForRoutes.readLock().lock();
 		String toString = "Routes :";
@@ -641,6 +780,9 @@ public class Node_RoutingP extends AbstractPlugin{
 		return toString;
 	}
 	
+	/**
+	 * Permet de faire une copie de la table de routage
+	 */
 	public Set<RouteInfoI> copyRouteInfo(){
 		this.lockForRoutes.readLock().lock();;
 		Set<RouteInfoI> copy = new HashSet<RouteInfoI>();
@@ -651,6 +793,9 @@ public class Node_RoutingP extends AbstractPlugin{
 		return copy;
 	}
 	
+	/**
+	 * Ping toutes les addresses pour v�rifier que les noeuds sont actifs
+	 */
 	public void checkPingOthers() {
 		this.logMessage("Sending ping");
 		
@@ -664,7 +809,7 @@ public class Node_RoutingP extends AbstractPlugin{
 				ci.getNrcop().ping();
 			}
 			
-			// Ne pas d�truire le port, Voir mail
+			// Ne pas d�truire le port, Voir mail
 			catch(Exception e) {
 				lockForRoutes.writeLock().lock();
 				Iterator<RouteInfoI> iri = this.routes.iterator();

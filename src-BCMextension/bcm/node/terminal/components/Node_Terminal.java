@@ -7,9 +7,8 @@ import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
 import java.util.List;
 import java.util.Set;
-import java.awt.Point;
+import java.rmi.ConnectException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import bcm.connexion.classes.ConnectionInformation;
 import bcm.connexion.connectors.CommunicationConnector;
@@ -38,20 +37,41 @@ import bcm.utils.nodeInfo.interfaces.PositionI;
 
 public class Node_Terminal extends AbstractComponent{
 	
+	/** un compteur qui permet d'identifier notre noeud **/
 	public static int node_terminal_id = 1;
 	
+	/** l'identifiant de notre nœud terminal **/
 	private int id;
 	
+	/** le port sortant du nœud terminal **/
 	protected Node_TerminalOutBoundPort ntop;
+	
+	/** le port entrant "CommunicationCI" du nœud terminal **/
 	protected Node_TerminalCommInboundPort ntip;
 	
+	/** la liste des ports sortant "CommunicationCI" du nœud terminal **/
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
+	
+	/** l'adresse du nœud terminal **/
 	private NodeAddress address = new NodeAddress();
+	
+	/** la liste des adresses accessible à partir du nœud terminal **/
 	private List<ConnectionInformation> addressConnected= new ArrayList<>();
 	
+	/** le nombre e tentative pour envoyais un message **/
 	private int NumberOfNeighboorsToSend = 2;
+	
+	/** la position initial du nœud terminal **/
 	private PositionI pointInitial;
 	
+	/** un boolean qui permet de savoir si notre composant est toujours vivant**/
+	private boolean isAlive = false;
+	
+	
+	/**
+	 * Constructeur qui crée une instance du nœud terminal
+	 * @throws Exception
+	 */
 	protected Node_Terminal() throws Exception {
 		super(3,0); 
 		this.id = node_terminal_id;
@@ -75,6 +95,10 @@ public class Node_Terminal extends AbstractComponent{
 	}
 
 
+	/**--------------------------------------------------
+	 *--------------  Component life-cycle -------------
+	  --------------------------------------------------**/
+	
 	@Override
 	public synchronized void finalise() throws Exception {
 		super.finalise();
@@ -106,6 +130,7 @@ public class Node_Terminal extends AbstractComponent{
 		super.execute();
 		this.logMessage("Tries to log in the manager");
 		Set<ConnectionInfoI> devices = this.ntop.registerTerminalNode(address, ntip.getPortURI(),this.pointInitial , 1.5);
+		this.isAlive = true;
 		this.logMessage("Logged");
 		
 		// Current node connects to others nodes
@@ -134,9 +159,26 @@ public class Node_Terminal extends AbstractComponent{
 			this.addressConnected.add(ciToAdd);
 		}
 		this.logMessage("Connected to all nearby devices");
-		
+		this.logMessage("Ping neighbour");
+		try {
+			this.ntip.ping();
+		}catch(Exception e) {
+			this.logMessage("Dead neighbour");
+		}
+		this.logMessage("neighbour always alive");
+		this.ntop.unregister(this.address);
+		this.isAlive = false;
 	}
 
+	/** ------------------------- Services ------------------------**/
+	
+	/**
+	 * cette méthode permet a un voisin de se connecter 
+	 * @param address : l'adresse du voisin
+	 * @param communicationInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		
 		this.logMessage("Someone asked for connection");
@@ -161,14 +203,28 @@ public class Node_Terminal extends AbstractComponent{
 		return null;
 	}
 
+	/**
+	 * Cette méthode est appeler par le nœud terminal s'il a la capacité à router des messages 
+	 * @param address
+	 * @param communicationInboundPortURI
+	 * @param routingInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		return null;
 	}
+	
+	/**
+	 * cette méthode permet de trasmettre un message
+	 * @param m : le message à transmettre
+	 * @return null
+	 * @throws Exception
+	 */
 
 	public Object transmitMessage(MessageI m) throws Exception {
 		
 		m.decrementHops();
-		m.addAddressToHistory(this.address);
 		
 		
 		
@@ -180,15 +236,10 @@ public class Node_Terminal extends AbstractComponent{
 				int numberSent = 0;
 				for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {					
 					AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
-					if(!m.isInHistory(addressToTransmitTo)) {
-						this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
-						MessageI messageToSend = m.copy();
-						this.node_CommOBP.get(i).transmitMessage(messageToSend);
-						numberSent += 1;
-					}
-					else {
-						this.logMessage("No node to send message to");
-					}
+					this.logMessage("Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
+					MessageI messageToSend = m.copy();
+					this.node_CommOBP.get(i).transmitMessage(messageToSend);
+					numberSent += 1;
 				}
 			}
 			else {
@@ -198,6 +249,13 @@ public class Node_Terminal extends AbstractComponent{
 		
 		return null;
 	}
+	
+	/**
+	 * Cette méthode vérifie s'il existe une route vers une adresse particulière
+	 * @param address : l'adresse a vérifié
+	 * @return true si il existe une route
+	 * @throws Exception
+	 */
 
 	public boolean hasRouteFor(AddressI address) throws Exception{
 		return false;

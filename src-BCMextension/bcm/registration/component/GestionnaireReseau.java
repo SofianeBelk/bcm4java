@@ -1,6 +1,5 @@
 package bcm.registration.component;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -20,14 +19,28 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
+/**
+ * classe GestionnaireReseau qui représente le gestionnaire du réseau 
+ * @author Nguyen, Belkhir
+ **/
+
 @OfferedInterfaces(offered= {RegistrationCI.class})
 public class GestionnaireReseau extends AbstractComponent{
 	
+	/**l'URI du composant**/
 	public static final String GS_URI="gs-uri";
+	
+	/**le port entrant du composant**/
 	protected RegistrationInboundPort rip;
 	protected ReentrantReadWriteLock lockforArray = new ReentrantReadWriteLock();
+	
+	/**la table du gestionnaire du réseau**/
     Set<ConnectionInfoI> mySet= new HashSet<>();
     
+    /**
+	 * Constructeur qui crée une instance du gestionnaire du réseau
+	 * @throws Exception
+	 */
 	protected GestionnaireReseau() throws Exception {
 		super(1, 0);
 		this.rip =new RegistrationInboundPort(GS_URI,this);
@@ -37,6 +50,10 @@ public class GestionnaireReseau extends AbstractComponent{
 	}
 	
 
+	/**--------------------------------------------------
+	 *--------------  Component life-cycle -------------
+	  --------------------------------------------------**/
+	
 	
 	@Override
 	public synchronized void shutdown() throws ComponentShutdownException{
@@ -50,7 +67,17 @@ public class GestionnaireReseau extends AbstractComponent{
 	}
 	
 
-	@SuppressWarnings("unchecked")
+	/** ------------------------- Services ------------------------**/
+	
+	/**
+	 * 
+	 * @param address : l'adresse du noeud terminal
+	 * @param communicationInboundPortURI:  l’URI du port entrant de communication
+	 * @param initialPosition : la position du noeud
+	 * @param initialRange : la portée 
+	 * @return : une nouvelle table
+	 * @throws Exception
+	 */
 	public Set<ConnectionInfoI> registerTerminalNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange) throws Exception {
 		
@@ -77,7 +104,16 @@ public class GestionnaireReseau extends AbstractComponent{
 	    return (Set<ConnectionInfoI>) portee;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 
+	 * @param address : l'adresse du noeud Access Point
+	 * @param communicationInboundPortURI : l’URI du port entrant de communication
+	 * @param initialPosition : la position du noeud
+	 * @param initialRange : la portée
+	 * @param routingInboundPortURI : l’URI du port entrant du routage
+	 * @return : une nouvelle table
+	 * @throws Exception
+	 */
 	public Set<ConnectionInfoI> registerAccessPoint(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) throws Exception {
 		Noeud n =new Noeud(
@@ -116,6 +152,15 @@ public class GestionnaireReseau extends AbstractComponent{
 	}
 
 
+	/**
+	 * 
+	 * @param address : l'adresse du noeud Access Point
+	 * @param communicationInboundPortURI : l’URI du port entrant de communication
+	 * @param initialPosition : la position du noeud
+	 * @param initialRange : la portée
+	 * @param routingInboundPortURI : l’URI du port entrant du routage
+	 * @return : une nouvelle table
+	 */
 	public Object registerRoutingNode(NodeAddressI address, String communicationInboundPortURI,
 			PositionI initialPosition, double initialRange, String routingInboundPortURI) {
 		Noeud n = new Noeud(
@@ -175,6 +220,12 @@ public class GestionnaireReseau extends AbstractComponent{
 		
 	}
 
+	
+	/**
+	 * 
+	 * @param address : l'adresse du noeud qui va etre dérengistrer
+	 * @return null
+	 */
 	public void unregister(AddressI address) {
 		lockforArray.writeLock().lock();
 		Iterator<ConnectionInfoI> iter = this.mySet.iterator();

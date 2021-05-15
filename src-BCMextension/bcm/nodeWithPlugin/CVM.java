@@ -34,7 +34,7 @@ public class CVM extends AbstractCVM {
 		int nb_terminal = 0;
 		
 		
-		// Répartition aléatoire des noeuds
+		// Répartition aléatoire des noeuds pour qu'ils soient a 
 		Random rand = new Random();
 		ArrayList<Integer> list = new ArrayList<Integer>(3);
 		for(int i=0;i<3;i++) {

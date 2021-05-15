@@ -29,28 +29,51 @@ import bcm.utils.nodeInfo.interfaces.PositionI;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 
+/**
+ * classe Node_TerminalP qui est le plugin "greffons" qui correspand au noeud terminal
+ * @author Nguyen, Belkhir
+ **/
 public class Node_TerminalP extends AbstractPlugin {
 	public static final long 			serialVersionUID = 1L ;
 	
 	
-	
+	/** l'identifiant de notre nœud terminal **/
 	private int id;
+	
 	protected ComponentI owner;
-	protected String URIportCommunication; 
+	
+	/** l'URI du port de communication**/
+	protected String URIportCommunication;
+	
+	/**l'URI du port terminal**/
 	protected String URIportNodeTerminale; 
+	
+	/** le port sortant du nœud terminal **/
 	protected Node_TerminalOutBoundPort ntop;
+	
+	/** le port entrant "CommunicationCI" du nœud terminal **/
 	protected Node_TerminalCommInboundPort ntcip;
+	
+	/** la liste des ports sortant "CommunicationCI" du nœud terminal **/
 	protected List<Node_TerminalCommOutboundPort> node_CommOBP = new ArrayList<>();
+	
+	/** l'adresse du nœud terminal **/
 	private NodeAddress address = new NodeAddress();
+	
+	/** la liste des adresses accessible à partir du nœud terminal **/
 	private List<ConnectionInformation> addressConnected= new ArrayList<>();
 	
+	/** le nombre e tentative pour envoyais un message **/
 	private int NumberOfNeighboorsToSend = 2;
+	
+	/** la position initial du nœud terminal **/
 	private PositionI pointInitial;
 	
 	
 	// // Thread 
 	
 	// Thread URI
+	/**l'URI de la méthode connect**/
 	public static final String			Connect_URI            	= "Connexion" ;
 	public static final String         	Transmit_MESSAGES_URI 	= "Transmission";
 	public static final String         	Has_Routes_URI			= "Has_routes_for";
@@ -58,9 +81,16 @@ public class Node_TerminalP extends AbstractPlugin {
 	public static final String         	Ping_URI 				= "ping";
 	
 	// Thread Distribution
+	/**le nombre initial de thread pour la méthode connect**/
 	private int nbThreadConnect = 1;
+	
+	/**le nombre initial de thread pour la méthode connectRouting**/
 	private int nbThreadConnectRouting = 1;
+	
+	/**le nombre initial de thread pour la méthode transmitMessage**/
 	private int nbThreadTransmitMessage = 1;
+	
+	/**le nombre initial de thread pour la méthode HasRouteFor**/
 	private int nbThreadHasRouteFor = 1;
 	private int nbThreadPing = 2;
 	
@@ -72,6 +102,14 @@ public class Node_TerminalP extends AbstractPlugin {
 		
 	}
 	
+	/**
+	 * Constructeur qui permet d'initialiser le nombre maximum de thread pour chaque méthode
+	 * @param C
+	 * @param nbThreadConnectRouting
+	 * @param nbThreadTransmitMessage
+	 * @param nbThreadHasRouteFor
+	 * @param nbThreadPing
+	 */
 	public Node_TerminalP(int C, int nbThreadConnectRouting, int nbThreadTransmitMessage, int nbThreadHasRouteFor, int nbThreadPing) {
 		this.nbThreadPing=nbThreadPing;
 		this.nbThreadConnectRouting=nbThreadConnectRouting;
@@ -79,6 +117,10 @@ public class Node_TerminalP extends AbstractPlugin {
 		this.nbThreadHasRouteFor=nbThreadHasRouteFor;
 		this.nbThreadPing=nbThreadPing;
 	}
+	
+	/**--------------------------------------------------
+	 *--------------  Component life-cycle -------------
+	  --------------------------------------------------**/
 	
 	@Override
 	public void	 installOn(ComponentI owner) throws Exception
@@ -170,11 +212,12 @@ public class Node_TerminalP extends AbstractPlugin {
 			this.logMessage("Connected to all nearby devices");
 			
 			
+			// Toutes les 5 secondes, le noeud � 10% de chance de se d�connecter
 			while(true) {
 				Thread.yield();
 				Thread.sleep(5000);
 				Random rand = new Random();
-				if(rand.nextFloat() < 0.05) {
+				if(rand.nextFloat() < 0.10) {
 					this.logMessage("Disconnecting");
 					this.ntop.unregister(address);
 					this.logMessage("Unregistered");
@@ -250,6 +293,16 @@ public class Node_TerminalP extends AbstractPlugin {
 	}
 
 
+	
+/** ------------------------- Services ------------------------**/
+	
+	/**
+	 * cette méthode permet a un voisin de se connecter 
+	 * @param address : l'adresse du voisin
+	 * @param communicationInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public void connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {	
 		this.logMessage("Someone asked for connection");
 		lockForConnections.lock();
@@ -295,6 +348,12 @@ public class Node_TerminalP extends AbstractPlugin {
 	}
 
 	// Used to answer if the node is still active
+	
+	/**
+	 * Cette méthode permet de vérifier le voisin est encore présent
+	 * @return null
+	 * @throws Exception
+	 */
 	public Void ping() throws Exception{
 		return null;
 	}

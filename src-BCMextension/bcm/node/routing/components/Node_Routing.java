@@ -1,11 +1,9 @@
 package bcm.node.routing.components;
 
+import java.rmi.ConnectException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import bcm.connexion.classes.ConnectionInformation;
@@ -41,6 +39,10 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 
+/**
+ * classe Node_Routing qui reprÃ©sente le nÅ“ud routing dans notre rÃ©seau
+ * @author Nguyen, Belkhir
+ **/
 
 @RequiredInterfaces(required = {Node_RoutingCI.class, CommunicationCI.class, RoutingCI.class})
 @OfferedInterfaces (offered = {RoutingCI.class, CommunicationCI.class})
@@ -50,32 +52,36 @@ public class Node_Routing extends AbstractComponent{
 	/** un compteur qui permet d'identifier notre noeud **/
 	public static int node_routing_id = 1;
 	
-	/** l'identifiant de notre nœud routing **/
+	/** l'identifiant de notre nï¿½ud routing **/
 	private int id;
 	
-	/** le port sortant du nœud routing **/
+	/** le port sortant du nï¿½ud routing **/
 	protected Node_RoutingOutBoundPort nrop;
-	/** le port entrant "CommunicationCI" du nœud routing **/
+	/** le port entrant "CommunicationCI" du nï¿½ud routing **/
 	protected Node_RoutingCommInboundPort nrcip;
-	/** le port entrant du nœud routing **/
+	/** le port entrant du nï¿½ud routing **/
 	protected Node_RoutingRoutingInboundPort nrrip;
-	/** l'adresse du nœud routing **/
+	/** l'adresse du nï¿½ud routing **/
 	private NodeAddress address = new NodeAddress();
-	/** la liste des adresses accessible à partir du nœud routing **/
+	/** la liste des adresses accessible ï¿½ partir du nï¿½ud routing **/
 	private List<ConnectionInformation> addressConnected = new ArrayList<>();
 	/** la liste des adresses de la table de routage **/
 	private Set<RouteInfoI> routes = new HashSet<RouteInfoI>();
-	/** l'adresse vers un access Point**/
+	
+	/** l'adresse de l'access Point**/
 	private RouteInfoI routeToAccessPoint;
 	
-	
+	/**l'adresse a qui on envoi le message**/
 	public static AddressI addressToSendMessage;
+	
+	/** le nombre e tentative pour envoyais un message **/
 	private int NumberOfNeighboorsToSend = 2;
 	
+	/** la position initial du nÅ“ud routing **/
 	private PositionI pointInitial;
 	
 	/**
-	 * Constructeur qui crée une instance du nœud routing
+	 * Constructeur qui crï¿½e une instance du nï¿½ud routing
 	 * @throws Exception
 	 */
 	protected Node_Routing() throws Exception {
@@ -104,6 +110,9 @@ public class Node_Routing extends AbstractComponent{
 	 *--------------  Component life-cycle -------------
 	  --------------------------------------------------**/
 
+	/**--------------------------------------------------
+	 *--------------  Component life-cycle -------------
+	  --------------------------------------------------**/
 
 	@Override
 	public synchronized void finalise() throws Exception {
@@ -259,12 +268,22 @@ public class Node_Routing extends AbstractComponent{
 				this.transmitMessage(m);
 			}
 		}
+		//ping
+		this.logMessage("Ping neighbour");
+		try {
+			this.nrcip.ping();
+		}catch(Exception e) {
+			this.logMessage("Dead neighbour");
+		}
+		this.logMessage("neighbour always alive");
+		//dÃ©senregistrement
+		this.nrop.unregister(this.address);
 	}
 	
 	/** ------------------------- Services ------------------------**/
 
 	/**
-	 * cette méthode permet a un voisin de se connecter 
+	 * cette mï¿½thode permet a un voisin de se connecter 
 	 * @param address : l'adresse du voisin
 	 * @param communicationInboundPortURI
 	 * @return null
@@ -272,6 +291,15 @@ public class Node_Routing extends AbstractComponent{
 	 */
 
 
+	/** ------------------------- Services ------------------------**/
+
+	/**
+	 * cette mÃ©thode permet a un voisin de se connecter 
+	 * @param address : l'adresse du voisin
+	 * @param communicationInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connect(NodeAddressI address, String communicationInboundPortURI) throws Exception {
 		this.logMessage("Someone asked connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
@@ -299,7 +327,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * Cette méthode est appeler par le nœud routing s'il a la capacité à router des messages 
+	 * Cette mï¿½thode est appeler par le nï¿½ud routing s'il a la capacitï¿½ ï¿½ router des messages 
 	 * @param address
 	 * @param communicationInboundPortURI
 	 * @param routingInboundPortURI
@@ -307,6 +335,14 @@ public class Node_Routing extends AbstractComponent{
 	 * @throws Exception
 	 */
 
+	/**
+	 * Cette mÃ©thode est appeler par le nÅ“ud routing s'il a la capacitÃ© Ã  router des messages 
+	 * @param address
+	 * @param communicationInboundPortURI
+	 * @param routingInboundPortURI
+	 * @return null
+	 * @throws Exception
+	 */
 	public Object connectRouting(NodeAddressI address, String communicationInboundPortURI, String routingInboundPortURI) throws Exception {
 		this.logMessage("Someone asked connection");
 		ConnectionInformation CInfo = new ConnectionInformation(address);
@@ -354,17 +390,15 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode permet de trasmettre un message
-	 * @param m : le message à transmettre
+	 * cette mÃ©thode permet de trasmettre un message
+	 * @param m : le message Ã  transmettre
 	 * @return null
 	 * @throws Exception
 	 */
-
-
+	
 	public Object transmitMessage(MessageI m) throws Exception {
 		this.logMessage("Routing tables before sending message " + this.routingTableToString());
 		m.decrementHops();
-		m.addAddressToHistory(this.address);
 		
 		if(m.getAddress().equals(this.address)) {
 			this.logMessage("Received a message : " + m.getContent());
@@ -395,7 +429,7 @@ public class Node_Routing extends AbstractComponent{
 	/**
 	 * cette methode nous permet d'envoyer un message to network
 	 * @param m : le message
-	 * @return true si on réussi a envoyais le message to Network
+	 * @return true si on rÃ©ussi a envoyais le message to Network
 	 * @throws Exception
 	 */
 	public boolean sendMessageToNetwork(MessageI m) throws Exception {
@@ -415,9 +449,9 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode nous permet d'envyer un message via le routeur
+	 * cette mÃ©thode nous permet d'envyer un message via le routeur
 	 * @param m : le message
-	 * @return true si on réussit a envoyer un message via le routeur
+	 * @return true si on rÃ©ussit a envoyer un message via le routeur
 	 * @throws Exception
 	 */
 	public boolean sendMessageViaRouting(MessageI m) throws Exception {
@@ -436,7 +470,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode nous permets d'envoyer un message via l'innondation
+	 * cette mÃ©thode nous permets d'envoyer un message via l'innondation
 	 * @param m : le message
 	 * @throws Exception
 	 */
@@ -445,20 +479,16 @@ public class Node_Routing extends AbstractComponent{
 		for(int i = 0; numberSent < NumberOfNeighboorsToSend && i < this.addressConnected.size(); i++) {
 			// No blocking mechanism
 			AddressI addressToTransmitTo = this.addressConnected.get(i).getAddress();
-			if(!m.isInHistory(addressToTransmitTo)) {
-				this.logMessage("(Via innondation) Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
-				this.addressConnected.get(i).getNrcop().transmitMessage(m);
-				numberSent += 1;
-			}
-			else {
-				this.logMessage("No node to send message to");
-			}
+			this.logMessage("(Via innondation) Transmitting a Message to " + this.addressConnected.get(i).getAddress().getAdress());
+			this.addressConnected.get(i).getNrcop().transmitMessage(m);
+			numberSent += 1;
+		
 		}
 	}
-	
+
 	/**
-	 * Cette méthode vérifie s'il existe une route vers une adresse particulière
-	 * @param address : l'adresse a vérifié
+	 * Cette mÃ©thode vÃ©rifie s'il existe une route vers une adresse particuliÃ¨re
+	 * @param address : l'adresse a vÃ©rifiÃ©
 	 * @return true si il existe une route
 	 * @throws Exception
 	 */
@@ -467,7 +497,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * Cette méthode permet de vérifier le voisin est encore présent
+	 * Cette mï¿½thode permet de vï¿½rifier le voisin est encore prï¿½sent
 	 * @return null
 	 * @throws Exception
 	 */
@@ -476,7 +506,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode nous permet de mettre a jours notre table de routage
+	 * cette mï¿½thode nous permet de mettre a jours notre table de routage
 	 * @param neighbour
 	 * @param routes
 	 * @throws Exception
@@ -525,7 +555,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * cette méthode nous permet de mettre à jour la route vers le point d’accès le plus proche 
+	 * cette mÃ©thode nous permet de mettre Ã  jour la route vers le point dâ€™accÃ¨s le plus proche 
 	 * @param neighbour
 	 * @param numberOfHops
 	 * @throws Exception
@@ -545,7 +575,7 @@ public class Node_Routing extends AbstractComponent{
 	}
 	
 	/**
-	 * Permet de créer une string représentant la table de routage
+	 * Permet de crï¿½er une string reprï¿½sentant la table de routage
 	 */
 	public String routingTableToString() {
 		String toString = "Routes :";

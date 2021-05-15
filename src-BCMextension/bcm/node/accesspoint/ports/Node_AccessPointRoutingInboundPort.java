@@ -20,18 +20,39 @@ import bcm.utils.routing.interfaces.RouteInfoI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
-import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 
 
+/**
+ * Classe Node_AccessPointRoutingInboundPort definissant le comportement du port entrant obeissant a l'interface de RoutingCI
+ * @author Nguyen, belkhir
+ *
+ */
 public class Node_AccessPointRoutingInboundPort extends AbstractInboundPort implements RoutingCI{
 
 	private static final long serialVersionUID = 1L;
-
+	
+	/**
+	 * Constructeur du port entrant
+	 * @param owner : le composant utilisant ce port
+	 * @throws Exception
+	 */
 	public Node_AccessPointRoutingInboundPort(ComponentI owner) throws Exception {
 		super(RoutingCI.class, owner);
 	}
 
 
+	/**
+	 * <p>
+	 * 	<strong> 
+	 * 		demande de mise a jour
+	 * 	</strong>
+	 * 	<em> 
+	 * 		ce service permet de mettre a jour de la table de routage  
+	 *      si cette route est plus intéressante que la précédente
+	 * 	</em>
+	 * </p> 
+	 * 
+	 **/
 	@Override
 	public void updateRouting(NodeAddressI neighbour, Set<RouteInfoI> routes) throws Exception {
 		this.getOwner().handleRequest(
@@ -45,7 +66,17 @@ public class Node_AccessPointRoutingInboundPort extends AbstractInboundPort impl
 		);
 	}
 
-
+	/**
+	 * <p>
+	 * 	<strong> 
+	 * 		demande de mise a jour
+	 * 	</strong>
+	 * 	<em> 
+	 * 		ce service permet de mettre à jour la route vers le point d’accès le plus proche
+	 * 	</em>
+	 * </p> 
+	 * 
+	 **/
 	@Override
 	public void updateAccessPoint(NodeAddressI neighbour, int numberOfHops) throws Exception{
 		this.getOwner().handleRequest(

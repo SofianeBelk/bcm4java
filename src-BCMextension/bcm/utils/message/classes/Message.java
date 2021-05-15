@@ -10,6 +10,7 @@ import bcm.utils.message.interfaces.MessageI;
 
 public class Message implements MessageI {
 	
+	// Variables pour tracer les messages et garder des statistiques dessus
 	public static int MessageSent = 0;
 	public static int MessageLost = 0;
 	public static int MessageReceived = 0;
@@ -19,10 +20,10 @@ public class Message implements MessageI {
 	
 	public static ReentrantLock lock = new ReentrantLock();
 	
+	// Représente le nombre de bonds que le message peut faire
 	private int hops = 3;
 	private AddressI address;
 	private String content = "";
-	private List<AddressI> listAddress = new ArrayList<>();
 	
 	
 	public Message(AddressI address, String content) {
@@ -36,12 +37,6 @@ public class Message implements MessageI {
 		this.hops = hops;
 	}
 	
-	private Message(AddressI address, String content, int hops, List<AddressI> listAddress) {
-		this.address = address;
-		this.content = content;
-		this.hops = hops;
-		this.listAddress.addAll(listAddress);
-	}
 
 	@Override
 	public AddressI getAddress() {
@@ -70,25 +65,10 @@ public class Message implements MessageI {
 	}
 	
 	public MessageI copy() {
-		return new Message(this.address, this.content, this.hops, this.listAddress);
+		return new Message(this.address, this.content, this.hops);
 	}
 
-	@Override
-	public void addAddressToHistory(AddressI a) {
-		this.listAddress.add(a);
-	}
-
-
-	@Override
-	public boolean isInHistory(AddressI a) {
-		for(AddressI address: this.listAddress) {
-			if (address.equals(a)){
-				return true;
-			}
-		}
-		return false;
-	}
-	
+	// Permet de tracer les messages et d'avoir des statistiques dessus.
 	public static void newMessageSent() {
 		Message.lock.lock();
 		Message.MessageSent += 1;
