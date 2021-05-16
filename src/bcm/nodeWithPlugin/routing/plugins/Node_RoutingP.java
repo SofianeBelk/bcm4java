@@ -337,7 +337,7 @@ public class Node_RoutingP extends AbstractPlugin{
 			Thread.yield();
 			Thread.sleep(rand.nextInt(4) * 250);
 			
-			// Tous les 5 tours de boucle, nous vérifions les voisins
+			// Tous les 5 tours de boucle, nous verifions les voisins
 			if(cpt % 5 == 0) {
 				this.checkPingOthers();
 			}
@@ -359,7 +359,7 @@ public class Node_RoutingP extends AbstractPlugin{
 			}
 			
 			
-			// Le noeud à 15% de chance d'envoyer un message à une adresse du réseau classique
+			// Le noeud a 15% de chance d'envoyer un message a une adresse du rï¿½seau classique
 			if(rand.nextFloat() < 0.15) {
 				NetworkAddress toSend = new NetworkAddress();
 				Message m = new Message(toSend,"Hello to Network from : " + toSend.getAdress());						
@@ -367,7 +367,7 @@ public class Node_RoutingP extends AbstractPlugin{
 				Message.newMessageSent();
 				this.transmitMessage(m);
 			}
-			// Le noeud à 10% de chance d'envoyer un message à une adresse aléatoire du réseau
+			// Le noeud ï¿½ 10% de chance d'envoyer un message ï¿½ une adresse alï¿½atoire du rï¿½seau
 			if(rand.nextFloat() < 0.10){
 				lockForCI.readLock().lock();
 				ConnectionInfoI ci;
@@ -794,7 +794,7 @@ public class Node_RoutingP extends AbstractPlugin{
 	}
 	
 	/**
-	 * Ping toutes les addresses pour vérifier que les noeuds sont actifs
+	 * Ping toutes les addresses pour vï¿½rifier que les noeuds sont actifs
 	 */
 	public void checkPingOthers() {
 		this.logMessage("Sending ping");
