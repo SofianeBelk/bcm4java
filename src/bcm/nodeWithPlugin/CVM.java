@@ -29,9 +29,9 @@ public class CVM extends AbstractCVM {
 		assert	this.isDeployedComponent(uri) ;
 		
 		
-		int nb_accesspoint = 0;
+		int nb_accesspoint = 2;
 		int nb_routing = 5;
-		int nb_terminal = 0;
+		int nb_terminal = 3;
 		
 		
 		// Répartition aléatoire des noeuds pour qu'ils soient a 

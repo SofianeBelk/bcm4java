@@ -212,12 +212,12 @@ public class Node_TerminalP extends AbstractPlugin {
 			this.logMessage("Connected to all nearby devices");
 			
 			
-			// Toutes les 5 secondes, le noeud � 10% de chance de se d�connecter
+			// Toutes les 500 milliseconds, le noeud � 0.5% de chance de se d�connecter
 			while(true) {
 				Thread.yield();
-				Thread.sleep(5000);
+				Thread.sleep(500);
 				Random rand = new Random();
-				if(rand.nextFloat() < 0.10) {
+				if(rand.nextFloat() < 0.005) {
 					this.logMessage("Disconnecting");
 					this.ntop.unregister(address);
 					this.logMessage("Unregistered");
